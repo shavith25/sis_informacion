@@ -216,8 +216,8 @@ class ZonasController extends Controller
             'descripcion' => 'nullable|string',
             'coordenadas' => 'required|json',
             'area_id' => 'required|exists:areas,id',
-            'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
-            'videos.*' => 'nullable|mimes:mp4,mov,ogg,qt|max:20000',
+            'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:20480', // Maximo de 20MB
+            'videos.*' => 'nullable|mimes:mp4,mov,ogg,qt|max:50000',
             'imagen_mapa' => 'nullable|string',
         ]);
 
@@ -404,8 +404,8 @@ class ZonasController extends Controller
             'descripcion' => 'nullable|string',
             'coordenadas' => 'required|json',
             'area_id' => 'required|exists:areas,id',
-            'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:8048',
-            'videos.*' => 'nullable|mimes:mp4,mov,ogg,qt|max:20000',
+            'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:20480',
+            'videos.*' => 'nullable|mimes:mp4,mov,ogg,qt|max:50000',
             'imagen_mapa' => 'nullable|string',
 
         ]);

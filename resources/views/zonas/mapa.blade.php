@@ -43,7 +43,7 @@
         }
 
         .container-mapa {
-            height: calc(100vh - 140px);
+            height: calc(100vh - 250px);
             display: flex;
             flex-direction: column;
             padding: 20px;
@@ -459,29 +459,40 @@
                         <div class="form-section-title mt-0"><i class="fas fa-info-circle me-1"></i> Información General
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-6"><label class="form-label">Flora y Fauna</label>
-                                <div class="input-group"><span class="input-group-text bg-light"><i
-                                            class="fas fa-leaf text-success"></i></span><input type="text"
-                                        class="form-control" name="flora_fauna" id="flora_fauna" required
-                                        placeholder="Ej: Pinos, Osos...">
+                            <div class="col-md-12">
+                                <label class="form-label">Flora y Fauna</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-leaf text-success"></i>
+                                    </span>
+                                    <textarea class="form-control" name="flora_fauna" id="flora_fauna" style="height: 80px;" required
+                                        placeholder="Ej: Pinos, Osos..."></textarea>
                                 </div>
                             </div>
 
-                            <div class="col-md-6"><label class="form-label">Extensión</label>
-                                <div class="input-group"><span class="input-group-text bg-light"><i
-                                            class="fas fa-ruler-combined text-primary"></i></span><input type="text"
-                                        class="form-control" name="extension" id="extension" required
-                                        placeholder="Ej: 500 Hectáreas"></div>
+                            <div class="col-md-12">
+                                <label class="form-label">Extensión</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-ruler-combined text-primary"></i>
+                                    </span>
+                                    <textarea class="form-control" name="extension" id="extension" style="height: 80px;" required
+                                        placeholder="Ej: 500 Hectáreas"></textarea>
+                                </div>
                             </div>
 
-                            <div class="col-md-6"><label class="form-label">Población</label>
-                                <div class="input-group"><span class="input-group-text bg-light"><i
-                                            class="fas fa-users text-info"></i></span><input type="text"
-                                        class="form-control" name="poblacion" id="poblacion" required
-                                        placeholder="Ej: 1500 habitantes"></div>
+                            <div class="col-md-12">
+                                <label class="form-label">Población</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-users text-info"></i>
+                                    </span>
+                                    <textarea class="form-control" name="poblacion" id="poblacion" style="height: 80px;" required
+                                        placeholder="Ej: 1500 habitantes"></textarea>
+                                </div>
                             </div>
 
-                            <div class="col-md-6"><label class="form-label">Provincia</label>
+                            <div class="col-md-12"><label class="form-label">Provincia</label>
                                 <div class="input-group"><span class="input-group-text bg-light"><i
                                             class="fas fa-map-marker-alt text-danger"></i></span><input type="text"
                                         class="form-control" name="provincia" id="provincia" required
@@ -492,19 +503,26 @@
                         <div class="form-section-title"><i class="fas fa-exclamation-triangle me-1"></i> Estado y Otros
                         </div>
                         <div class="row g-3">
-                            <div class="col-md-6"><label class="form-label">Especies en Peligro</label>
-                                <div class="input-group"><span class="input-group-text bg-light"><i
-                                            class="fas fa-paw text-warning"></i></span><input type="text"
-                                        class="form-control" name="especies_peligro" id="especies_peligro" required
-                                        placeholder="Ej: Cóndor Andino">
+                            <div class="col-md-12">
+                                <label class="form-label">Especies en Peligro</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-paw text-warning"></i>
+                                    </span>
+                                    <textarea class="form-control" name="especies_peligro" id="especies_peligro" style="height: 80px;" required
+                                        placeholder="Ej: Cóndor Andino"></textarea>
                                 </div>
                             </div>
 
-                            <div class="col-md-6"><label class="form-label">Otros Datos</label>
-                                <div class="input-group"><span class="input-group-text bg-light"><i
-                                            class="fas fa-clipboard-list text-secondary"></i></span><input type="text"
-                                        class="form-control" name="otros_datos" id="otros_datos" required
-                                        placeholder="Información extra..."></div>
+                            <div class="col-md-12">
+                                <label class="form-label">Otros Datos</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light">
+                                        <i class="fas fa-clipboard-list text-secondary"></i>
+                                    </span>
+                                    <textarea class="form-control" name="otros_datos" id="otros_datos" style="height: 80px;" required
+                                        placeholder="Información extra..."></textarea>
+                                </div>
                             </div>
                         </div>
 
