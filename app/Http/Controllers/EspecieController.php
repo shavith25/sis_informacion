@@ -29,8 +29,8 @@ class EspecieController extends Controller
             'titulo'      => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'tipo'        => 'required|in:emblematica,vulnerable',
-            'imagenes.*'  => 'image|mimes:jpeg,png,jpg,gif|max:8048',
-            'documentos.*' => 'nullable|mimes:pdf,doc,docx|max:20480',
+            'imagenes.*'  => 'image|mimes:jpeg,png,jpg,gif|max:20480',
+            'documentos.*' => 'nullable|mimes:pdf,doc,docx|max:51200',
         ]);
 
         $especie = Especie::create($request->only(['titulo', 'descripcion', 'tipo','zona_id']));
@@ -81,7 +81,8 @@ class EspecieController extends Controller
             'titulo'      => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'tipo'        => 'required|in:emblematica,vulnerable',
-            'imagenes.*'  => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'imagenes.*'  => 'image|mimes:jpeg,png,jpg,gif|max:20480',
+            'documentos.*' => 'nullable|mimes:pdf,doc,docx|max:51200',
         ]);
 
         $especie->update($request->only(['titulo', 'descripcion', 'tipo','zona_id']));
