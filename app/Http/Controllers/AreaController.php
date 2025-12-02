@@ -121,7 +121,7 @@ class AreaController extends Controller
     {
         $area->delete();
 
-        return redirect()->route('areas.index')->with('success', 'Área Protegida eliminada permanentemente.');
+        return redirect()->route('areas.index');
     }
     public function getAreas()
     {

@@ -147,10 +147,6 @@
                                                         <p class="lead text-dark-50">
                                                             Aún no hay áreas protegidas registradas en el sistema.
                                                         </p>
-                                                        <a href="{{ route('areas.create') }}"
-                                                            class="btn btn-primary mt-3 btn-lg">
-                                                            <i class="fas fa-plus mr-2"></i> Crear Nueva Área Protegida
-                                                        </a>
                                                     </div>
                                                 </td>
                                             </tr>
