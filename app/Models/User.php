@@ -7,9 +7,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use App\Models\Conductor;
+use Illuminate\Support\Facades\Hash;
 
-//spatie
+
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
@@ -17,9 +17,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
     /**
-     * The attributes that are mass assignable.
-     *
-     * @var string[]
+     * Atributos que se pueden asignar masivamente
      */
     protected $fillable = [
         'name',
@@ -29,15 +27,26 @@ class User extends Authenticatable
         'estado'
     ];
 
-    public function conductor()
+    // Convierte el ID (ej: 1) a código Hexadecimal (ej: "4a2f")
+    public function getRouteKey()
     {
-        return $this->hasOne(Conductor::class);
+        $idOculto = $this->getKey() ^ 123456789; // Máscara XOR
+        return dechex($idOculto);
+    }
+
+    // Recibe el código Hexadecimal y recupera el ID original
+    public function resolveRouteBinding($value, $field = null)
+    {
+        try {
+            $idReal = hexdec($value) ^ 123456789; // Máscara XOR inversa
+            return $this->where('id', $idReal)->firstOrFail();
+        } catch (\Exception $e) {
+            abort(404);
+        }
     }
 
     /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array
+     * Atributos ocultos al convertir a JSON
      */
     protected $hidden = [
         'password',
@@ -45,9 +54,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be cast.
-     *
-     * @var array
+     * Conversión de tipos de datos
      */
     protected $casts = [
         'email_verified_at' => 'datetime',

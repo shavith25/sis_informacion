@@ -126,7 +126,7 @@
                                                 </td>
                                                 <td class="text-center actions-column">
                                                     <div class="btn-group">
-                                                        <a href="{{ route('usuarios.edit', $usuario->id) }}"
+                                                        <a href="{{ route('usuarios.edit', $usuario) }}"
                                                             class="btn btn-icon btn-sm btn-info" data-toggle="tooltip"
                                                             title="Editar">
                                                             <i class="fas fa-edit"></i>

@@ -29,7 +29,7 @@
                                 </div>
                             @endif
 
-                            {!! Form::model($user, ['method' => 'PATCH', 'route' => ['usuarios.update', $user->id], 'files' => true]) !!}
+                            {!! Form::model($user, ['method' => 'PATCH', 'route' => ['usuarios.update', $user], 'files' => true]) !!}
 
                             <div class="form-scroll-container">
                                 <div class="row">
