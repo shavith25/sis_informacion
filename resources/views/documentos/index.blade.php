@@ -74,7 +74,7 @@
                                                         {{ \Carbon\Carbon::parse($documento->fecha_emision)->format('d/m/Y') }}
                                                     </span>
                                                     <div>
-                                                        <a href="{{ route('documentos.edit', $documento->id) }}"
+                                                        <a href="{{ route('documentos.edit', $documento) }}"
                                                             class="btn btn-icon btn-sm btn-info mr-1" data-toggle="tooltip"
                                                             title="Editar">
                                                             <i class="fas fa-edit"></i>
@@ -87,7 +87,7 @@
                                                             </a>
 
                                                             <form
-                                                                action="{{ route('documentos.destroy', $documento->id) }}"
+                                                                action="{{ route('documentos.destroy', $documento) }}"
                                                                 method="POST" class="d-inline"
                                                                 id="form-delete-{{ $documento->id }}">
                                                                 @csrf

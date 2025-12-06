@@ -23,10 +23,12 @@ class DepartamentoController extends Controller
         $departamentos =Departamento::paginate(5);
         return view('limites.departamentos.index',compact('departamentos'));
     }
+
     public function create()
     {
         return view('limites.departamentos.create');
     }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -58,18 +60,18 @@ class DepartamentoController extends Controller
 
         return redirect()->route('limites.departamentos.index')->with('success', 'Departamento creado correctamente.');
     }
-    public function edit($id)
+
+    public function edit(Departamento $departamento)
     {
-        $departamento = Departamento::findOrFail($id);
-       if (is_string($departamento->geometria)) {
+        if (is_string($departamento->geometria)) {
             $departamento->geometria = json_decode($departamento->geometria, true);
         }
+
         return view('limites.departamentos.edit', compact('departamento'));
     }
-    public function update(Request $request, $id)
-    {
-        $departamento = Departamento::findOrFail($id);
 
+    public function update(Request $request, Departamento $departamento)
+    {
         $request->validate([
             'nombre' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
@@ -85,17 +87,19 @@ class DepartamentoController extends Controller
             'tipo_geometria' => 'geojson',
             'geometria' => $data,
         ]);
-        // $departamento->update($request->only('nombre', 'descripcion', 'tipo_geometria', 'geometria'));
+
         if ($request->has('delete_media')) {
                 $medias = Media::whereIn('id', $request->delete_media)->get();
                 foreach ($medias as $media) {
                     $media->delete();
                 }
             }
+            
         if ($request->hasFile('media')) {
             foreach ($request->file('media') as $file) {
                 $path = $file->store('departamentos', 'public');
                 $tipo = str_contains($file->getMimeType(), 'video') ? 'video' : 'image';
+
                 $departamento->media()->create([
                     'archivo' => $path,
                     'tipo' => $tipo,
@@ -106,6 +110,7 @@ class DepartamentoController extends Controller
         return redirect()->route('limites.departamentos.index')
                         ->with('success', 'Departamento actualizado correctamente.');
     }
+
     public function mapa()
     {
         $departamentos = Departamento::select('id', 'nombre', 'geometria', 'tipo_geometria')->get();
@@ -119,9 +124,10 @@ class DepartamentoController extends Controller
             'zonas' => $zonas,
         ]);
     }
-     public function getByDepartamento($id)
+
+    public function getByDepartamento($id)
     {
-        $departamento = Departamento::find($id);
+        $departamento = Departamento::resolveRouteBinding($id);
 
         if (!$departamento) {
             return response()->json(['error' => 'Departamento no encontrado'], 404);
@@ -143,10 +149,9 @@ class DepartamentoController extends Controller
             'provincias' => $provincias
         ]);
     }
-    public function destroy($id)
-    {
-        $departamento = Departamento::findOrFail($id);
 
+    public function destroy(Departamento $departamento)
+    {
         if ($departamento->media->count() > 0) {
             foreach ($departamento->media as $media) {
                 $media->delete();
@@ -158,5 +163,4 @@ class DepartamentoController extends Controller
         return redirect()->route('limites.departamentos.index')
                         ->with('success', 'Departamento eliminado correctamente.');
     }
-
 }

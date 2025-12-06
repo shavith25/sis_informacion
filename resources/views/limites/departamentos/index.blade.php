@@ -115,7 +115,7 @@
                                             <td class="text-center">
                                                 <div class="d-flex justify-content-center" style="gap: 5px;">
                                                     @can('editar-departamento')
-                                                        <a href="{{ route('limites.departamentos.edit', $departamento->id) }}" 
+                                                        <a href="{{ route('limites.departamentos.edit', $departamento) }}" 
                                                             class="btn btn-sm btn-warning" title="Editar">
                                                             <i class="fas fa-edit"> Editar</i>
                                                         </a>

@@ -218,7 +218,6 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 
 <style>
-    /* VARIABLES DE COLOR */
     :root {
         --primary-color: #3498db;
         --secondary-color: #2c3e50;
@@ -676,17 +675,16 @@
             touchZoom: false,
             scrollWheelZoom: false,
             doubleClickZoom: false,
-            // Centrado inicial por defecto
             center: [-17.3895, -66.1568], 
             zoom: 10
         });
 
-        // Capa de OpenStreetMap (Satelital)
+        // Capa base de imágenes satelitales
         L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Esri, i-cubed, USDA, USGS, etc.',
         }).addTo(map);
 
-        // Capa de etiquetas
+        // Capa de límites y etiquetas
         L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Labels &copy; Esri'
         }).addTo(map);
@@ -694,7 +692,6 @@
 
         // Función auxiliar para expandir polígonos (Mantenido)
         function expandPolygon(latLngs, factor = 1.05) {
-            // Calcula el centroide
             const center = latLngs.reduce(
                 (acc, [lat, lng]) => [acc[0] + lat, acc[1] + lng],
                 [0, 0]
@@ -733,25 +730,24 @@
                     zonaCoords.forEach(function (item) {
                         if (item.tipo === 'poligono' && item.coordenadas && item.coordenadas.length > 0) {
                             
-                            // *** CAMBIO CLAVE: Obtener color aleatorio para cada polígono ***
                             const randomColor = getRandomColor();
                             
                             var latLngsOriginal = item.coordenadas.map(coord => [coord.lat, coord.lng]);
                             
                             // Crea el polígono con el color aleatorio
                             var zonaPolygon = L.polygon(latLngsOriginal, {
-                                color: randomColor,        // Color de borde aleatorio
+                                color: randomColor,     
                                 weight: 3,
                                 opacity: 1,
-                                fillColor: randomColor,    // Color de relleno aleatorio
+                                fillColor: randomColor,    
                                 fillOpacity: 0.4
                             }).addTo(map);
                             allZoneLayers.push(zonaPolygon);
                             layerBounds.extend(zonaPolygon.getBounds());
                             
                         } else if (item.tipo === 'marcador' && item.coordenadas) {
-                            // Los marcadores usan un color fijo o uno predefinido si no se aplica aleatoriedad
-                            var markerColor = getRandomColor(); // También podemos hacer los marcadores aleatorios
+
+                            var markerColor = getRandomColor(); 
                             var marker = L.marker([item.coordenadas.lat, item.coordenadas.lng], {
                                 icon: L.divIcon({className: 'custom-div-icon', html: '<i class="fas fa-map-marker-alt" style="color:' + markerColor + '; font-size: 24px;"></i>'})
                             }).addTo(map);

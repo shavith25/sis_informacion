@@ -408,7 +408,7 @@
                                             class="badge bg-{{ $zona->estado ? 'success' : 'secondary' }} rounded-pill">{{ $zona->estado ? 'Activo' : 'Inactivo' }}</span>
                                     </td>
                                     <td class="text-end">
-                                        <a href="{{ route('zonas.detalle', $zona->id) }}" title="Ver Detalle"
+                                        <a href="{{ route('zonas.detalle', $zona) }}" title="Ver Detalle"
                                             class="btn btn-info btn-sm btn-action-sm zona-hover-btn"
                                             data-zona-id="{{ $zona->id }}"><i class="fas fa-eye"></i>
                                         </a>

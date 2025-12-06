@@ -31,7 +31,6 @@
 
     
         <div class="row">
-            <!-- Columna de información -->
             <div class="col-lg-4 mb-4">
                 <div class="card shadow-sm h-100">
                     <div class="card-header bg-primary text-white">
@@ -182,7 +181,7 @@
                 <i class="fas fa-arrow-left me-2"></i> Volver al listado
             </a>
             <div>
-                <a href="{{ route('zonas.edit', $zona->id) }}" class="btn btn-warning me-2">
+                <a href="{{ route('zonas.edit', $zona) }}" class="btn btn-warning me-2">
                     <i class="fas fa-edit me-2"></i> Editar
                 </a>
                 <form action="{{ route('zonas.change-status', $zona) }}" method="POST" class="d-inline">

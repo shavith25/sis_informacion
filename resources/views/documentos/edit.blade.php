@@ -18,7 +18,7 @@
                             <h4><i class="fas fa-file-signature text-primary mr-2"></i> Editar Documento: {{ $documento->titulo }}</h4>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('documentos.update', $documento->id) }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('documentos.update', $documento) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
 

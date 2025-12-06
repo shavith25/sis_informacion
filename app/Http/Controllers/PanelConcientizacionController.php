@@ -19,6 +19,7 @@ class PanelConcientizacionController extends Controller
     {
         //
     }
+
     public function create()
     {
         return view('panelConcientizaciones.create');
@@ -44,15 +45,16 @@ class PanelConcientizacionController extends Controller
 
         return redirect()->route('panelConcientizaciones.index')->with('toast_success', 'Video agregado correctamente.');
     }
-    public function edit($id)
-    {
-        $concientizacion = Concientizacion::findOrFail($id);
 
+    public function edit(Concientizacion $concientizacion)
+    {
+        $concientizacion = (new Concientizacion)->resolveRouteBinding($concientizacion->firstOrFail()->id);
         return view('panelConcientizaciones.edit', compact('concientizacion'));
     }
-    public function update(Request $request, $id)
+
+    public function update(Request $request, Concientizacion $concientizacion)
     {
-        $concientizacion = Concientizacion::findOrFail($id);
+        $concientizacion = (new Concientizacion)->resolveRouteBinding($concientizacion->firstOrFail()->id);
 
         $request->validate([
             'titulo' => 'required|string|max:255',
@@ -61,30 +63,36 @@ class PanelConcientizacionController extends Controller
             'video' => 'nullable|mimes:mp4,webm,ogg|max:51200', 
         ]);
 
-        if ($request->hasFile('video')) {
-            if ($concientizacion->video_path && Storage::disk('public')->exists($concientizacion->video_path)) {
-                Storage::disk('public')->delete($concientizacion->video_path);
-            }
-            $path = $request->file('video')->store('videos_concientizacion', 'public');
-            $concientizacion->video_path = $path;
-        }
-
-        $concientizacion->update([
+        $data = [
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
             'categoria' => $request->categoria,
             'video_path' => $concientizacion->video_path,
-        ]);
+        ];
+
+        // Si suben un video nuevo...
+        if ($request->hasFile('video')) {
+            if ($concientizacion->video_path && Storage::disk('public')->exists($concientizacion->video_path)) {
+                Storage::disk('public')->delete($concientizacion->video_path);
+            }
+            
+            $path = $request->file('video')->store('videos_concientizacion', 'public');
+            $data['video_path'] = $path;
+        }
+
+        $concientizacion->update($data);
 
         return redirect()
             ->route('panelConcientizaciones.index')
             ->with('toast_success', 'Video actualizado correctamente.');
+        
     }
+
     public function destroy($id)
     {
-        $concientizacion = \App\Models\Concientizacion::findOrFail($id);
+        $concientizacion = (new Concientizacion)->resolveRouteBinding($id);
 
-        if ($concientizacion->video_path && Storage::disk('public')->exists($concientizacion->video_path)) {
+        if($concientizacion->video_path && Storage::disk('public')->exists($concientizacion->video_path)) {
             Storage::disk('public')->delete($concientizacion->video_path);
         }
 

@@ -74,8 +74,13 @@
                                                     </span>
                                                 </td>
 
+                                                @php
+                                                    $rand = rand(10000, 99999);
+                                                    $token = dechex($rand) . 'x' . dechex($role->id ^ $rand);
+                                                @endphp
+
                                                 <td class="text-center">
-                                                    <a href="{{ route('roles.edit', $role->id) }}"
+                                                    <a href="{{ route('roles.edit', $token) }}"
                                                         class="btn btn-icon btn-sm btn-action-blue mr-1" data-toggle="tooltip"
                                                         title="Editar rol">
                                                         <i class="fas fa-edit"></i>

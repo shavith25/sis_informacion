@@ -46,7 +46,7 @@
             </div>
             
             <div class="card-body custom-scroll-area">
-                <form action="{{ route('limites.municipios.update', $municipio->id) }}" method="POST" enctype="multipart/form-data" id="form-municipio">
+                <form action="{{ route('limites.municipios.update', $municipio) }}" method="POST" enctype="multipart/form-data" id="form-municipio">
                     @csrf
                     @method('PUT')
 

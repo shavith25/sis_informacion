@@ -46,9 +46,6 @@ class ProvinciaController extends Controller
      */
     public function store(Request $request)
     {
-        // $provincia = Provincia::create($request->only([
-        //     'id_departamento', 'nombre', 'descripcion', 'tipo_geometria', 'geometria'
-        // ]));
         $validatedData = $request->validate(
             [
                 'id_departamento' => 'required|exists:departamentos,id',
@@ -73,15 +70,13 @@ class ProvinciaController extends Controller
         try {
             $provincia = Provincia::create($provinciaData);
         } catch (\Illuminate\Database\QueryException $e) {
-            // El código '23505' es específico de PostgreSQL para violaciones de unicidad.
+
             if ($e->getCode() == '23505') {
-                // Redirige de vuelta con un mensaje de error amigable.
                 return redirect()->back()
                     ->withInput() // Mantiene los datos del formulario que el usuario ya llenó.
                     ->with('error', 'Error: Ha ocurrido un conflicto de ID en la base de datos. Esto puede deberse a una desincronización. Por favor, intente guardar de nuevo. Si el problema persiste, contacte al administrador.');
             }
 
-            // Si es otro tipo de error de base de datos, lo relanza.
             throw $e;
         }
 
@@ -119,6 +114,11 @@ class ProvinciaController extends Controller
     public function edit(Provincia $provincia)
     {
         $departamentos = Departamento::select('id', 'nombre')->get();
+        
+        if (is_string($provincia->geometria)) {
+            $provincia->geometria = json_decode($provincia->geometria, true);
+        }
+
         return view('limites.provincias.edit', compact('provincia', 'departamentos'));
     }
 
@@ -187,7 +187,6 @@ class ProvinciaController extends Controller
      */
     public function destroy(Provincia $provincia)
     {
-        // Solo eliminar registros de media, no archivos físicos
         foreach ($provincia->media as $media) {
             $media->delete();
         }
@@ -196,6 +195,7 @@ class ProvinciaController extends Controller
 
         return redirect()->route('limites.provincias.index')->with('success', 'Provincia eliminada correctamente.');
     }
+    
     public function destroyMedia(Media $media)
     {
         $media->delete();

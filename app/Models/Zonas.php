@@ -24,6 +24,36 @@ class Zonas extends Model
         'estado' => 'boolean',
     ];
 
+    public function getRouteKey()
+    {
+        $rand = rand(10000, 99999);
+        $mezcla = $this->getKey() ^ $rand; // Operación XOR para mezclar los valores
+        return dechex($rand) . 'x' . dechex($mezcla);
+    }
+
+    public function resolveRouteBinding($value, $field = null)
+    {
+        if (is_numeric($value)) {
+            return $this->where('id', $value)->firstOrFail();
+        }
+
+        if (str_contains($value, 'x')) {
+            try {
+                $partes = explode('x', $value);
+                if (count($partes) === 2) {
+                    $aleatorio = hexdec($partes[0]);
+                    $mezcla = hexdec($partes[1]);
+                    $idReal = $mezcla ^ $aleatorio;
+
+                    return $this->where('id', $idReal)->firstOrFail();
+                }
+            } catch (\Exception $e) {
+                // Ignorar errores y continuar
+            }
+        }
+        abort(404);
+    }
+
     public function medios()
     {
         return $this->hasMany(ZonaMedio::class, 'zona_id');

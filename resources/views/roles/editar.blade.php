@@ -38,7 +38,12 @@
                                 </div>
                             @endif
 
-                            {!! Form::model($role, ['method' => 'PATCH', 'route' => ['roles.update', $role->id]]) !!}
+                            @php
+                                $randUpdate = rand(10000, 99999);
+                                $tokenUpdate = dechex($randUpdate) . 'x' . dechex($role->id ^ $randUpdate);
+                            @endphp
+
+                            {!! Form::model($role, ['method' => 'PATCH', 'route' => ['roles.update', $tokenUpdate]]) !!}
 
                             <div class="form-scroll-container">
                                 <div class="p-4">

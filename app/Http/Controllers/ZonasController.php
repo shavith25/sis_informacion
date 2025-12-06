@@ -42,12 +42,7 @@ class ZonasController extends Controller
         $zona->load(['ultimoHistorial', 'area', 'imagenes', 'videos', 'datos.medios']);
         $coordenadas = $zona->ultimoHistorial ? $zona->ultimoHistorial->coordenadas : [];
 
-        // Renderiza la vista 'zonas.show' y le pasa los datos de la zona.
         return view('zonas.show', compact('zona', 'coordenadas'));
-        $detalle = Datos::with('imagenes', 'medios')
-            ->where('zona_id', $zona->id)
-            ->first();
-        return response()->json($detalle);
     }
 
     public function registradas()
@@ -83,9 +78,6 @@ class ZonasController extends Controller
             $coordenadas = $zona->ultimoHistorial->coordenadas;
         }
 
-        // $imagenes = is_array($zona->imagenes) ? $zona->imagenes : [];
-        // $videos = is_array($zona->videos) ? $zona->videos : [];
-
         return view('zonas.detalle', [
             'zona' => $zona,
             'coordenadas' => $coordenadas
@@ -111,10 +103,6 @@ class ZonasController extends Controller
     {
         $zona->load('area', 'datos', 'ultimoHistorial', 'imagenes', 'videos');
         $coordenadas = $zona->ultimoHistorial ? $zona->ultimoHistorial->coordenadas : null;
-
-        // Obtener las imágenes y videos si existen
-        // $imagenes = $zona->imagenes ?? [];
-        // $videos = $zona->videos ?? [];
 
         return view('landing.detalle-zona', compact('zona', 'coordenadas'));
     }
@@ -315,7 +303,7 @@ class ZonasController extends Controller
             ]);
 
             if (app()->environment('local')) {
-                throw $e; // Esto te mostrará el error exacto en el navegador
+                throw $e; 
             }
 
             return back()->withInput()->withErrors(['error' => 'Error al crear la zona.']);
@@ -365,15 +353,14 @@ class ZonasController extends Controller
     // }
 
 
-    public function edit($id)
+    public function edit(Zonas $zona)
     {
-        $zona = Zonas::with([
+        $zona->load([
             'historial',
             'imagenes',
             'videos'
-        ])->findOrFail($id);
+        ]);
 
-        // dd($zona);
         $areas = Area::where('estado', 1)->get();
 
         return view('zonas.editar', compact('zona', 'areas'));
@@ -397,7 +384,7 @@ class ZonasController extends Controller
         return response()->json($dato);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Zonas $zona)
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
@@ -407,40 +394,39 @@ class ZonasController extends Controller
             'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:20480',
             'videos.*' => 'nullable|mimes:mp4,mov,ogg,qt|max:50000',
             'imagen_mapa' => 'nullable|string',
-
         ]);
 
         DB::beginTransaction();
         try {
-            $zona = Zonas::findOrFail($id);
             $coordenadas = json_decode($request->input('coordenadas'), true);
             $tipoCoordenada = $this->determinarTipoCoordenada($coordenadas);
 
-
+            // Crear Historial
             ZonaHistorial::create([
-                'zona_id' => $zona->id,
-                'coordenadas' => $coordenadas,
+                'zona_id' => $zona->id, // Usamos el ID del objeto inyectado
+                'coordenadas' => $coordenadas, 
                 'tipo_coordenada' => $tipoCoordenada,
                 'imagen_mapa' => $request->input('imagen_mapa'),
                 'created_at' => now()
             ]);
 
-
+            // Actualizar datos básicos
             $zona->nombre = $request->nombre;
             $zona->descripcion = $request->descripcion;
             $zona->area_id = $request->area_id;
 
+            // Manejo de eliminación de imágenes
             if ($request->has('imagenes_eliminadas')) {
                 foreach ($request->input('imagenes_eliminadas') as $ruta) {
                     ZonaMedio::where('zona_id', $zona->id)
                         ->where('tipo', 'imagen')
                         ->where('url', $ruta)
                         ->delete();
-
                     Storage::delete('public/' . $ruta);
                 }
             }
 
+            // Manejo de nuevas imágenes
             if ($request->hasFile('imagenes')) {
                 foreach ($request->file('imagenes') as $imagen) {
                     $path = $imagen->store('zonas/imagenes', 'public');
@@ -452,18 +438,18 @@ class ZonasController extends Controller
                 }
             }
 
-
+            // Manejo de eliminación de videos
             if ($request->has('videos_eliminadas')) {
                 foreach ($request->input('videos_eliminadas') as $ruta) {
                     ZonaMedio::where('zona_id', $zona->id)
                         ->where('tipo', 'video')
                         ->where('url', $ruta)
                         ->delete();
-
                     Storage::delete('public/' . $ruta);
                 }
             }
 
+            // Manejo de nuevos videos
             if ($request->hasFile('videos')) {
                 foreach ($request->file('videos') as $video) {
                     $path = $video->store('zonas/videos', 'public');
@@ -480,6 +466,7 @@ class ZonasController extends Controller
 
             return redirect()->route('zonas.index')
                 ->with('success', 'Zona actualizada correctamente');
+
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Error al actualizar zona: ' . $e->getMessage());
@@ -495,14 +482,11 @@ class ZonasController extends Controller
     {
         $zona = Zonas::findOrFail($id);
 
-        // Obtener la imagen del request
         $image = $request->file('image');
         $imagePath = 'public/mapa_zona_' . $zona->id . '.png';
 
-        // Guardar la imagen en el almacenamiento local
         Storage::put($imagePath, file_get_contents($image));
 
-        // Opciones de DomPDF para mejorar la compatibilidad
         $options = new Options();
         $options->set('isRemoteEnabled', true);
         $pdf = new Dompdf($options);
@@ -517,9 +501,9 @@ class ZonasController extends Controller
         $pdf->setPaper('A4', 'portrait');
         $pdf->render();
 
-        // Retornar el PDF generado
         return $pdf->stream('mapa_zona_' . $zona->nombre . '.pdf');
     }
+
     public function destroy(Zonas $zona)
     {
         try {
@@ -549,7 +533,6 @@ class ZonasController extends Controller
         $dato->imagenes()->delete();
         $dato->medios()->delete();
 
-        // Eliminar el registro principal
         $dato->delete();
 
         return response()->json(['success' => true, 'message' => 'Registro eliminado correctamente.']);

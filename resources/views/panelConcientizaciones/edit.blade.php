@@ -47,7 +47,7 @@
                     </div>
                     
                     <div class="card-body scroll-content">
-                        <form action="{{ route('panelConcientizaciones.update', $concientizacion->id) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('panelConcientizaciones.update', $concientizacion) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
 
@@ -81,7 +81,6 @@
 
                             {{-- SECCIÓN DE VIDEOS ALINEADOS --}}
                             <div class="row mt-4">
-                                {{-- Columna Izquierda: Video Actual --}}
                                 <div class="col-lg-6 border-right pr-lg-4 mb-4 mb-lg-0">
                                     <label class="form-label fw-bold text-dark mb-2">
                                         <i class="fas fa-video text-primary mr-1"></i> VIDEO ACTUAL
@@ -98,7 +97,6 @@
                                     </div>
                                 </div>
 
-                                {{-- Columna Derecha: Reemplazo y Previsualización --}}
                                 <div class="col-lg-6 pl-lg-4">
                                     <label for="video" class="form-label fw-bold text-success mb-2">
                                         <i class="fas fa-upload mr-1"></i> REEMPLAZAR VIDEO (OPCIONAL)
@@ -112,7 +110,6 @@
                                     </div>
                                     <small class="text-muted d-block mb-3">Si no seleccionas uno nuevo, se conservará el actual.</small>
 
-                                    {{-- Contenedor de Previsualización (Oculto por defecto) --}}
                                     <div id="preview-container" class="bg-light rounded border p-2" style="display: none;">
                                         <p class="text-center text-success small mb-2">Previsualización del Nuevo Video:</p>
                                         <video id="videoPreview" controls class="w-100 rounded" style="max-height: 300px;"></video>
@@ -171,7 +168,6 @@
 @push('js')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Script para mostrar nombre de archivo en input custom
             $('.custom-file-input').on('change', function() {
                 let fileName = $(this).val().split('\\').pop();
                 $(this).next('.custom-file-label').addClass("selected").html(fileName);
@@ -179,18 +175,24 @@
 
             // Script de previsualización de video
             const videoInput = document.getElementById('video');
+            const previewContainer = document.getElementById('preview-container');
+            const videoPreview = document.getElementById('videoPreview');
+
             if(videoInput) {
                 videoInput.addEventListener('change', function(event) {
                     const file = event.target.files[0];
-                    const container = document.getElementById('preview-container');
-                    const video = document.getElementById('videoPreview');
 
                     if (file) {
-                        const url = URL.createObjectURL(file);
-                        video.src = url;
-                        container.style.display = 'block';
+                        const fileURL = URL.createObjectURL(file);
+                        videoPreview.src = fileURL;
+
+                        previewContainer.style.display = 'block';
+
+                        videoPreview.load();
+                        videoPreview.play();
                     } else {
-                        container.style.display = 'none';
+                        previewContainer.style.display = 'none';
+                        videoPreview.src = "";
                     }
                 });
             }

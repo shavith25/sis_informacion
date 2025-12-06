@@ -56,7 +56,7 @@
                             </div>
                         @endif
 
-                    <div class="table-responsive" style="height: calc(100vh - 450px)">
+                    <div class="table-responsive" style="height: calc(100vh - 375px)">
                             <table class="table table-striped table-hover" id="table-areas">
                                 <thead>
                                     <tr class="bg-light text-white">
@@ -90,7 +90,7 @@
 
                                             </td>
                                             <td class="text-center" style="display:flex;align-items: center;gap:5px;">
-                                                <a href="{{ route('limites.provincias.edit', $provincia->id) }}" class="btn btn-sm btn-warning">
+                                                <a href="{{ route('limites.provincias.edit', $provincia) }}" class="btn btn-sm btn-warning">
                                                     <i class="fas fa-edit"> Editar</i>
                                                 </a>
                                             </td>
@@ -134,7 +134,7 @@ document.addEventListener("DOMContentLoaded", function() {
 @push('css')
 <style>
     .table th {
-        font-weight: 600;
+        font-weight: 700;
         text-transform: uppercase;
         font-size: 0.8rem;
         letter-spacing: 0.5px;
@@ -161,6 +161,7 @@ document.addEventListener("DOMContentLoaded", function() {
         justify-content: center;
         border-radius: 50%;
     }
+
     button[disabled] {
     opacity: 0.5;           
     cursor: not-allowed !important;      
@@ -175,19 +176,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
     /* ESTILO PARA EL BOTÓN NUEVA PROVINCIA */
     #btn-nueva-provincia {
-        background-color: #0d6efd !important; /* Azul sólido */
+        background-color: #0d6efd !important; 
         border-color: #0d6efd !important;
         color: white !important;
         box-shadow: none !important;
         background-image: none !important;
-        text-decoration: none !important; /* Quita subrayado si aparece */
+        text-decoration: none !important; 
     }
 
     /* Eliminar el fondo blanco al pasar el mouse (Hover) */
     #btn-nueva-provincia:hover, 
     #btn-nueva-provincia:focus, 
     #btn-nueva-provincia:active {
-        background-color: #0b5ed7 !important; /* Un azul un poco más oscuro */
+        background-color: #0b5ed7 !important; 
         border-color: #0a58ca !important;
         color: white !important;
         opacity: 1 !important;

@@ -63,24 +63,19 @@ class MunicipioController extends Controller
             'media.*.mimes'         => 'Solo se permiten archivos de tipo: jpg, jpeg, png, gif, mp4, mov, avi.'
         ]);
 
-        // Usar solo los datos validados para la creación
         $municipioData = $validatedData;
-        // decodificar la geometria que viene en formato json
         $municipioData['geometria'] = !empty($validatedData['geometria']) ? json_decode($validatedData['geometria'], true) : null;
         $municipioData['tipo_geometria'] = !empty($validatedData['geometria']) ? 'geojson' : null;
 
         try {
             $municipio = Municipio::create($municipioData);
         } catch (\Illuminate\Database\QueryException $e) {
-            // El código '23505' es específico de PostgreSQL para violaciones de unicidad.
             if ($e->getCode() == '23505') {
-                // Redirige de vuelta con un mensaje de error amigable.
                 return redirect()->back()
                     ->withInput() // Mantiene los datos del formulario que el usuario ya llenó.
                     ->with('error', 'Error: Ha ocurrido un conflicto de ID en la base de datos. Esto puede deberse a una desincronización. Por favor, intente guardar de nuevo. Si el problema persiste, contacte al administrador.');
             }
 
-            // Si es otro tipo de error de base de datos, lo relanza.
             throw $e;
         }
 
@@ -118,6 +113,11 @@ class MunicipioController extends Controller
     public function edit(Municipio $municipio)
     {
         $provincias = Provincia::select('id', 'nombre')->get();
+        
+        if (is_string($municipio->geometria)) {
+            $municipio->geometria = json_decode($municipio->geometria, true);
+        }
+
         return view('limites.municipios.edit', compact('municipio', 'provincias'));
     }
 
@@ -204,6 +204,8 @@ class MunicipioController extends Controller
 
         return redirect()->route('limites.municipios.index')->with('success', 'Municipio eliminado correctamente.');
     }
+
+    
     public function destroyMedia(Media $media)
     {
         $media->delete();

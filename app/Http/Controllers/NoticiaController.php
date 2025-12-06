@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Noticia;       
 use App\Models\NoticiaImagen;
 use Illuminate\Support\Facades\Storage;
+use PHPUnit\Framework\Error\Notice;
 
 class NoticiaController extends Controller
 {
@@ -66,8 +67,6 @@ class NoticiaController extends Controller
         return redirect()->route('noticias.index')->with('success', 'Noticia creada correctamente.');
     }
 
-
-
     /**
      * Display the specified resource.
      *
@@ -85,9 +84,10 @@ class NoticiaController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Noticia $noticia)
     {
-         $noticia = Noticia::with('imagenes')->findOrFail($id);
+        $noticia->load('imagenes');
+
         return view('noticias.edit', compact('noticia'));
     }
 
@@ -134,21 +134,17 @@ class NoticiaController extends Controller
             return redirect()->route('noticias.index')->with('success', 'Noticia actualizada correctamente.');
         }
 
-
     /**
      * Remove the specified resource from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Noticia $noticia)
     {
-        $noticia = Noticia::with('imagenes')->findOrFail($id);
-
-        // foreach ($noticia->imagenes as $imagen) {
-        //     \Storage::disk('public')->delete($imagen->ruta);
-        //     $imagen->delete();
-        // }
+        foreach($noticia->imagenes as $imagen){
+            Storage::disk('public')->delete($imagen->ruta);
+        }
 
         $noticia->delete();
 

@@ -85,11 +85,11 @@
                                             </td>
                                             <td class="text-center" style="vertical-align: middle;">
                                                 <div class="d-flex justify-content-center align-items-center">
-                                                    <a href="{{ route('noticias.edit', $noticia->id) }}" class="btn btn-sm btn-warning mr-2" title="Editar">
+                                                    <a href="{{ route('noticias.edit', $noticia) }}" class="btn btn-sm btn-warning mr-2" title="Editar">
                                                         <i class="fas fa-edit"></i>
                                                     </a>
                                                     
-                                                    <form action="{{ route('noticias.destroy', $noticia->id) }}" method="POST" class="form-eliminar m-0">
+                                                    <form action="{{ route('noticias.destroy', $noticia) }}" method="POST" class="form-eliminar m-0">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="button" class="btn btn-sm btn-danger" onclick="confirmarEliminar(this)" title="Borrar">
@@ -127,7 +127,6 @@
 
 @push('css')
 <style>
-    /* Estilo para botón Azul Sólido (sin sombras) */
     .btn-primary {
         background-color: #2f55d4 !important; 
         border-color: #2f55d4 !important;
@@ -173,7 +172,6 @@
 @endpush
 
 @push('js')
-{{-- SweetAlert2 Script --}}
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
@@ -190,7 +188,6 @@
             reverseButtons: true
         }).then((result) => {
             if (result.isConfirmed) {
-                // Encuentra el formulario más cercano al botón clickeado y lo envía
                 button.closest('form').submit();
             }
         });

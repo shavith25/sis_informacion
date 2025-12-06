@@ -89,13 +89,28 @@ class RolController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($token)
     {
-        $role = Role::findOrFail($id);
+        try {
+            $partes = explode('x', $token);
+
+            if (count($partes) != 2) abort(404);
+
+            $aleatorio = hexdec($partes[0]);
+            $mezcla = hexdec($partes[1]);
+
+            $idReal = $mezcla ^ $aleatorio;
+
+            $role = Role::findOrFail($idReal);
+        } catch (\Exception $e) {
+            abort(404);
+        }
+
         $permissionsByModule = $this->groupPermissionsByModule();
-        $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $id)
+        $rolePermissions = DB::table("role_has_permissions")->where("role_has_permissions.role_id", $idReal)
             ->pluck('role_has_permissions.permission_id', 'role_has_permissions.permission_id')
             ->all();
+
         return view('roles.editar', compact('role', 'permissionsByModule', 'rolePermissions'));
     }
 
@@ -106,41 +121,46 @@ class RolController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $token)
     {
+        $partes = explode('x', $token);
+
+        if (count($partes) != 2) abort(404);
+
+        $aleatorio = hexdec($partes[0]);
+        $mezcla = hexdec($partes[1]);
+        $idReal = $mezcla ^ $aleatorio;
+
         $this->validate($request, [
-            'name' => 'required|unique:roles,name,' . $id,
+            'name' => 'required|unique:roles,name,' . $idReal,
+            'permission' => 'nullable|array',
         ]);
-    
-        $role = Role::findOrFail($id);
+
+        $role = Role::findOrFail($idReal);
+        $role->name = $request->input('name');
+        $role->save();
 
         DB::beginTransaction();
         try {
-
             $role->update(['name' => $request->input('name')]);
-    
-            $permissions = $request->input('permission', []);
-            
-            $permissions = array_map('intval', $permissions); 
 
-            $role->syncPermissions($permissions);
+            $permission = $request->input('permission', []);
+            $permission = array_map('intval', $permission);
+
+            $role->syncPermissions($permission);
 
             DB::commit();
-    
-            return redirect()->route('roles.index')
-                        ->with('success', 'Rol actualizado correctamente.');
 
+            return redirect()->route('roles.index')->with('success', 'Rol actualizado correctamente.');
         } catch (QueryException $e) {
             DB::rollBack();
             if ($e->getCode() == 23000) {
-                return redirect()->back()->with('error', 'El nombre del rol ya existe.')->withInput();
+                return redirect()->back()->with('error', 'Error al actualizar el rol, el nombre del rol ya está en uso.')->withInput();
             }
-            return redirect()->back()->with('error', 'Error SQL: ' . $e->getMessage())->withInput();
-
+            return redirect()->back()->with('error', 'Error SQL:' . $e->getMessage())->withInput();
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('roles.index')
-                            ->with('error', 'Error Técnico: ' . $e->getMessage()); 
+            return redirect()->back()->with('error', 'Ocurrió un error inesperado al actualizar el rol: ' . $e->getMessage());
         }
     }
     

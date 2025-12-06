@@ -31,7 +31,6 @@
                         </div>
 
                         <div class="card-body">
-                            <!-- Alertas -->
                             @if (session('success'))
                                 <div class="alert alert-success alert-dismissible show fade">
                                     <div class="alert-body">
@@ -59,7 +58,7 @@
                                 </div>
                             @endif
 
-                            <div class="table-responsive" style="height: calc(100vh - 450px)">
+                            <div class="table-responsive" style="height: calc(100vh - 375px)">
                                 <table class="table table-striped table-hover" id="table-areas">
                                     <thead>
                                         <tr class="bg-light text-white">
@@ -111,7 +110,7 @@
 
                                                 <td class="text-center">
                                                     <div class="d-flex justify-content-center" style="gap: 5px;">
-                                                        <a href="{{ route('limites.municipios.edit', $municipio->id) }}"
+                                                        <a href="{{ route('limites.municipios.edit', $municipio) }}"
                                                             class="btn btn-sm btn-warning">
                                                             <i class="fas fa-edit"> Editar</i>
                                                         </a>

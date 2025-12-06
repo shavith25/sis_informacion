@@ -4,8 +4,6 @@
 
 @section('content')
 <section class="section">
-    
-    {{-- 1. Encabezado Estático --}}
     <div class="section-header">
         <h3 class="page__heading">Edición de Noticias</h3>
         <div class="section-header-breadcrumb">
@@ -18,8 +16,6 @@
     <div class="section-body">
         <div class="row">
             <div class="col-lg-12">
-                
-                {{-- Alertas --}}
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show mb-2" role="alert">
                         <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
@@ -53,7 +49,7 @@
                     
                     {{-- 3. Scroll Interno --}}
                     <div class="card-body scroll-content">
-                        <form action="{{ route('noticias.update', $noticia->id) }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('noticias.update', $noticia) }}" method="POST" enctype="multipart/form-data">
                             @csrf
                             @method('PUT')
                             
@@ -77,13 +73,11 @@
                                 </div>
                             </div>
 
-                            {{-- Descripción --}}
                             <div class="mb-3">
                                 <label for="descripcion" class="form-label"><i class="fas fa-align-left"></i> Descripción Completa</label>
                                 <textarea name="descripcion" id="descripcion" class="form-control" style="height: 150px;" required>{{ old('descripcion', $noticia->descripcion) }}</textarea>
                             </div>
 
-                            {{-- Autor y Fecha --}}
                             <div class="row">
                                 <div class="col-md-6 mb-3">
                                     <label for="autor" class="form-label"><i class="fas fa-user"></i> Autor</label>
@@ -99,7 +93,6 @@
 
                             <hr>
 
-                            {{-- Imágenes Actuales --}}
                             @if($noticia->imagenes->count())
                                 <div class="mb-4">
                                     <label class="form-label font-weight-bold text-dark">Imágenes Actuales</label>
@@ -207,6 +200,7 @@
             background: #fff; 
             border-bottom: 1px solid #eee;
         }
+
         trix-editor { min-height: 45px; border-color: #e4e6fc; }
         
         #trix-titulo-editor + trix-toolbar .trix-button-group { display: none; }
@@ -225,6 +219,7 @@
             align-items: center;
             justify-content: center;
         }
+
         .preview-item img { width: 100%; height: 100%; object-fit: cover; }
         
         .remove-preview { 
@@ -242,7 +237,6 @@
     <script type="text/javascript" src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Lógica Eliminar Imágenes Existentes
             document.querySelectorAll('.eliminar-imagen').forEach(btn => {
                 btn.addEventListener('click', function () {
                     const container = this.closest('.imagen-container');
@@ -250,7 +244,7 @@
 
                     hiddenInput.value = this.dataset.id;
                     container.style.opacity = "0.4";
-                    this.remove(); // Elimina el botón rojo
+                    this.remove(); 
                 });
             });
 

@@ -203,7 +203,13 @@
                                 <span>{{ $zona->area ? $zona->area->nombre : 'Área no especificada' }}</span>
                                 <span>{{ $zona->tipo_coordenada ?? 'Tipo no definido' }}</span>
                             </div>
-                            <a href="{{ route('detalle.show', ['tipo' => 'zona', 'id' => $zona->id]) }}"
+
+                            @php
+                                $rand = rand(10000, 99999);
+                                $token = dechex($rand) . 'x' . dechex($zona->id ^ $rand);
+                            @endphp
+
+                            <a href="{{ route('detalle.show', ['tipo' => 'zona', 'id' => $token]) }}"
                                 class="read-more">Explorar →</a>
                         </div>
                     </div>
@@ -234,7 +240,13 @@
                                 <span>{{ $dato->provincia }},
                                     {{ $dato->zona ? $dato->zona->nombre : 'Bolivia' }}</span>
                             </div>
-                            <a href="{{ route('detalle.show', ['tipo' => 'dato', 'id' => $dato->id]) }}"
+
+                            @php
+                                $rand = rand(10000, 99999);
+                                $token = dechex($rand) . 'x' . dechex($dato->id ^ $rand);
+                            @endphp
+
+                            <a href="{{ route('detalle.show', ['tipo' => 'dato', 'id' => $token]) }}"
                                 class="read-more">Saber más →</a>
                         </div>
                     </div>
@@ -265,7 +277,13 @@
                             <div class="meta">
                                 <span>Tipo: Emblemática</span>
                             </div>
-                            <a href="{{ route('detalle.show', ['tipo' => 'especie', 'id' => $especie->id]) }}"
+
+                            @php
+                                $rand = rand(10000, 99999);
+                                $token = dechex($rand) . 'x' . dechex($especie->id ^ $rand);
+                            @endphp
+
+                            <a href="{{ route('detalle.show', ['tipo' => 'especie', 'id' => $token]) }}"
                                 class="read-more">Saber más →</a>
                         </div>
                     </div>
@@ -296,7 +314,13 @@
                             <div class="meta">
                                 <span>Tipo: Vulnerable</span>
                             </div>
-                            <a href="{{ route('detalle.show', ['tipo' => 'especie', 'id' => $especie->id]) }}"
+
+                            @php
+                                $rand = rand(10000, 99999);
+                                $token = dechex($rand) . 'x' . dechex($especie->id ^ $rand);
+                            @endphp
+
+                            <a href="{{ route('detalle.show', ['tipo' => 'especie', 'id' => $token]) }}"
                                 class="read-more">Saber más →</a>
                         </div>
                     </div>
@@ -325,7 +349,13 @@
                                 <span>{{ $noticia->fecha_publicacion->format('Y-m-d') }}</span>
                                 <span>{{ $noticia->subtitulo }}</span>
                             </div>
-                            <a href="{{ route('detalle.show', ['tipo' => 'noticia', 'id' => $noticia->id]) }}"
+
+                            @php
+                                $rand = rand(10000, 99999);
+                                $token = dechex($rand) . 'x' . dechex($noticia->id ^ $rand);
+                            @endphp
+
+                            <a href="{{ route('detalle.show', ['tipo' => 'noticia', 'id' => $token]) }}"
                                 class="read-more">Leer más →</a>
                         </div>
                     </div>

@@ -60,13 +60,13 @@
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="d-flex justify-content-center" style="gap: 5px;">
-                                                        <a href="{{ route('panelConcientizaciones.edit', $item->id) }}"
+                                                        <a href="{{ route('panelConcientizaciones.edit', $item) }}"
                                                             class="btn btn-sm btn-warning">
                                                             <i class="fas fa-edit"> Editar</i>
                                                         </a>
 
                                                         <form
-                                                            action="{{ route('panelConcientizaciones.destroy', $item->id) }}"
+                                                            action="{{ route('panelConcientizaciones.destroy', $item) }}"
                                                             method="POST" id="form-delete-{{ $item->id }}">
                                                             @csrf
                                                             @method('DELETE')
@@ -101,7 +101,6 @@
 
 @push('css')
     <style>
-        /* Botón Azul Sólido y Plano */
         .btn-primary {
             background-color: #2f55d4 !important;
             border-color: #2f55d4 !important;

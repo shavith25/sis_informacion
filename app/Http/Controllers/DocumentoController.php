@@ -70,7 +70,6 @@ class DocumentoController extends Controller
         $data = $request->except(['icono', 'pdf']);
 
         if ($request->hasFile('icono')) {
-            // Eliminar icono anterior si existe
             if ($documento->icono) {
                 Storage::disk('public')->delete($documento->icono);
             }
@@ -78,7 +77,6 @@ class DocumentoController extends Controller
         }
 
         if ($request->hasFile('pdf')) {
-            // Eliminar PDF anterior si existe
             if ($documento->pdf) {
                 Storage::disk('public')->delete($documento->pdf);
             }

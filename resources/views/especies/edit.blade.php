@@ -210,7 +210,7 @@
 
         /* 3. Card con Scroll interno */
         .card-fixed-height {
-            height: calc(100vh - 100px);
+            height: calc(100vh - 230px);
             display: flex;
             flex-direction: column;
             margin-bottom: 0;

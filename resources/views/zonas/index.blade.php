@@ -95,12 +95,12 @@
                             </p>
 
                             <div class="mt-auto d-flex justify-content-between border-top pt-3">
-                                <a href="{{ route('zonas.show', $zona->id) }}" class="btn btn-outline-info btn-sm">
+                                <a href="{{ route('zonas.show', $zona) }}" class="btn btn-outline-info btn-sm">
                                     <i class="fas fa-eye"></i> Detalles
                                 </a>
                                 
                                 <div>
-                                    <a href="{{ route('zonas.edit', $zona->id) }}" class="btn btn-warning btn-sm text-white" title="Editar">
+                                    <a href="{{ route('zonas.edit', $zona) }}" class="btn btn-warning btn-sm text-white" title="Editar">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
                                     

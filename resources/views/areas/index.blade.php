@@ -76,8 +76,7 @@
                                                             </a>
                                                         @endif
                                                     @else
-                                                        <span class="text-muted font-italic">Sin descripción
-                                                            detallada</span>
+                                                        <span class="text-muted font-italic">Sin descripción detallada</span>
                                                     @endif
                                                 </td>
                                                 <td>
@@ -91,7 +90,7 @@
                                                 <td class="text-center">
                                                     <div class="btn-group" role="group"
                                                         aria-label="Acciones de Área Protegida">
-                                                        <a href="{{ route('areas.edit', $area->id) }}"
+                                                        <a href="{{ route('areas.edit', $area) }}"
                                                             class="btn btn-icon btn-sm btn-outline-warning"
                                                             data-toggle="tooltip" title="Editar área">
                                                             <i class="fas fa-edit"></i>
