@@ -13,7 +13,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <style>
-        /* --- ESTILOS NUEVOS PARA EL HEADER TIPO COCHABAMBA --- */
         .cochabamba-header {
             background-color: #0077c0; /* Azul institucional */
             padding: 0.5rem 0;
@@ -23,7 +22,7 @@
         .cochabamba-nav .nav-link {
             color: white !important;
             text-transform: uppercase;
-            font-weight: 600; /* Letras semi-negritas */
+            font-weight: 600; 
             font-size: 0.95rem;
             margin-left: 15px;
             letter-spacing: 0.5px;
