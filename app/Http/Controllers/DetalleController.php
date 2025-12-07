@@ -33,8 +33,10 @@ class DetalleController extends Controller
         if (!$idReal) {
             abort(404);
         }
+            $item = null;
+            $view = '';
 
-        // BÚSQUEDA EN BD
+        // Cargar el modelo correspondiente según el tipo
         try {
             switch ($tipo) {
                 case 'zona':
