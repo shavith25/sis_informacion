@@ -30,6 +30,7 @@ class HomeController extends Controller
         $totalZonas = Zonas::count(); 
         $totalAreas = Area::count();
         $totalUsuarios = User::where('estado', true)->count();
+        
         $zonasPorMes = Zonas::select(
                     DB::raw("EXTRACT(MONTH FROM created_at) as mes"),
                     DB::raw("COUNT(*) as total")
@@ -39,14 +40,16 @@ class HomeController extends Controller
                 ->orderBy(DB::raw("EXTRACT(MONTH FROM created_at)"))
                 ->get();
 
-            $labels = [];
-            $data = [];
             $meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
+            $data = array_fill(0, 12, 0);
+
             foreach ($zonasPorMes as $item) {
-                $labels[] = $meses[$item->mes - 1]; 
-                $data[] = $item->total; 
+                $data[$item->mes - 1] = $item->total; 
             }
+
+            $labels = $meses;
+
         return view('home', compact('totalZonas', 'totalAreas', 'totalUsuarios','labels', 'data'));
     }
 }

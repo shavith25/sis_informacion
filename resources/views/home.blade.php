@@ -12,6 +12,7 @@
 
             <div class="section-body" style="padding: 10px; position: relative; z-index: 2;">
                 <div class="row">
+                    {{-- TARJETA ZONAS (Ahora redirige directamente) --}}
                     <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
                         <div class="card card-statistic-2 statistic-zone" style="cursor: pointer;" id="zonasCard">
                             <div class="card-icon card-icon-bg">
@@ -87,27 +88,7 @@
             </div>
         </section>
 
-        <div class="modal fade" id="zonasModal" tabindex="-1" role="dialog" aria-hidden="true">
-            <div class="modal-dialog modal-lg" role="document">
-                <div class="modal-content modal-content-custom">
-                    <div class="modal-header bg-primary text-white modal-header-custom">
-                        <h5 class="modal-title">Zonas Registradas</h5>
-                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body position-relative">
-                        <div id="zonasLoader" class="loader-custom" style="display: none;">
-                            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status"></div>
-                        </div>
-                        <div id="zonasContent" class="table-responsive"></div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
-                    </div>
-                </div>
-            </div>
-        </div>
+        {{-- NOTA: Se ha eliminado el HTML del Modal "zonasModal" --}}
 
         <style>
             .dashboard-bg { overflow: hidden; border-radius: 12px; }
@@ -147,14 +128,14 @@
                     type: 'line',
                     data: {
                         labels: labels,
-                        datasets: [{ label: 'Tendencia', data: dataTendencia, borderColor: '#007bff', fill: true }]
+                        datasets: [{ label: 'Tendencia', data: dataZonas, borderColor: '#007bff', fill: true }]
                     },
                     options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
                 });
 
+                // --- CAMBIO AQUÍ: Redirección directa en lugar de Modal ---
                 document.getElementById('zonasCard').addEventListener('click', function() {
-                    $('#zonasModal').modal('show');
-                    document.getElementById('zonasLoader').style.display = 'flex';
+                    window.location.href = "{{ route('zonas.index') }}";
                 });
                 
                 document.getElementById('AreasCard').addEventListener('click', function() { window.location.href = "{{ route('areas.index') }}"; });
