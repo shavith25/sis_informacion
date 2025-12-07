@@ -11,15 +11,6 @@
             <div class="col-lg-12">             
                 <div class="card card-fixed-scroll mb-0">             
                     <div class="card-body scroll-content">
-                        @if (session('success'))
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                {{ session('success') }}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                            </div>
-                        @endif
-
                         <ul class="nav nav-tabs sticky-top bg-white pt-2" id="mediaTabs" role="tablist" style="z-index: 10;">
                             <li class="nav-item">
                                 <a class="nav-link" id="pendientes-tab" data-toggle="tab" href="#pendientes" role="tab" aria-controls="pendientes" aria-selected="true">
@@ -304,7 +295,7 @@
                         icon: 'success',
                         title: 'Archivo aprobado',
                         showConfirmButton: false,
-                        timer: 1500,
+                        timer: 4000,
                         toast: true
                     });
                     card.style.transition = "all 0.5s ease";

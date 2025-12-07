@@ -5,7 +5,7 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h3 class="page__heading">Gestión de Departamentos</h3>
+        <h3 class="page__heading"><i class="fas fa-map mr-2"></i> Gestión de Departamentos</h3>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="{{ route('home') }}">Inicio</a></div>
             <div class="breadcrumb-item"><a href="{{ route('limites.index') }}">Límites</a></div>
@@ -31,29 +31,6 @@
                     </div>
 
                     <div class="card-body">
-                        <!-- Alertas -->
-                        @if(session('success'))
-                            <div class="alert alert-success alert-dismissible show fade">
-                                <div class="alert-body">
-                                    <button class="close" data-dismiss="alert">
-                                        <span>&times;</span>
-                                    </button>
-                                    <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
-                                </div>
-                            </div>
-                        @endif
-
-                        @if(session('error'))
-                            <div class="alert alert-danger alert-dismissible show fade">
-                                <div class="alert-body">
-                                    <button class="close" data-dismiss="alert">
-                                        <span>&times;</span>
-                                    </button>
-                                    <i class="fas fa-exclamation-circle mr-2"></i> {{ session('error') }}
-                                </div>
-                            </div>
-                        @endif
-
                         @if($errors->any())
                             <div class="alert alert-danger alert-dismissible show fade">
                                 <div class="alert-body">
@@ -169,7 +146,7 @@
 
     /* ESTILO PARA EL BOTÓN NUEVO DEPARTAMENTO */
     #btn-nuevo-departamento {
-        background-color: #0d6efd !important; /* Azul sólido */
+        background-color: #0d6efd !important;
         border-color: #0d6efd !important;
         color: white !important;
         box-shadow: none !important;
@@ -180,7 +157,7 @@
     #btn-nuevo-departamento:hover, 
     #btn-nuevo-departamento:focus, 
     #btn-nuevo-departamento:active {
-        background-color: #0b5ed7 !important; /* Un azul apenas más oscuro para dar efecto de click */
+        background-color: #0b5ed7 !important; 
         border-color: #0a58ca !important;
         color: white !important;
         opacity: 1 !important;
@@ -248,17 +225,6 @@
                 });
             });
         }
-
-        // Auto-ocultar alertas después de 5 segundos
-        setTimeout(function() {
-            document.querySelectorAll('.alert').forEach(function(alert) {
-                if (alert.classList.contains('alert-success')) {
-                    alert.style.transition = 'opacity 0.5s';
-                    alert.style.opacity = '0';
-                    setTimeout(() => alert.remove(), 500);
-                }
-            });
-        }, 5000);
     });
 
     function confirmarEliminar(id, nombre) {

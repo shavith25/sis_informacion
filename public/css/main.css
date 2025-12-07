@@ -1147,8 +1147,7 @@ main {
     margin: 0 6px;
 }
 
-.articles article .articles-header .articles-header-category {
-    display: inline-block;
+.tu-clase {
     float: right;
 }
 

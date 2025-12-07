@@ -478,19 +478,18 @@ tr:first-child > td > .fc-day-grid-event {
   display: inline-block;
   width: 100%; }
   .gallery .gallery-item {
-    float: left;
-    display: inline-block;
-    width: 50px;
-    height: 50px;
-    background-repeat: no-repeat;
-    background-size: cover;
-    background-position: center;
-    border-radius: 3px;
-    margin-right: 7px;
-    margin-bottom: 7px;
-    cursor: pointer;
-    transition: all .5s;
-    position: relative; }
+      float: left;
+      width: 50px;
+      height: 50px;
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+      border-radius: 3px;
+      margin-right: 7px;
+      margin-bottom: 7px;
+      cursor: pointer;
+      transition: all .5s;
+      position: relative; }
     .gallery .gallery-item:hover {
       opacity: .8; }
   .gallery .gallery-hide {

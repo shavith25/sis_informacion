@@ -5,19 +5,24 @@ document.addEventListener("DOMContentLoaded", () => {
      * @returns {string|null} La URL de la API/Web.
      */
     const getRoute = (name) => {
-        const routeUrl = window.routes && window.routes[name];
-
+        const routes = {
             // Sugerencias (Web)
-            'sugerencias.index'; '/sugerencias', 
-            'sugerencias.store'; '/sugerencias', 
+            'sugerencias.index': '/sugerencias', 
+            'sugerencias.store': '/sugerencias', 
 
             // Reportes (Web)
-            'reportes.index'; '/api/reportes', 
-            'reportes.store'; '/api/reportes', 
+            'reportes.index': '/api/reportes', 
+            'reportes.store': '/api/reportes', 
 
             // Archivos (Media) (Web)
-            'archivos.index'; '/api/archivos', 
-            'archivos.store'; '/api/archivos', 
+            'archivos.index': '/api/archivos', 
+            'archivos.store': '/api/archivos',
+            'api.comentarios.index': '/api/comentarios',
+            'api.comentarios.store': '/api/comentarios',
+            'api.reportes.index': '/api/reportes',
+            'api.reportes.store': '/api/reportes',
+            'api.archivos.index': '/api/archivos',
+            'api.archivos.store': '/api/archivos',
         };
         
         if (!routes[name]) {

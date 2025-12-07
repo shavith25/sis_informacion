@@ -3,9 +3,12 @@
 @section('title', 'Editar Departamento')
 
 @section('content')
-<section class="section">
-    <div class="section-header">
-        <h1>Editar Departamento</h1>
+<section class="section" style="height: calc(100vh - 120px); display: flex; flex-direction: column;">
+    
+    <div class="section-header" style="flex-shrink: 0;">
+        <h1 style="color: #6c757d; font-weight: 700;">
+            <i class="fas fa-edit mr-2"></i> Editar Departamento
+        </h1>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="{{ route('limites.departamentos.index') }}">Inicio</a></div>
             <div class="breadcrumb-item"><a href="#">Límites</a></div>
@@ -14,40 +17,33 @@
         </div>
     </div>
 
-    <div class="section-body">
-        
+    <div class="section-body" style="flex-grow: 1; overflow: hidden; padding-bottom: 20px;">
         @if(session('success'))
-        <div class="alert alert-success alert-dismissible show fade">
+        <div class="alert alert-success alert-dismissible show fade mb-3">
             <div class="alert-body">
-                <button class="close" data-dismiss="alert">
-                    <span>&times;</span>
-                </button>
+                <button class="close" data-dismiss="alert"><span>&times;</span></button>
                 {{ session('success') }}
             </div>
         </div>
         @endif
 
         @if($errors->any())
-        <div class="alert alert-danger alert-dismissible show fade">
+        <div class="alert alert-danger alert-dismissible show fade mb-3">
             <div class="alert-body">
-                <button class="close" data-dismiss="alert">
-                    <span>&times;</span>
-                </button>
-                <ul>
-                    @foreach($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
+                <button class="close" data-dismiss="alert"><span>&times;</span></button>
+                <ul class="mb-0 pl-3">
+                    @foreach($errors->all() as $error) <li>{{ $error }}</li> @endforeach
                 </ul>
             </div>
         </div>
         @endif
 
-        <div class="card">
-            <div class="card-header">
+        <div class="card h-100 d-flex flex-column">
+            <div class="card-header" style="flex-shrink: 0;">
                 <h4><i class="fas fa-edit text-primary"></i> Formulario de Edición</h4>
             </div>
             
-            <div class="card-body">
+            <div class="card-body" style="flex: 1; overflow-y: auto;">
                 <form action="{{ route('limites.departamentos.update', $departamento) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
@@ -78,48 +74,44 @@
                             <i class="fas fa-draw-polygon"></i> Geometría (GeoJSON) <span class="text-danger">*</span>
                         </label>
                         <input type="hidden" name="geometria" id="geometria">
-                        
                         <div id="jsoneditor" style="height: 300px; border: 1px solid #ddd;"></div>
-                        
                         <small class="form-text text-muted">
-                            <i class="fas fa-info-circle"></i> Modifica la geometría en formato GeoJSON válido. Asegúrate de mantener la estructura correcta.
+                            <i class="fas fa-info-circle"></i> Modifica la geometría en formato GeoJSON válido.
                         </small>
                     </div>
 
                     <div class="form-group mt-4">
-                        <label for="media" class="font-weight-bold"><i class="fas fa-images"></i> Subir Medios (Imágenes/Videos)</label>
+                        <label for="media" class="font-weight-bold"><i class="fas fa-images"></i> Subir Nuevos Medios</label>
                         <div class="custom-file">
                             <input type="file" name="media[]" id="media" class="form-control" multiple accept="image/*,video/*">
                         </div>
-                        <small class="text-muted">Puedes subir múltiples imágenes o videos nuevos para agregar a la galería existente.</small>
                     </div>
 
                     @if($departamento->media->count())
-
                     <hr>
-
                     <div class="form-group">
                         <label class="font-weight-bold mb-3">Administrar Medios Existentes</label>
                         <div class="row">
                             @foreach($departamento->media as $media)
-                                <div class="col-md-2 col-sm-4 mb-3">
-                                    <div class="card h-100 shadow-sm border">
-                                        <div class="card-body p-0 bg-light" style="height: 120px; overflow: hidden; position: relative;">
+                                <div class="col-6 col-md-3 col-lg-2 mb-3">
+                                    <div class="card h-100 shadow-sm border media-card">
+                                        <div class="media-preview-container bg-light">
                                             @if(str_contains($media->tipo, 'video'))
                                                 <div class="d-flex align-items-center justify-content-center h-100">
-                                                    <i class="fas fa-video fa-3x text-secondary"></i>
+                                                    <i class="fas fa-video fa-2x text-secondary"></i>
                                                 </div>
                                             @else
-                                                <img src="{{ asset('storage/' . $media->archivo) }}" alt="Media" style="width: 100%; height: 100%; object-fit: cover; display: block;">
+                                                <img src="{{ asset('storage/' . $media->archivo) }}" alt="Media" class="media-img">
                                             @endif
                                         </div>
-                                        <div class="card-footer p-2 bg-white text-center">
+                                        
+                                        <div class="card-footer p-1 bg-white text-center">
                                             <div class="custom-control custom-checkbox">
                                                 <input type="checkbox" class="custom-control-input" id="del_media_{{ $media->id }}" name="delete_media[]" value="{{ $media->id }}">
-                                                <label class="custom-control-label text-danger small" for="del_media_{{ $media->id }}">Eliminar</label>
+                                                <label class="custom-control-label text-danger small font-weight-bold" for="del_media_{{ $media->id }}" style="cursor: pointer;">Eliminar</label>
                                             </div>
                                             @if(str_contains($media->tipo, 'video'))
-                                                <a href="{{ asset('storage/' . $media->archivo) }}" target="_blank" class="btn btn-sm btn-link p-0 mt-1">Ver video</a>
+                                                <a href="{{ asset('storage/' . $media->archivo) }}" target="_blank" class="btn btn-sm btn-link p-0 mt-1" style="font-size: 0.7rem;">Ver video</a>
                                             @endif
                                         </div>
                                     </div>
@@ -131,12 +123,12 @@
 
                     <hr>
 
-                    <div class="form-group mt-5 mb-5 d-flex">
-                        <a href="{{ route('limites.departamentos.index') }}" class="btn btn-secondary btn-lg mr-2">
-                            <i class="fas fa-arrow-left"></i> Volver
+                    <div class="form-group mt-4 mb-4 d-flex justify-content-end">
+                        <a href="{{ route('limites.departamentos.index') }}" class="btn btn-secondary mr-2">
+                            <i class="fas fa-times"></i> Cancelar
                         </a>
-                        <button type="submit" class="btn btn-primary btn-lg" id="btn-actualizar-departamento">
-                            <i class="fas fa-save"></i> Actualizar Departamento
+                        <button type="submit" class="btn btn-primary" id="btn-actualizar-departamento">
+                            <i class="fas fa-save"></i> Guardar Cambios
                         </button>
                     </div>
 
@@ -153,28 +145,18 @@
     document.addEventListener("DOMContentLoaded", function() {
         const container = document.getElementById("jsoneditor");
         const hiddenInput = document.getElementById("geometria");
-
-        // Datos iniciales desde el controlador
         const initialData = @json($departamento->geometria);
-
-        // Configuración del editor para que se vea limpio
-        const options = {
-            mode: 'code',
-            modes: ['code', 'tree'], 
-            ace: ace 
-        };
-
+        const options = { mode: 'code', modes: ['code', 'tree'], ace: ace };
         const editor = new JSONEditor(container, options);
         editor.set(initialData);
 
         const form = hiddenInput.closest("form");
-
         form.addEventListener("submit", () => {
             try {
                 const data = editor.get();
                 hiddenInput.value = JSON.stringify(data);
             } catch (e) {
-                alert('El JSON de geometría no es válido. Por favor revísalo.');
+                alert('El JSON de geometría no es válido.');
                 event.preventDefault();
             }
         });
@@ -182,101 +164,67 @@
 </script>
 
 <style>
-    /* 1. Bloquear el scroll de la ventana principal del navegador */
-    body {
-        overflow: hidden;
-    }
+    .section-header h1 { color: #34395e; font-size: 24px; font-weight: 700; }
+    
+    /* Scrollbar Personalizado */
+    .card-body::-webkit-scrollbar { width: 8px; }
+    .card-body::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+    .card-body::-webkit-scrollbar-thumb { background: #cdd3d8; border-radius: 4px; }
+    .card-body::-webkit-scrollbar-thumb:hover { background: #6777ef; }
 
-    /* 2. Ajustes visuales del encabezado (como tenías antes) */
-    .section-header h1 {
-        color: #34395e;
-        font-size: 24px;
-        font-weight: 700;
-    }
-
-    /* 3. Configuración de la Tarjeta para que ocupe el espacio vertical disponible */
-    .card {
-        /* Calculamos el 100% de la altura de la pantalla (100vh)
-           y le restamos espacio para: Header, Título y el Footer (~230px es un margen seguro).
-        */
-        height: calc(100vh - 230px) !important; 
-        display: flex;
-        flex-direction: column;
-        margin-bottom: 0 !important;
-    }
-
-    /* 4. Habilitar el scroll SOLO dentro del cuerpo del formulario */
-    .card-body {
-        flex: 1; /* Ocupa todo el espacio restante dentro de la tarjeta */
-        overflow-y: auto; /* Activa el scroll vertical aquí */
-        overflow-x: hidden;
-        padding-right: 10px; /* Un pequeño espacio para que la barra no pegue con el contenido */
-    }
-
-    /* (Opcional) Estilizar la barra de scroll para que se vea moderna y combine con tu azul */
-    .card-body::-webkit-scrollbar {
-        width: 8px;
-    }
-    .card-body::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 4px;
-    }
-    .card-body::-webkit-scrollbar-thumb {
-        background: #cdd3d8;
-        border-radius: 4px;
-    }
-    .card-body::-webkit-scrollbar-thumb:hover {
-        background: #6777ef; /* Azul al pasar el mouse */
-    }
-
-    /* --- TUS ESTILOS DE BOTONES Y JSON EDITOR (SE MANTIENEN IGUAL) --- */
-
-    /* Botón Actualizar: Azul Fijo */
+    /* Botón Actualizar */
     #btn-actualizar-departamento {
-        background-color: #0d6efd !important; 
-        border-color: #0d6efd !important;
-        color: white !important;
-        box-shadow: none !important;
-        background-image: none !important;
+        background-color: #0d6efd !important; border-color: #0d6efd !important;
+        color: white !important; box-shadow: none !important;
     }
 
-    #btn-actualizar-departamento:hover, 
-    #btn-actualizar-departamento:focus, 
-    #btn-actualizar-departamento:active {
-        background-color: #0b5ed7 !important; 
-        border-color: #0a58ca !important;
-        color: white !important;
-        opacity: 1 !important;
+    #btn-actualizar-departamento:hover { background-color: #0b5ed7 !important; }
+
+    /* ESTILOS PARA LAS IMÁGENES (MEDIA) */
+    .media-card {
+        border-radius: 8px;
+        overflow: hidden;
+        transition: transform 0.2s;
     }
 
-    .form-control:focus {
-        border-color: #6777ef;
-        box-shadow: none;
-    }
-
-    div.jsoneditor {
-        border-color: #e4e6fc;
-        border-radius: 5px;
-    }
-
-    div.jsoneditor-menu {
-        background-color: #6777ef; 
-        border-bottom: 1px solid #6777ef;
-        border-top-left-radius: 4px;
-        border-top-right-radius: 4px;
+    .media-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
     }
     
-    /* Estilos para preview de media (que ya tenías) */
-    #media-preview img, #media-preview video {
-        width: 100%; height: 150px; object-fit: cover; border-radius: 8px;
+    /* Contenedor de imagen fijo */
+    .media-preview-container {
+        height: 100px;
+        width: 100%;
+        overflow: hidden;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
-    .media-item { position: relative; }
-    .remove-media {
-        position: absolute; top: 5px; right: 20px;
-        background: rgba(255, 0, 0, 0.8); color: white;
-        border: none; border-radius: 50%; width: 25px; height: 25px;
-        cursor: pointer; z-index: 10;
+    
+    /* Imagen ajustada (cover) */
+    .media-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; 
+        display: block;
     }
-    .remove-media:hover { background: rgba(255, 0, 0, 1); }
+
+    .section-header h1 {
+        color: #6c757d !important; 
+        font-size: 34px;
+        font-weight: 700;
+        text-shadow: none;
+    }
+    
+    /* Asegurar que el icono también sea gris */
+    .section-header h1 i {
+        color: #6c757d !important;
+    }
+
+    /* JSON Editor */
+    div.jsoneditor { border-color: #e4e6fc; border-radius: 5px; }
+    div.jsoneditor-menu { background-color: #6777ef; border-bottom: 1px solid #6777ef; }
 </style>
 @endsection

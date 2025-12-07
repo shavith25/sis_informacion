@@ -29,17 +29,6 @@
                     </div>
 
                     <div class="card-body">
-                        @if(session('success'))
-                            <div class="alert alert-success alert-dismissible show fade">
-                                <div class="alert-body">
-                                    <button class="close" data-dismiss="alert">
-                                        <span>&times;</span>
-                                    </button>
-                                    <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
-                                </div>
-                            </div>
-                        @endif
-
                         @if($errors->any())
                             <div class="alert alert-danger alert-dismissible show fade">
                                 <div class="alert-body">

@@ -5,7 +5,7 @@
 @section('content')
 <section class="section">
     <div class="section-header">
-        <h3 class="page__heading">Crear Nuevo Departamento</h3>
+        <h3 class="page__heading"><i class="fas fa-plus-circle mr-2"></i> Crear Nuevo Departamento</h3>
         <div class="section-header-breadcrumb">
             <div class="breadcrumb-item active"><a href="{{ route('home') }}">Inicio</a></div>
             <div class="breadcrumb-item"><a href="{{ route('limites.index') }}">Límites</a></div>
