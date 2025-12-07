@@ -18,9 +18,12 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal"><i
-                            class="fas fa-times"></i> Cancelar</button>
+                            class="fas fa-times"></i> Cancelar
+                    </button>
+
                     <button type="button" id="confirmStatusChange" class="btn btn-primary btn-sm"><i
-                            class="fas fa-check"></i> Confirmar</button>
+                            class="fas fa-check"></i> Confirmar
+                    </button>
                 </div>
             </div>
         </div>
@@ -138,12 +141,14 @@
                                                                 data-user-id="{{ $usuario->getRouteKey() }}"
                                                                 data-status="{{ $usuario->estado ? 'desactivar' : 'activar' }}"
                                                                 title="{{ $usuario->estado ? 'Desactivar' : 'Activar' }}">
-                                                                <i class="fas {{ $usuario->estado ? 'fa-user-times' : 'fa-user-check' }}"></i>
+                                                                <i
+                                                                    class="fas {{ $usuario->estado ? 'fa-user-times' : 'fa-user-check' }}"></i>
                                                             </button>
                                                             <button type="button"
                                                                 class="btn btn-icon btn-sm btn-danger delete-btn"
                                                                 data-toggle="modal" data-target="#deleteModal"
-                                                                data-user-id="{{ $usuario->getRouteKey() }}" title="Eliminar">
+                                                                data-user-id="{{ $usuario->getRouteKey() }}"
+                                                                title="Eliminar">
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                         @endif
@@ -167,7 +172,6 @@
 
 @push('css')
     <style>
-        /* Estado Normal */
         #btnNuevoUsuario {
             background-color: #2f55d4 !important;
             border-color: #2f55d4 !important;
@@ -322,6 +326,22 @@
             transition: all 0.2s ease;
         }
 
+        /* Estilo específico para el botón de Confirmar Estado */
+        #confirmStatusChange {
+            background-color: #007bff !important;
+            border-color: #007bff !important;
+            color: #ffffff !important;
+            box-shadow: 0 2px 6px rgba(0, 123, 255, 0.4) !important;
+            transition: all 0.3s;
+        }
+
+        /* Efecto al pasar el mouse (Hover) */
+        #confirmStatusChange:hover {
+            background-color: #0056b3 !important;
+            border-color: #0056b3 !important;
+            transform: translateY(-1px);
+        }
+
         /* Paginación */
         .pagination-container {
             padding: 1.5rem;
@@ -415,9 +435,9 @@
             // --- LÓGICA DE CAMBIO DE ESTADO ---
             $('.change-status-btn').on('click', function() {
                 targetButton = $(this);
-                targetUserId = $(this).data('user-id'); 
+                targetUserId = $(this).data('user-id');
                 targetStatus = $(this).data('status');
-                
+
                 const actionText = targetStatus === 'activar' ? 'activar' : 'desactivar';
                 $('#statusActionText').text(actionText);
 
@@ -435,19 +455,15 @@
                     type: 'PATCH',
                     success: function(response) {
                         const badge = $('#status-badge-' + targetUserId);
+
                         if (targetStatus === 'activar') {
                             badge.removeClass('badge-secondary').addClass('badge-success').text('Activo');
-                        } else {
-                            badge.removeClass('badge-success').addClass('badge-secondary').text('Inactivo');
-                        }
-
-                        // 2. Actualizar Botón (para que funcione la próxima vez sin recargar)
-                        if (targetStatus === 'activar') {
                             targetButton.data('status', 'desactivar');
                             targetButton.attr('title', 'Desactivar');
                             targetButton.removeClass('btn-success').addClass('btn-warning');
                             targetButton.find('i').removeClass('fa-user-check').addClass('fa-user-times');
                         } else {
+                            badge.removeClass('badge-success').addClass('badge-secondary').text('Inactivo');
                             targetButton.data('status', 'activar');
                             targetButton.attr('title', 'Activar');
                             targetButton.removeClass('btn-warning').addClass('btn-success');
@@ -456,14 +472,30 @@
 
                         $('#statusModal').modal('hide');
 
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Estado Actualizado!',
+                            text: response.message || 'El estado del usuario ha sido modificado correctamente.',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 4000,
+                            timerProgressBar: true
+                        });
+
                     },
                     error: function(xhr) {
                         console.error(xhr.responseText);
                         $('#statusModal').modal('hide');
-                        if(typeof toastr !== 'undefined') toastr.error('Error al cambiar el estado.');
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'No se pudo cambiar el estado del usuario.',
+                        });
                     },
                     complete: function() {
-                        btnConfirm.prop('disabled', false).text('Confirmar');
+                        btnConfirm.prop('disabled', false).html('<i class="fas fa-check"></i> Confirmar');
                     }
                 });
             });
@@ -480,26 +512,37 @@
                 $.ajax({
                     url: '/usuarios/' + targetUserId,
                     type: 'DELETE',
-                    headers: {
-                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-                    },
                     success: function(response) {
                         $('#user-row-' + targetUserId).fadeOut(500, function() {
                             $(this).remove();
                         });
                         $('#deleteModal').modal('hide');
-                        // Mostrar notificación de éxito
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: '¡Eliminado!',
+                            text: response.message || 'Usuario eliminado correctamente.',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 3000,
+                            timerProgressBar: true
+                        });
                     },
                     error: function(xhr) {
                         console.error(xhr.responseText);
-                    
-                        if(xhr.responseJSON && xhr.responseJSON.message) {
+                        let mensaje = 'Error al eliminar el usuario.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
                             mensaje = xhr.responseJSON.message;
                         }
 
                         $('#deleteModal').modal('hide');
-                        if(typeof toastr !== 'undefined') toastr.error(mensaje);
-                        else alerta(mensaje);
+
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: mensaje,
+                        });
                     },
                     complete: function() {
                         btnConfirm.prop('disabled', false).html('<i class="fas fa-check"></i> Eliminar Permanentemente');
