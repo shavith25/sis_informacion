@@ -340,19 +340,6 @@ class ZonasController extends Controller
         return 'marcador';
     }
 
-
-    // private function determinarTipoCoordenada(array $coordenadas): string
-    // {
-    //     $tipos = collect($coordenadas)->pluck('tipo')->unique();
-
-    //     if ($tipos->count() > 1) {
-    //         return 'mixto';
-    //     }
-
-    //     return $tipos->first() ?? 'marcador';
-    // }
-
-
     public function edit(Zonas $zona)
     {
         $zona->load([
@@ -403,7 +390,7 @@ class ZonasController extends Controller
 
             // Crear Historial
             ZonaHistorial::create([
-                'zona_id' => $zona->id, // Usamos el ID del objeto inyectado
+                'zona_id' => $zona->id,
                 'coordenadas' => $coordenadas, 
                 'tipo_coordenada' => $tipoCoordenada,
                 'imagen_mapa' => $request->input('imagen_mapa'),

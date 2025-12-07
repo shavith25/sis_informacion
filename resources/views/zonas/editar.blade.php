@@ -3,8 +3,9 @@
 @section('title', 'Editar Zona: ' . $zona->nombre)
 
 @section('content')
-<section class="section">
-    <div class="section-header">
+<section class="section" style="height: calc(100vh - 120px); display: flex; flex-direction: column;">
+    
+    <div class="section-header" style="flex-shrink: 0;">
         <h3 class="page__heading">
             <i class="fas fa-edit mr-2"></i> Editando Zona: {{ $zona->nombre }}
         </h3>
@@ -15,69 +16,64 @@
         </div>
     </div>
 
-    <div class="section-body">
-        <div class="row justify-content-center">
-            <div class="col-xl-12 col-lg-11 col-md-12">
-                <div class="card shadow-lg custom-card-form">
-                    
-                    <div class="card-header custom-card-header">
+    <div class="section-body" style="flex-grow: 1; overflow: hidden; padding-bottom: 10px;">
+        <div class="row justify-content-center h-100">
+            <div class="col-xl-12 col-lg-12 h-100">
+                <div class="card shadow-lg custom-card-form h-100" style="display: flex; flex-direction: column;">
+                    <div class="card-header custom-card-header" style="flex-shrink: 0;">
                         <h4><i class="fas fa-layer-group mr-2"></i> Datos de la Zona y Geometría</h4>
                     </div>
 
-                    @if (session('error'))
-                        <div class="p-4">
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="fas fa-times-circle mr-2"></i>
-                                <strong>Error:</strong> {{ session('error') }}
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
-                        </div>
-                    @endif
-                    @if ($errors->any())
-                        <div class="p-4">
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <i class="fas fa-exclamation-triangle mr-2"></i>
-                                <strong>Errores de validación:</strong>
-                                <ul class="mb-0 mt-2 pl-4">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                                <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                            </div>
+                    {{-- MENSAJES DE ERROR: Fijos si aparecen --}}
+                    @if (session('error') || $errors->any())
+                        <div class="p-3" style="flex-shrink: 0;">
+                            @if (session('error'))
+                                <div class="alert alert-danger alert-dismissible fade show mb-0" role="alert">
+                                    <i class="fas fa-times-circle mr-2"></i> {{ session('error') }}
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                            @endif
+                            @if ($errors->any())
+                                <div class="alert alert-danger alert-dismissible fade show mb-0 mt-2" role="alert">
+                                    <strong><i class="fas fa-exclamation-triangle mr-2"></i> Corrige los errores:</strong>
+                                    <ul class="mb-0 mt-1 pl-4">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                </div>
+                            @endif
                         </div>
                     @endif
 
-                    <form action="{{ route('zonas.update', $zona->id) }}" method="POST" enctype="multipart/form-data" id="zona-form">
+                    {{-- FORMULARIO: Flex 1 para ocupar espacio y min-height 0 para permitir scroll interno --}}
+                    <form action="{{ route('zonas.update', $zona->id) }}" method="POST" enctype="multipart/form-data" id="zona-form" 
+                        style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
                         @csrf
                         @method('PUT')
-                        <div class="card-body custom-scroll-area p-4" style="max-height: calc(100vh - 400px); overflow-y: auto;">
+
+                        <div class="card-body p-4" style="overflow-y: auto; flex: 1;">
                             
                             <input type="hidden" name="coordenadas" id="coordenadas-array"
                                 value="{{ old('coordenadas', $zona->historial->first() ? json_encode($zona->historial->first()->coordenadas) : '') }}">
                             <input type="hidden" name="tipo_coordenada" id="tipo-coordenada"
                                 value="{{ old('tipo_coordenada', $zona->historial->first() ? $zona->historial->first()->tipo_coordenada : '') }}">
-                            <input type="hidden" id="historial-primero" value='@json($zona->historial->first() ? $zona->historial->first()->coordenadas : null)'>
-
 
                             <div class="row">
-                                <div class="col-lg-6">
-                                    <h5 class="text-primary mb-3"><i class="fas fa-info-circle mr-1"></i> Información General</h5>
+                                <div class="col-lg-5">
+                                    <h6 class="text-primary font-weight-bold text-uppercase mb-3"><i class="fas fa-info-circle mr-1"></i> Información General</h6>
                                     
                                     <div class="form-group">
-                                        <label for="nombre" class="required-label" style="font-size: 14px;">
-                                            <i class="fas fa-tag mr-1"></i> Nombre de la Zona:
-                                        </label>
+                                        <label for="nombre" class="required-label">Nombre de la Zona</label>
                                         <input type="text" name="nombre" id="nombre" class="form-control" required
-                                            value="{{ old('nombre', $zona->nombre) }}" placeholder="Ej: Zona de seguridad A">
+                                            value="{{ old('nombre', $zona->nombre) }}">
                                     </div>
     
                                     <div class="form-group">
-                                        <label for="area_id" class="required-label" style="font-size: 14px;">
-                                            <i class="fas fa-globe-americas mr-1"></i> Área Protegida:
-                                        </label>
+                                        <label for="area_id" class="required-label">Área Protegida</label>
                                         <select name="area_id" id="area_id" class="form-control select2" required>
-                                            <option value="">Seleccione un área protegida</option>
+                                            <option value="">Seleccione un área</option>
                                             @foreach ($areas as $area)
                                                 <option value="{{ $area->id }}" {{ old('area_id', $zona->area_id) == $area->id ? 'selected' : '' }}>
                                                     {{ $area->area }}
@@ -87,148 +83,135 @@
                                     </div>
     
                                     <div class="form-group">
-                                        <label for="descripcion" style="font-size: 14px;">
-                                            <i class="fas fa-file-alt mr-1"></i> Descripción:
-                                        </label>
-                                        <textarea name="descripcion" id="descripcion" class="form-control" style="height: 190px;"
-                                            placeholder="Descripción detallada de la zona">{{ old('descripcion', $zona->descripcion) }}</textarea>
+                                        <label for="descripcion">Descripción</label>
+                                        <textarea name="descripcion" id="descripcion" class="form-control" style="height: 120px;">{{ old('descripcion', $zona->descripcion) }}</textarea>
                                     </div>
-                                </div>
 
-                                <div class="col-lg-6">
-                                    <h5 class="text-primary mb-3"><i class="fas fa-images mr-1"></i> Gestión Multimedia</h5>
+                                    <hr>
+
+                                    <h6 class="text-primary font-weight-bold text-uppercase mb-3"><i class="fas fa-photo-video mr-1"></i> Multimedia</h6>
                                     
-                                    <div class="form-group media-section">
-                                        <label style="font-size: 14px;">Imágenes Existentes:</label>
-                                        <div class="row existing-media-row">
-                                            @if (!empty($zona->imagenes) && is_iterable($zona->imagenes))
-                                                @foreach($zona->imagenes as $imagen)
-                                                    <div class="col-md-4 preview-container mb-3">
-                                                        <img src="{{ asset('storage/' . $imagen->url) }}" class="img-fluid media-preview">
-                                                        <label class="mt-2 d-block small">
-                                                            <input type="checkbox" name="imagenes_eliminadas[]" value="{{ $imagen->url }}">
-                                                            Eliminar
-                                                        </label>
+                                    <div class="form-group">
+                                        <label class="d-block mb-2 text-muted small font-weight-bold">IMÁGENES ACTUALES (Marcar para eliminar)</label>
+                                        <div class="row existing-media-row px-2">
+                                            @forelse($zona->imagenes as $imagen)
+                                                <div class="col-6 col-md-4 preview-container mb-2 text-center">
+                                                    <div class="media-wrapper">
+                                                        <img src="{{ asset('storage/' . $imagen->url) }}" class="img-fluid rounded border">
+                                                        <div class="custom-control custom-checkbox mt-1">
+                                                            <input type="checkbox" class="custom-control-input" id="del_img_{{ $loop->index }}" name="imagenes_eliminadas[]" value="{{ $imagen->url }}">
+                                                            <label class="custom-control-label small text-danger" for="del_img_{{ $loop->index }}">Eliminar</label>
+                                                        </div>
                                                     </div>
-                                                @endforeach
-                                            @else
-                                                <p class="col-12 text-muted small">No hay imágenes existentes.</p>
-                                            @endif
+                                                </div>
+                                            @empty
+                                                <p class="col-12 text-muted small font-italic">No hay imágenes cargadas.</p>
+                                            @endforelse
                                         </div>
                                     </div>
 
                                     <div class="form-group">
-                                        <label style="font-size: 14px;"><i class="fas fa-plus-circle mr-1"></i> Agregar nuevas imágenes:</label>
-                                        <div class="custom-file mb-2">
-                                            <input type="file" class="custom-file-input" id="imagenes" name="imagenes[]" accept="image/*" multiple>
-                                            <label class="custom-file-label" for="imagenes">Seleccione una o más imágenes</label>
-                                        </div>
-                                        <div id="imagenes-preview" class="row mt-3"></div>
-                                    </div>
-
-                                    <div class="form-group media-section">
-                                        <label style="font-size: 14px;">Videos Existentes:</label>
-                                        <div class="row existing-media-row">
-                                            @if (!empty($zona->videos) && is_iterable($zona->videos))
-                                                @foreach($zona->videos as $video)
-                                                    <div class="col-md-4 preview-container mb-3">
-                                                        <video controls class="img-fluid media-preview">
+                                        <label class="d-block mb-2 text-muted small font-weight-bold">VIDEOS ACTUALES (Marcar para eliminar)</label>
+                                        <div class="row existing-media-row px-2">
+                                            @forelse($zona->videos as $video)
+                                                <div class="col-6 col-md-4 preview-container mb-2 text-center">
+                                                    <div class="media-wrapper">
+                                                        <video class="img-fluid rounded border" style="height: 80px; width:100%; object-fit:cover;">
                                                             <source src="{{ asset('storage/' . $video->url) }}" type="video/mp4">
                                                         </video>
-                                                        <label class="mt-2 d-block small">
-                                                            <input type="checkbox" name="videos_eliminadas[]" value="{{ $video->url }}">
-                                                            Eliminar
-                                                        </label>
+                                                        <div class="custom-control custom-checkbox mt-1">
+                                                            <input type="checkbox" class="custom-control-input" id="del_vid_{{ $loop->index }}" name="videos_eliminadas[]" value="{{ $video->url }}">
+                                                            <label class="custom-control-label small text-danger" for="del_vid_{{ $loop->index }}">Eliminar</label>
+                                                        </div>
                                                     </div>
-                                                @endforeach
-                                            @else
-                                                <p class="col-12 text-muted small">No hay videos existentes.</p>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label style="font-size: 14px;"><i class="fas fa-plus-circle mr-1"></i> Agregar nuevos videos:</label>
-                                        <div class="custom-file mb-2">
-                                            <input type="file" class="custom-file-input" id="videos" name="videos[]" accept="video/mp4,video/quicktime" multiple>
-                                            <label class="custom-file-label" for="videos">Seleccione uno o más videos</label>
-                                        </div>
-                                        <div id="videos-preview" class="row mt-3"></div>
-                                    </div>
-                                </div>
-                            </div>
-                            
-                            <hr class="my-4">
-
-                            <h5 class="text-primary mb-3"><i class="fas fa-map-pin mr-1"></i> Geometría de la Zona</h5>
-                            <div class="form-group">
-                                <label for="map" class="required-label" style="font-size: 14px;"><i class="fas fa-pencil-alt"></i> Opciones de Dibujo:</label>
-                                <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
-                                    <div class="btn-group mb-2" role="group">
-                                        <button type="button" class="btn btn-outline-primary btn-sm" id="draw-marker">
-                                            <i class="fas fa-map-marker-alt"></i> Marcador
-                                        </button>
-                                        <button type="button" class="btn btn-outline-success btn-sm" id="draw-polygon">
-                                            <i class="fas fa-draw-polygon"></i> Polígono
-                                        </button>
-                                        <button type="button" class="btn btn-outline-danger btn-sm" id="clear-all">
-                                            <i class="fas fa-trash-alt"></i> Limpiar
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div id="map"></div>
-                                <small class="form-text text-muted">
-                                    Dibuje al menos un marcador o polígono en el mapa (dentro de Cochabamba) para definir la zona.
-                                </small>
-                            </div>
-                            
-                            <hr class="my-4">
-
-                            <h5 class="text-primary mb-3"><i class="fas fa-history mr-1"></i> Historial de Geometría</h5>
-                            <div class="form-group">
-                                <div class="table-responsive" style="max-height: 250px; overflow-y: auto;">
-                                    <table class="table table-striped table-sm table-bordered">
-                                        <thead class="bg-light">
-                                            <tr>
-                                                <th>Fecha</th>
-                                                <th>Tipo</th>
-                                                <th class="text-center">Acciones</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @forelse($zona->historial as $historial)
-                                            <tr>
-                                                <td>{{ $historial->created_at->format('d/m/Y H:i') }}</td>
-                                                <td>{{ ucfirst($historial->tipo_coordenada) }}</td>
-                                                <td class="text-center">
-                                                    <button type="button" class="btn btn-sm btn-info view-history"
-                                                            data-coordenadas="{{ json_encode($historial->coordenadas) }}"
-                                                            data-toggle="tooltip" title="Ver en el mapa">
-                                                        <i class="fas fa-eye"></i>
-                                                    </button>
-                                                </td>
-                                            </tr>
+                                                </div>
                                             @empty
-                                            <tr>
-                                                <td colspan="3" class="text-center">No hay historial de geometría.</td>
-                                            </tr>
+                                                <p class="col-12 text-muted small font-italic">No hay videos cargados.</p>
                                             @endforelse
-                                        </tbody>
-                                    </table>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group bg-light p-3 rounded">
+                                        <label class="small font-weight-bold">AGREGAR NUEVOS ARCHIVOS:</label>
+                                        <div class="custom-file mb-2">
+                                            <input type="file" class="custom-file-input" id="imagenes" name="imagenes[]" accept="image/*" multiple>
+                                            <label class="custom-file-label" for="imagenes">Subir Imágenes</label>
+                                        </div>
+                                        <div id="imagenes-preview" class="row mt-2"></div>
+
+                                        <div class="custom-file mt-2">
+                                            <input type="file" class="custom-file-input" id="videos" name="videos[]" accept="video/mp4,video/quicktime" multiple>
+                                            <label class="custom-file-label" for="videos">Subir Videos</label>
+                                        </div>
+                                        <div id="videos-preview" class="row mt-2"></div>
+                                    </div>
+                                </div>
+
+                                {{-- COLUMNA DERECHA --}}
+                                <div class="col-lg-7 border-left-lg">
+                                    <h6 class="text-primary font-weight-bold text-uppercase mb-3 d-flex justify-content-between align-items-center">
+                                        <span><i class="fas fa-map-marked-alt mr-1"></i> Geometría</span>
+                                        <small class="text-muted font-weight-normal text-none-transform">Edite el dibujo en el mapa</small>
+                                    </h6>
+                                    
+                                    <div class="d-flex flex-wrap justify-content-between align-items-center mb-2">
+                                        <div class="btn-group" role="group">
+                                            <button type="button" class="btn btn-outline-primary btn-sm" id="draw-marker">
+                                                <i class="fas fa-map-marker-alt"></i> Marcador
+                                            </button>
+                                            <button type="button" class="btn btn-outline-success btn-sm" id="draw-polygon">
+                                                <i class="fas fa-draw-polygon"></i> Polígono
+                                            </button>
+                                            <button type="button" class="btn btn-outline-danger btn-sm" id="clear-all">
+                                                <i class="fas fa-trash-alt"></i> Limpiar
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <div id="map" style="height: 500px; width: 100%; border-radius: 8px; border: 2px solid #e9ecef;"></div>
+                                    
+                                    <div class="mt-4">
+                                        <h6 class="text-primary font-weight-bold text-uppercase mb-2"><i class="fas fa-history mr-1"></i> Historial de Cambios</h6>
+                                        <div class="table-responsive" style="max-height: 200px;">
+                                            <table class="table table-sm table-hover mb-0">
+                                                <thead class="thead-light">
+                                                    <tr>
+                                                        <th>Fecha</th>
+                                                        <th>Tipo</th>
+                                                        <th class="text-right">Ver</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @forelse($zona->historial as $historial)
+                                                    <tr>
+                                                        <td>{{ $historial->created_at->format('d/m/Y H:i') }}</td>
+                                                        <td><span class="badge badge-light">{{ ucfirst($historial->tipo_coordenada) }}</span></td>
+                                                        <td class="text-right">
+                                                            <button type="button" class="btn btn-sm btn-info view-history"
+                                                                    data-coordenadas="{{ json_encode($historial->coordenadas) }}" title="Ver en el mapa">
+                                                                <i class="fas fa-eye"></i>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                    @empty
+                                                    <tr><td colspan="3" class="text-center text-muted">Sin historial previo.</td></tr>
+                                                    @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-
                         </div>
                         
-                        <div class="card-footer text-center py-3">
-                            <button type="submit" class="btn btn-primary btn-action-custom mr-3">
-                                <i class="fas fa-sync-alt"></i> Actualizar Zona
-                            </button>
-
-                            <a href="{{ route('zonas.index') }}" class="btn btn-outline-secondary btn-lg">
-                                <i class="fas fa-arrow-left"></i> Cancelar
+                        {{-- FOOTER: Fijo al final del formulario, siempre visible dentro del layout --}}
+                        <div class="card-footer bg-whitesmoke text-right" style="flex-shrink: 0;">
+                            <a href="{{ route('zonas.index') }}" class="btn btn-secondary mr-2">
+                                <i class="fas fa-times mr-1"></i> Cancelar
                             </a>
+                            <button type="submit" class="btn btn-primary btn-lg px-4 btn-create">
+                                <i class="fas fa-save mr-1"></i> Guardar Cambios
+                            </button>
                         </div>
                     </form>
                 </div>
@@ -244,125 +227,22 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
 
 <style>
-    /* Estilo para el botón de acción (Azul Sólido) */
-    .btn-action-custom {
-        background-color: #2f55d4 !important; 
-        border-color: #2f55d4 !important;
-        color: #ffffff !important;           
-        box-shadow: none !important;          
-        border-radius: 50px;                
-        padding: 0.55rem 1.5rem;
-        font-weight: 600;
-        transition: opacity 0.3s ease;
-    }
-
-    /* Estados Hover / Focus / Active */
-    .btn-action-custom:hover,
-    .btn-action-custom:focus,
-    .btn-action-custom:active {
-        background-color: #2f55d4 !important;  
-        border-color: #2f55d4 !important;
-        color: #ffffff !important;
-        box-shadow: none !important;          
-        outline: none !important;
-        opacity: 0.9;                          
-        transform: none !important;
-    }
-
-    /* Estilo de la Tarjeta (Consistencia) */
-    .custom-card-form {
-        border-radius: 12px;
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-    }
-
-    .custom-card-header {
-        background: linear-gradient(90deg, #6777ef 0%, #a9b5f5 100%);
-        color: #ffffff !important;
-        border-radius: 12px 12px 0 0 !important;
-        padding: 1rem 1.5rem;
-    }
-
-    .custom-card-header h4 {
-        color: #ffffff !important;
-        font-weight: 600;
-        margin-bottom: 0;
-    }
-
-    .card-footer {
-        border-top: 1px solid #adb5bd transparent;
-        background-color: #adb5bd transparent;
-        border-radius: 0 0 12px 12px;
-    }
-
-    /* SCROLL SOLO EN EL CONTENIDO */
-    .custom-scroll-area::-webkit-scrollbar {
-        width: 6px;
-    }
-
-    .custom-scroll-area::-webkit-scrollbar-thumb {
-        background-color: #adb5bd;
-        border-radius: 3px;
-    }
-
-    .custom-scroll-area::-webkit-scrollbar-track {
-        background-color: #f1f1f1;
-    }
-
-    /* Formulario y Etiquetas */
-    .required-label:after {
-        content: " *";
-        color: #dc3545;
-        font-weight: bold;
-    }
-
-    label {
-        font-weight: 600;
-        color: #495057;
-    }
+    /* Ajustes visuales de botones y tarjeta */
+    .btn-create { background-color: #2f55d4 !important; border-color: #2f55d4 !important; box-shadow: 0 2px 6px rgba(47, 85, 212, 0.4); }
+    .btn-create:hover { background-color: #2040a5 !important; }
+    .custom-card-header { background-color: #5d75e8; border-bottom: 3px solid #6777ef; color: white; }
+    .custom-card-header h4 { color: white !important; }
+    .required-label:after { content: " *"; color: #dc3545; font-weight: bold; }
     
-    /* Mapa */
-    #map {
-        height: 500px;
-        width: 100%;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        border: 1px solid #adb5bd;
-    }
-    
-    /* Previsualizaciones Multimedia */
-    .preview-container {
-        position: relative;
-        padding: 5px;
-    }
+    @media (min-width: 992px) { .border-left-lg { border-left: 1px solid #eee; } }
+    .preview-container img, .preview-container video { border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .remove-btn { position: absolute; top: -5px; right: 5px; background: #dc3545; color: white; border-radius: 50%; width: 20px; height: 20px; padding: 0; font-size: 10px; border: 2px solid white; cursor: pointer; }
 
-    .media-preview {
-        max-width: 100%;
-        max-height: 120px;
-        border: 1px solid #adb5bd;
-        border-radius: 4px;
-        display: block;
-        margin: auto;
-        object-fit: cover;
-    }
-
-    .custom-file-label::after {
-        content: "Examinar";
-    }
-
-    .search-container {
-        width: 250px;
-    }
-    
-    /* Historial */
-    .table-responsive {
-        border: 1px solid #adb5bd;
-        border-radius: 8px;
-    }
-    
-    .table th {
-        background-color: #adb5bd;
-        font-weight: 700;
-    }
+    /* ESTILO PARA EL SCROLLBAR PERSONALIZADO */
+    .card-body::-webkit-scrollbar { width: 8px; }
+    .card-body::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
+    .card-body::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+    .card-body::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
 </style>
 @endpush
 
@@ -373,46 +253,28 @@
 <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
 <script>
 let map;
 let drawnItems;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Configuración del mapa centrado en Cochabamba
-    const cochabambaBounds = L.latLngBounds(
-        L.latLng(-18.50, -67.50), 
-        L.latLng(-16.00, -64.00) 
-    );
-
-    map = L.map('map', {
-        minZoom: 9,
-        maxZoom: 18,
-        maxBounds: cochabambaBounds
-    }).setView([-17.3895, -66.1568], 16); 
+    // 1. Inicializar Mapa
+    const cochabambaBounds = L.latLngBounds(L.latLng(-18.50, -67.50), L.latLng(-16.00, -64.00));
+    map = L.map('map', { minZoom: 9, maxBounds: cochabambaBounds }).setView([-17.3895, -66.1568], 13); 
 
     L.layerGroup([
-        L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: '&copy; Esri, i-cubed, USDA, USGS, etc.',
-        }),
-        L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Labels &copy; Esri'
-        })
+        L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Esri' }),
+        L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}')
     ]).addTo(map);
 
-    // 2. Capa de elementos dibujados
     drawnItems = new L.FeatureGroup();
     map.addLayer(drawnItems);
     
-    // 3. Controles de Dibujo
+    // Controles de dibujo
     const drawControl = new L.Control.Draw({
         position: 'topright',
         draw: {
-            polygon: {
-                allowIntersection: false,
-                drawError: { color: '#b00b00', message: '¡No puedes dibujar fuera de Cochabamba!' },
-                shapeOptions: { color: '#3388ff', fillColor: '#3388ff', fillOpacity: 0.2 }
-            },
+            polygon: { allowIntersection: false, drawError: { color: '#b00b00', message: '¡Fuera de límites!' }, shapeOptions: { color: '#3388ff', fillColor: '#3388ff', fillOpacity: 0.2 } },
             marker: { icon: new L.Icon.Default() },
             polyline: false, circle: false, rectangle: false, circlemarker: false
         },
@@ -420,18 +282,21 @@ document.addEventListener('DOMContentLoaded', function() {
     });
     map.addControl(drawControl);
     
-    // 4. Funciones Auxiliares (Validación y Actualización)
+    // Buscador
+    L.Control.geocoder({ defaultMarkGeocode: false, placeholder: "Buscar lugar...", geocoder: new L.Control.Geocoder.Nominatim() })
+    .on('markgeocode', function(e) {
+        var bbox = e.geocode.bbox;
+        var poly = L.polygon([bbox.getSouthEast(), bbox.getNorthEast(), bbox.getNorthWest(), bbox.getSouthWest()]);
+        map.fitBounds(poly.getBounds());
+    }).addTo(map);
+
     function estaEnCochabamba(lat, lng) {
-        return lat >= cochabambaBounds.getSouth() &&
-            lat <= cochabambaBounds.getNorth() &&
-            lng >= cochabambaBounds.getWest() &&
-            lng <= cochabambaBounds.getEast();
+        return lat >= cochabambaBounds.getSouth() && lat <= cochabambaBounds.getNorth() && lng >= cochabambaBounds.getWest() && lng <= cochabambaBounds.getEast();
     }
 
     function updateCoordenadasInput() {
         const coordenadas = [];
         let fueraDeLimites = false;
-
         drawnItems.eachLayer(function(layer) {
             if (layer instanceof L.Marker) {
                 const latlng = layer.getLatLng();
@@ -439,64 +304,43 @@ document.addEventListener('DOMContentLoaded', function() {
                 coordenadas.push({ tipo: 'marcador', coordenadas: { lat: latlng.lat, lng: latlng.lng } });
             } else if (layer instanceof L.Polygon) {
                 const points = layer.getLatLngs()[0];
-                const puntosFuera = points.some(latlng => !estaEnCochabamba(latlng.lat, latlng.lng));
-
-                if (puntosFuera) { fueraDeLimites = true; return; }
+                if (points.some(latlng => !estaEnCochabamba(latlng.lat, latlng.lng))) { fueraDeLimites = true; return; }
                 coordenadas.push({ tipo: 'poligono', coordenadas: points.map(latlng => ({ lat: latlng.lat, lng: latlng.lng })) });
             }
         });
 
         if (fueraDeLimites) {
-            Swal.fire('Error', 'Se detectaron puntos fuera de Cochabamba. Limpiando el mapa...', 'error');
+            Swal.fire('Error', 'Puntos fuera de Cochabamba eliminados.', 'error');
             drawnItems.clearLayers();
             document.getElementById('coordenadas-array').value = '';
             return;
         }
-
         document.getElementById('coordenadas-array').value = JSON.stringify(coordenadas);
-
         const tipos = coordenadas.map(c => c.tipo);
-        const tipoCoordenada = tipos.includes('poligono') ?
-            (tipos.includes('marcador') ? 'mixto' : 'poligono') : 'marcador';
-        document.getElementById('tipo-coordenada').value = tipoCoordenada;
+        document.getElementById('tipo-coordenada').value = tipos.includes('poligono') ? (tipos.includes('marcador') ? 'mixto' : 'poligono') : 'marcador';
     }
-    
-    // 5. Manejo de Eventos del Mapa
+
     map.on(L.Draw.Event.CREATED, function(e) {
         const layer = e.layer;
-        
         if (layer instanceof L.Marker) {
-            if (!estaEnCochabamba(layer.getLatLng().lat, layer.getLatLng().lng)) {
-                map.removeLayer(layer);
-                return Swal.fire('Error', 'No puedes dibujar marcadores fuera de Cochabamba.', 'error');
-            }
+            if (!estaEnCochabamba(layer.getLatLng().lat, layer.getLatLng().lng)) return;
             layer.options.draggable = true;
             layer.on('dragend', updateCoordenadasInput);
         } else if (layer instanceof L.Polygon) {
             layer.on('edit', updateCoordenadasInput);
         }
-
         drawnItems.addLayer(layer);
         updateCoordenadasInput();
     });
-
     map.on(L.Draw.Event.EDITED, updateCoordenadasInput);
     map.on(L.Draw.Event.DELETED, updateCoordenadasInput);
 
-    // 6. Carga de Datos Existentes
+    // Cargar datos existentes
     const oldCoordenadas = document.getElementById('coordenadas-array').value;
     if (oldCoordenadas) {
         try {
             const coordenadas = JSON.parse(oldCoordenadas);
-            let coordenadasValidas = true;
-
-            // Validación rápida antes de cargar
-            for (const item of coordenadas) {
-                if (item.tipo === 'marcador' && !estaEnCochabamba(item.coordenadas.lat, item.coordenadas.lng)) { coordenadasValidas = false; break; }
-                if (item.tipo === 'poligono' && item.coordenadas.some(coord => !estaEnCochabamba(coord.lat, coord.lng))) { coordenadasValidas = false; break; }
-            }
-
-            if (coordenadasValidas) {
+            if(Array.isArray(coordenadas)){
                 coordenadas.forEach(item => {
                     if (item.tipo === 'marcador') {
                         const marker = L.marker([item.coordenadas.lat, item.coordenadas.lng], { draggable: true });
@@ -509,262 +353,87 @@ document.addEventListener('DOMContentLoaded', function() {
                         drawnItems.addLayer(polygon);
                     }
                 });
-
-                if (drawnItems.getLayers().length > 0) { map.fitBounds(drawnItems.getBounds()); }
-            } else {
-                console.warn('Coordenadas existentes fuera de Cochabamba, no cargadas.');
-                document.getElementById('coordenadas-array').value = '';
+                if (drawnItems.getLayers().length > 0) map.fitBounds(drawnItems.getBounds()); 
             }
-        } catch (e) {
-            console.error('Error al cargar coordenadas JSON:', e);
-        }
+        } catch (e) { console.error('Error cargando coordenadas', e); }
     }
-    
-    // 7. Botones Personalizados
+
+    // Botones externos
     document.getElementById('draw-marker').addEventListener('click', function() { new L.Draw.Marker(map, drawControl.options.draw.marker).enable(); });
     document.getElementById('draw-polygon').addEventListener('click', function() { new L.Draw.Polygon(map, drawControl.options.draw.polygon).enable(); });
-    document.getElementById('clear-all').addEventListener('click', function() { drawnItems.clearLayers(); updateCoordenadasInput(); });
-    
-    // 8. Visualización de Historial
+    document.getElementById('clear-all').addEventListener('click', function() { 
+        Swal.fire({ title: '¿Limpiar mapa?', text: "Se borrará el dibujo actual.", icon: 'warning', showCancelButton: true, confirmButtonText: 'Sí, borrar' })
+        .then((result) => { if (result.isConfirmed) { drawnItems.clearLayers(); updateCoordenadasInput(); } });
+    });
+
+    // Ver Historial
     document.querySelectorAll('.view-history').forEach(btn => {
         btn.addEventListener('click', function() {
             const historialCoords = JSON.parse(this.getAttribute('data-coordenadas'));
             drawnItems.clearLayers(); 
-
-            // Cargar historial en rojo
             historialCoords.forEach(item => {
-                const color = '#7f8c8d';
-                if (item.tipo === 'marcador') {
-                    drawnItems.addLayer(L.marker([item.coordenadas.lat, item.coordenadas.lng], { icon: L.divIcon({className: 'history-icon', html: `<i class="fas fa-map-marker-alt" style="color:${color}; font-size: 24px;"></i>`}) }));
-                } else if (item.tipo === 'poligono') {
+                if (item.tipo === 'marcador') drawnItems.addLayer(L.marker([item.coordenadas.lat, item.coordenadas.lng], { icon: new L.Icon.Default({className: 'history-filter'}) }));
+                else if (item.tipo === 'poligono') {
                     const latlngs = item.coordenadas.map(coord => [coord.lat, coord.lng]);
-                    drawnItems.addLayer(L.polygon(latlngs, { color: color, fillColor: color, fillOpacity: 0.2 }));
+                    drawnItems.addLayer(L.polygon(latlngs, { color: '#ff5722', fillColor: '#ff5722', fillOpacity: 0.3 }));
                 }
             });
-
-            if (drawnItems.getLayers().length > 0) { map.fitBounds(drawnItems.getBounds()); }
-
-            // Alerta con opción para restaurar la vista de edición
-            Swal.fire({
-                title: 'Vista Histórica',
-                html: 'El mapa muestra la geometría antigua de la zona (en rojo).<br><br>¿Desea volver a la versión de edición actual?',
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: 'Sí, volver a editar',
-                cancelButtonText: 'Cerrar'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    drawnItems.clearLayers();
-                    // Recargar la geometría actual para edición
-                    const currentCoords = JSON.parse(document.getElementById('coordenadas-array').value);
-                    if (currentCoords) {
-                        currentCoords.forEach(item => {
-                            if (item.tipo === 'marcador') {
-                                const marker = L.marker([item.coordenadas.lat, item.coordenadas.lng], { draggable: true });
-                                marker.on('dragend', updateCoordenadasInput);
-                                drawnItems.addLayer(marker);
-                            } else if (item.tipo === 'poligono') {
-                                const latlngs = item.coordenadas.map(coord => [coord.lat, coord.lng]);
-                                const polygon = L.polygon(latlngs, { color: '#3388ff', fillColor: '#3388ff', fillOpacity: 0.2 });
-                                polygon.on('edit', updateCoordenadasInput);
-                                drawnItems.addLayer(polygon);
-                            }
-                        });
-                        map.fitBounds(drawnItems.getBounds());
-                    }
-                }
+            if (drawnItems.getLayers().length > 0) map.fitBounds(drawnItems.getBounds());
+            Swal.fire({ title: 'Viendo Historial', text: 'Estás viendo una versión antigua. ¿Restaurar o volver?', icon: 'info', showDenyButton: true, showCancelButton: true, confirmButtonText: 'Restaurar', denyButtonText: 'Volver' })
+            .then((result) => {
+                if (result.isDenied) location.reload();
+                else if (result.isConfirmed) { updateCoordenadasInput(); Swal.fire('Restaurado', 'Ahora puedes editar esta versión.', 'success'); }
             });
         });
     });
-    
-    // 9. Manejo de Archivos y Previsualización (Ajustada para edición)
+
+    // Previsualización Archivos
     const previewFiles = function(input, previewContainer, isImage) {
         return function(e) {
             const files = input.files;
             previewContainer.innerHTML = ''; 
-
             if (files) {
                 Array.from(files).forEach((file, index) => {
                     const reader = new FileReader();
-
                     reader.onload = function(event) {
-                        const previewDiv = document.createElement('div');
-                        // Usar col-md-4 para 3 en fila
-                        previewDiv.className = 'col-md-4 preview-container mb-3'; 
-
-                        if (isImage) {
-                            previewDiv.innerHTML = `
-                                <img src="${event.target.result}" class="img-fluid media-preview">
-                                <button type="button" class="remove-btn" data-index="${index}">×</button>
-                            `;
-                        } else {
-                            previewDiv.innerHTML = `
-                                <video controls class="img-fluid media-preview">
-                                    <source src="${event.target.result}" type="${file.type}">
-                                </video>
-                                <button type="button" class="remove-btn" data-index="${index}">×</button>
-                            `;
-                        }
-
-                        previewContainer.appendChild(previewDiv);
-
-                        previewDiv.querySelector('.remove-btn').addEventListener('click', function() {
+                        const div = document.createElement('div');
+                        div.className = 'col-4 preview-container mb-2 text-center position-relative'; 
+                        div.innerHTML = `${isImage ? `<img src="${event.target.result}" class="img-fluid rounded border">` : `<video src="${event.target.result}" class="img-fluid rounded border"></video>`}<button type="button" class="remove-btn" data-index="${index}">×</button>`;
+                        previewContainer.appendChild(div);
+                        div.querySelector('.remove-btn').addEventListener('click', function() {
                             const dt = new DataTransfer();
                             const inputFiles = input.files;
-                            const deletedIndex = parseInt(this.getAttribute('data-index'));
-
-                            for (let i = 0; i < inputFiles.length; i++) {
-                                if (i !== deletedIndex) {
-                                    dt.items.add(inputFiles[i]);
-                                }
-                            }
-
+                            const delIdx = parseInt(this.getAttribute('data-index'));
+                            for (let i = 0; i < inputFiles.length; i++) { if (i !== delIdx) dt.items.add(inputFiles[i]); }
                             input.files = dt.files;
-                            previewDiv.remove();
-                            // Reindexar botones
-                            previewContainer.querySelectorAll('.remove-btn').forEach((btn, newIndex) => { btn.setAttribute('data-index', newIndex); });
+                            div.remove();
                         });
                     };
-
                     reader.readAsDataURL(file);
                 });
             }
         };
     };
+    const imgInp = document.getElementById('imagenes');
+    const vidInp = document.getElementById('videos');
+    if (imgInp) imgInp.addEventListener('change', previewFiles(imgInp, document.getElementById('imagenes-preview'), true));
+    if (vidInp) vidInp.addEventListener('change', previewFiles(vidInp, document.getElementById('videos-preview'), false));
 
-    const imagenesInput = document.querySelector('input#imagenes');
-    const videosInput = document.querySelector('input#videos');
-    const imagenesPreview = document.getElementById('imagenes-preview');
-    const videosPreview = document.getElementById('videos-preview');
-
-    if (imagenesInput) { imagenesInput.addEventListener('change', previewFiles(imagenesInput, imagenesPreview, true)); }
-    if (videosInput) { videosInput.addEventListener('change', previewFiles(videosInput, videosPreview, false)); }
-
-    // Actualizar etiquetas de archivos
     document.querySelectorAll('.custom-file-input').forEach(input => {
-        input.addEventListener('change', function() {
-            const label = this.nextElementSibling;
-            const files = Array.from(this.files).map(f => f.name);
-
-            if (files.length === 0) {
-                label.textContent = 'Seleccione una o más imágenes';
-            } else if (files.length === 1) {
-                label.textContent = files[0];
-            } else {
-                label.textContent = `${files.length} archivos seleccionados`;
-            }
-        });
+        input.addEventListener('change', function() { this.nextElementSibling.textContent = this.files.length > 0 ? `${this.files.length} archivos` : 'Seleccionar'; });
     });
 
-    // 10. Geocoder y Leyenda
-    L.Control.geocoder({
-        defaultMarkGeocode: false,
-        placeholder: "Buscar...",
-        geocoder: new L.Control.Geocoder.Nominatim() 
-    }).addTo(map);
-
-    const legend = L.control({position: 'bottomright'});
-    legend.onAdd = function(map) {
-        const div = L.DomUtil.create('div', 'info legend');
-        div.innerHTML = '<i style="background:#ff7800"></i> Área de Cochabamba (Validación)';
-        return div;
-    };
-    legend.addTo(map);
-    
-    // Captura de Mapa
     document.getElementById('zona-form').addEventListener('submit', function(e) {
         e.preventDefault();
-
         map.invalidateSize();
-        
-        if (!document.getElementById('coordenadas-array').value) {
-            return Swal.fire('Error', "Debe dibujar al menos un marcador o polígono en el mapa.", 'error');
-        }
-
-        setTimeout(() => {
-            html2canvas(document.getElementById('map'), { useCORS: true, backgroundColor: null, scale: 1 
-            }).then(canvas => {
-                const resizedCanvas = document.createElement('canvas');
-                const ctx = resizedCanvas.getContext('2d');
-                const scaleFactor = 0.5; 
-
-                resizedCanvas.width = canvas.width * scaleFactor;
-                resizedCanvas.height = canvas.height * scaleFactor;
-                ctx.drawImage(canvas, 0, 0, resizedCanvas.width, resizedCanvas.height);
-
-                const base64Image = resizedCanvas.toDataURL('image/jpeg', 0.6); 
-
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'imagen_mapa';
-                input.value = base64Image;
-                document.getElementById('zona-form').appendChild(input);
-
-                document.getElementById('zona-form').submit();
-            }).catch(err => {
-                console.error("Error al capturar el mapa:", err);
-                document.getElementById('zona-form').submit();
-            });
-        }, 100); 
+        if (!document.getElementById('coordenadas-array').value) return Swal.fire('Error', "Dibuja la zona en el mapa.", 'error');
+        html2canvas(document.getElementById('map'), { useCORS: true, backgroundColor: null, ignoreElements: (element) => element.classList.contains('leaflet-control-container') })
+        .then(canvas => {
+            const input = document.createElement('input');
+            input.type = 'hidden'; input.name = 'imagen_mapa'; input.value = canvas.toDataURL('image/jpeg', 0.6);
+            this.appendChild(input); this.submit();
+        }).catch(() => this.submit());
     });
-
 });
-
-// 11. Funcionalidad de Búsqueda para el campo HTML
-const searchBox = document.getElementById('search-box');
-const searchResults = document.getElementById('search-results');
-const geocoderInstance = L.Control.Geocoder.nominatim();
-
-if (searchBox) {
-    let currentTimeout = null;
-
-    searchBox.addEventListener('keyup', function(e) {
-        clearTimeout(currentTimeout);
-        const query = searchBox.value.trim();
-
-        if (query.length < 3) {
-            searchResults.style.display = 'none';
-            return;
-        }
-
-        // Realizar búsqueda con retardo para evitar sobrecarga (debounce)
-        currentTimeout = setTimeout(() => {
-            geocoderInstance.geocode(query, results => {
-                searchResults.innerHTML = '';
-                searchResults.style.display = 'block';
-
-                if (results.length === 0) {
-                    searchResults.innerHTML = '<li class="list-group-item text-muted small">No se encontraron resultados.</li>';
-                    return;
-                }
-
-                results.forEach(result => {
-                    const li = document.createElement('li');
-                    li.className = 'list-group-item list-group-item-action small';
-                    li.textContent = result.name;
-                    li.style.cursor = 'pointer';
-
-                    li.addEventListener('click', function() {
-                        // Zoom al resultado de la búsqueda
-                        map.fitBounds(result.bbox); 
-                        searchResults.style.display = 'none';
-                        searchBox.value = result.name; 
-
-                        // Opcional: añadir un marcador temporal
-                        L.marker(result.center).addTo(map).bindPopup(result.name).openPopup();
-                    });
-                    searchResults.appendChild(li);
-                });
-            });
-        }, 500); // 500ms de retardo
-    });
-
-    // Ocultar resultados si se hace clic fuera
-    document.addEventListener('click', function(e) {
-        if (!searchBox.contains(e.target) && !searchResults.contains(e.target)) {
-            searchResults.style.display = 'none';
-        }
-    });
-}
 </script>
 @endpush

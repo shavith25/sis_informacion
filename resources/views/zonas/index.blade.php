@@ -27,15 +27,6 @@
             </div>
         </div>
 
-        @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        @endif
-
         <div class="row zona-card-list" style="max-height: calc(100vh - 250px); overflow-y: auto; padding: 5px;">
             @forelse ($zonas as $zona)
                 <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
