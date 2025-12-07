@@ -136,7 +136,7 @@ class UsuarioController extends Controller
     
         $usuario->syncRoles($request->input('roles'));
 
-        return redirect()->route('usuarios.index');
+        return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
     }
 
     public function changeStatus(User $usuario)
@@ -178,6 +178,21 @@ class UsuarioController extends Controller
         return view('usuarios.editar', ['user' => $usuario, 'roles' => $roles, 'userRole' => $userRole]);
     }
 
+    public function getInactiveUsers()
+    {
+        if(request()->ajax()) {
+            $inactiveUsers = User::where('estado', 0)->get(['id', 'name', 'email', 'url_image']);
+
+            $inactiveUsers->each(function ($user) {
+                $user->uuid = $user->getRouteKey();
+            });
+
+            return response()->json($inactiveUsers);
+        }
+
+        return abort(404);
+    }
+
     public function destroy(User $usuario)
     {
         try {
@@ -190,7 +205,7 @@ class UsuarioController extends Controller
 
             return response()->json(['message' => 'Usuario desactivado correctamente']);
         } catch (\Exception $e) {
-           Log::error("Error eliminando usuario ID: {$usuario->id}. Error: " . $e->getMessage());
+            Log::error("Error eliminando usuario ID: {$usuario->id}. Error: " . $e->getMessage());
         }
     }
 }

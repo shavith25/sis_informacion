@@ -112,6 +112,7 @@ Route::middleware(['auth'])->group(function () {
 
     // GESTIÓN DE USUARIOS Y ROLES 
     Route::patch('/usuarios/{usuario}/change-status', [UsuarioController::class, 'changeStatus'])->name('usuarios.change-status');
+    Route::get('/usuarios/inactivos', [UsuarioController::class, 'getInactiveUsers'])->name('usuarios.inactivos');
     Route::resource('usuarios', UsuarioController::class);
     Route::resource('roles', RolController::class);
 

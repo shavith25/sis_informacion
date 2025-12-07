@@ -36,7 +36,8 @@
             <div class="modal-content modal-content-custom">
                 <div class="modal-header modal-header-danger">
                     <h5 class="modal-title text-white" id="deleteModalLabel"><i class="fas fa-trash-alt mr-2"></i> Confirmar
-                        Eliminación</h5>
+                        Eliminación
+                    </h5>
                     <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -58,6 +59,28 @@
         </div>
     </div>
 
+    <!-- Modal para ver Usuarios Inactivos -->
+    <div class="modal fade" id="inactiveUsersModal" tabindex="-1" role="dialog" aria-labelledby="inactiveUsersModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content modal-content-custom">
+                <div class="modal-header modal-header-custom">
+                    <h5 class="modal-title" id="inactiveUsersModalLabel"><i class="fas fa-user-slash mr-2"></i> Usuarios
+                        Inactivos</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body" id="inactiveUsersList" style="max-height: 60vh; overflow-y: auto;">
+                    <!-- La lista de usuarios inactivos se cargará aquí vía AJAX -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Sección Principal de Gestión de Usuarios -->
     <section class="section">
         <div class="section-header">
@@ -74,6 +97,10 @@
                         <div class="card-header card-header-custom d-flex justify-content-between align-items-center">
                             <h4 class="m-0"><i class="fas fa-list-ul mr-2"></i> Listado de Usuarios</h4>
                             <div class="card-header-action">
+                                <button type="button" class="btn btn-secondary mr-2" id="btnVerInactivos"
+                                    data-toggle="modal" data-target="#inactiveUsersModal">
+                                    <i class="fas fa-user-slash mr-1"></i> Ver Inactivos
+                                </button>
                                 <a href="{{ route('usuarios.create') }}" class="btn btn-primary btn-create"
                                     id="btnNuevoUsuario">
                                     <i class="fas fa-plus mr-1"></i> Nuevo Usuario
@@ -209,8 +236,12 @@
             background: #6c757d;
             border-bottom: 1px solid #e9ecef;
             padding: 1rem 1.5rem;
+            color: white;
         }
 
+        .modal-header-custom .close {
+            color: white !important;
+        }
         .card-header-custom h4 {
             color: #343a40;
             font-weight: 700;
@@ -500,6 +531,78 @@
                 });
             });
 
+            // --- LÓGICA DEL MODAL DE USUARIOS INACTIVOS ---
+            $('#btnVerInactivos').on('click', function() {
+                const modalBody = $('#inactiveUsersList');
+                modalBody.html('<div class="text-center p-5"><i class="fas fa-spinner fa-spin fa-3x"></i><p class="mt-3">Cargando usuarios...</p></div>');
+
+                $.ajax({ 
+                    url: "{{ route('usuarios.inactivos') }}",
+                    type: 'GET',
+                    success: function(users) {
+                        let content = '<ul class="list-group list-group-flush">';
+                        if (users.length > 0) {
+                            users.forEach(function(user) {
+                                const avatarUrl = user.url_image
+                                    ? `{{ asset('storage') }}/${user.url_image}`
+                                    : `https://ui-avatars.com/api/?name=${encodeURIComponent(user.name)}&background=6c757d&color=ffffff`;
+
+                                content += `
+                                    <li class="list-group-item d-flex justify-content-between align-items-center" id="inactive-user-${user.uuid}">
+                                        <div class="d-flex align-items-center">
+                                            <img src="${avatarUrl}" alt="avatar" style="width: 40px; height: 40px; border-radius: 50%;" class="mr-3">
+                                            <div>
+                                                <strong class="d-block">${user.name}</strong>
+                                                <small class="text-muted">${user.email}</small>
+                                            </div>
+                                        </div>
+                                        <button class="btn btn-success btn-sm reactivate-btn" data-user-id="${user.uuid}" title="Reactivar Usuario">
+                                            <i class="fas fa-user-check"></i> Reactivar
+                                        </button>
+                                    </li>`;
+                            });
+                        } else {
+                            content += '<li class="list-group-item text-center text-muted">No hay usuarios inactivos.</li>';
+                        }
+                        content += '</ul>';
+                        modalBody.html(content);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("Error en AJAX:", xhr.responseText);
+                        const mensajeError = xhr.responseJSON && xhr.responseJSON.message ? xhr.responseJSON.message : 'Por favor, intenta de nuevo.';
+                        modalBody.html(`<div class="alert alert-danger text-center"><strong>Error al cargar los usuarios.</strong><br><small>${mensajeError}</small></div>`);
+                    }
+                });
+            });
+
+            // 2. Reactivar un usuario desde el modal
+            $('#inactiveUsersList').on('click', '.reactivate-btn', function() {
+                const reactivateBtn = $(this);
+                const userId = reactivateBtn.data('user-id');
+
+                reactivateBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+
+                $.ajax({
+                    url: `/usuarios/${userId}/change-status`,
+                    type: 'PATCH',
+                    success: function(response) {
+                        $(`#inactive-user-${userId}`).fadeOut(500, function() { $(this).remove(); });
+
+                        const mainRowButton = $(`.change-status-btn[data-user-id="${userId}"]`);
+                        if (mainRowButton.length) {
+                            mainRowButton.data('status', 'desactivar').attr('title', 'Desactivar');
+                            mainRowButton.removeClass('btn-success').addClass('btn-warning');
+                            mainRowButton.find('i').removeClass('fa-user-check').addClass('fa-user-times');
+                            $(`#status-badge-${userId}`).removeClass('badge-secondary').addClass('badge-success').text('Activo');
+                        }
+                    },
+                    error: function() {
+                        reactivateBtn.prop('disabled', false).html('<i class="fas fa-user-check"></i> Reactivar');
+                        alert('Error al reactivar el usuario.');
+                    }
+                });
+            });
+
             // --- LÓGICA DE ELIMINACIÓN ---
             $('.delete-btn').on('click', function() {
                 targetUserId = $(this).data('user-id');
@@ -549,6 +652,19 @@
                     }
                 });
             });
+
+            @if(session('success'))
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    text: @json(session('success')),
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            @endif
         });
     </script>
 @endpush
