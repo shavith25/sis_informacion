@@ -24,26 +24,8 @@ class User extends Authenticatable
         'email',
         'password',
         'url_image',
-        'estado'
+        'estado',
     ];
-
-    // Convierte el ID (ej: 1) a código Hexadecimal (ej: "4a2f")
-    public function getRouteKey()
-    {
-        $idOculto = $this->getKey() ^ 123456789; // Máscara XOR
-        return dechex($idOculto);
-    }
-
-    // Recibe el código Hexadecimal y recupera el ID original
-    public function resolveRouteBinding($value, $field = null)
-    {
-        try {
-            $idReal = hexdec($value) ^ 123456789; // Máscara XOR inversa
-            return $this->where('id', $idReal)->firstOrFail();
-        } catch (\Exception $e) {
-            abort(404);
-        }
-    }
 
     /**
      * Atributos ocultos al convertir a JSON
@@ -60,4 +42,27 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'estado' => 'boolean',
     ];
+
+    /**
+     * Atributos que deben ser ocultados para arrays
+     */
+    // Genera un código Hexadecimal basado en el ID del usuario
+    public function getRouteKey()
+    {
+        $idOculto = $this->getKey() ^ 123456789; // Máscara XOR
+        return dechex($idOculto);
+    }
+
+    /**
+     * Resuelve la vinculación de ruta utilizando el ID oculto
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        try {
+            $idReal = hexdec($value) ^ 123456789; // Máscara XOR inversa
+            return $this->where('id', $idReal)->firstOrFail();
+        } catch (\Exception $e) {
+            abort(404);
+        }
+    }
 }

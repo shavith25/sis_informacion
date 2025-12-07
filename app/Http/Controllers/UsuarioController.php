@@ -9,7 +9,9 @@ use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class UsuarioController extends Controller
 {
@@ -42,7 +44,7 @@ class UsuarioController extends Controller
             'email.unique' => 'Este correo electrónico ya está registrado.',
             'password.required' => 'La contraseña es obligatoria.',
             'password.same' => 'Las contraseñas no coinciden.',
-            'roles.nullable' => 'El campo de roles no puede ser nulo.',
+            'roles.required' => 'Debes de asignar al menos un rol.',
             'url_image.image' => 'El archivo debe ser una imagen.',
             'url_image.mimes' => 'La imagen debe ser de tipo: jpg, jpeg, png.',
             'url_image.max' => 'La imagen no debe pesar más de 2MB.',
@@ -52,8 +54,8 @@ class UsuarioController extends Controller
             'name' => 'required',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|same:confirm-password',
-            'roles' => 'nullable',
-            'url_image' => 'nullable|image|mimes:jpg,jpeg,png|max:8048',
+            'roles' => 'required',
+            'url_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ], $messages);
 
         $input = $request->all();
@@ -67,6 +69,7 @@ class UsuarioController extends Controller
         }
 
         $input['password'] = Hash::make($input['password']);
+        $input['estado'] = true;
         $user = User::create($input);
         $user->assignRole($request->input('roles'));
 
@@ -81,7 +84,6 @@ class UsuarioController extends Controller
     {
         $roles = Role::pluck('name', 'name')->all();
         $userRole = $usuario->roles->pluck('name', 'name')->all();
-        // Enviamos 'user' a la vista
         return view('usuarios.editar', ['user' => $usuario, 'roles' => $roles, 'userRole' => $userRole]);
     }
 
@@ -104,11 +106,10 @@ class UsuarioController extends Controller
 
         $this->validate($request, [
             'name' => 'required',
-            // Usamos $usuario->id para ignorar el email actual
-            'email' => 'required|email|unique:users,email,' . $usuario->id,
+            'email' => ['required', 'email', Rule::unique('users')->ignore($usuario->id)],
             'password' => 'same:confirm-password',
             'roles' => 'required',
-            'url_image' => 'nullable|image|mimes:jpg,jpeg,png|max:8048',
+            'url_image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ], $messages);
 
         $input = $request->all();
@@ -132,24 +133,34 @@ class UsuarioController extends Controller
         }
 
         $usuario->update($input);
-        
-        DB::table('model_has_roles')->where('model_id', $usuario->id)->delete();
-        $usuario->assignRole($request->input('roles'));
+    
+        $usuario->syncRoles($request->input('roles'));
 
         return redirect()->route('usuarios.index');
     }
 
     public function changeStatus(User $usuario)
     {
-        try {
-            if ($usuario->hasRole('Administrador')) {
-                return response()->json(['message' => 'No se puede cambiar el estado de un Administrador'], 403);
+            try {
+            if ($usuario->hasRole('Administrador') && $usuario->id == 1) {
+                return response()->json(['message' => 'No se puede desactivar al Super Admin'], 403);
             }
-            $usuario->estado = !$usuario->estado;
-            $usuario->save();
-            return response()->json(['message' => 'Estado actualizado correctamente']);
+
+            $nuevoEstado = !$usuario->estado;
+
+            $actualizado = $usuario->update(['estado' => $nuevoEstado]);
+
+            if ($actualizado) {
+                return response()->json([
+                    'message' => 'Estado actualizado correctamente',
+                    'nuevo_estado' => $nuevoEstado
+                ]);
+            } else {
+                return response()->json(['message' => 'No se pudo guardar el cambio en BD'], 500);
+            }
+
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al actualizar el estado'], 500);
+            return response()->json(['message' => 'Error crítico: ' . $e->getMessage()], 500);
         }
     }
 
@@ -173,10 +184,17 @@ class UsuarioController extends Controller
             if ($usuario->hasRole('Administrador')) {
                 return response()->json(['message' => 'No se puede eliminar un Administrador'], 403);
             }
+
+            if($usuario->url_image && Storage::disk('public')->exists($usuario->url_image)) {
+                Storage::disk('public')->delete($usuario->url_image);
+            }
+
+            $usuario->roles()->detach();
+
             $usuario->delete();
             return response()->json(['message' => 'Usuario eliminado correctamente']);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Error al eliminar el usuario'], 500);
+           Log::error("Error eliminando usuario ID: {$usuario->id}. Error: " . $e->getMessage());
         }
     }
 }

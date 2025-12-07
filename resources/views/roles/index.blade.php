@@ -144,7 +144,7 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        border-radius: 50% !important; /* Círculo perfecto */
+        border-radius: 50% !important; 
         border: none !important;
         box-shadow: none !important;
         transition: transform 0.2s ease, opacity 0.2s;
@@ -160,11 +160,11 @@
         background-color: #2f55d4 !important;
         color: #ffffff !important;
         opacity: 0.85;
-        transform: translateY(-2px); /* Pequeño efecto de elevación */
+        transform: translateY(-2px); 
     }
 
     .btn-action-red {
-        background-color: #fc544b !important; /* Rojo suave */
+        background-color: #fc544b !important;
         color: #ffffff !important;
     }
 

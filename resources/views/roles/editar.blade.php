@@ -69,7 +69,8 @@
                                             <div class="card shadow-sm border mb-3">
                                                 <div class="card-header bg-light py-2" style="min-height: auto;">
                                                     <h6 class="mb-0 text-dark font-weight-bold" style="font-size: 0.95rem;">
-                                                        {{ $module }}</h6>
+                                                        {{ $module }}
+                                                    </h6>
                                                 </div>
                                                 <div class="card-body py-3">
                                                     <div class="row">

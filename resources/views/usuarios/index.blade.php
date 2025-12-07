@@ -92,7 +92,7 @@
                                     </thead>
                                     <tbody>
                                         @foreach ($usuarios as $usuario)
-                                            <tr id="user-row-{{ $usuario->id }}">
+                                            <tr id="user-row-{{ $usuario->getRouteKey() }}">
                                                 <td style="display: none;">{{ $usuario->id }}</td>
                                                 <td>
                                                     <div class="d-flex align-items-center">
@@ -120,7 +120,7 @@
                                                 <td>
                                                     <span
                                                         class="badge badge-lg badge-{{ $usuario->estado ? 'success' : 'secondary' }}"
-                                                        id="status-badge-{{ $usuario->id }}">
+                                                        id="status-badge-{{ $usuario->getRouteKey() }}">
                                                         {{ $usuario->estado ? 'Activo' : 'Inactivo' }}
                                                     </span>
                                                 </td>
@@ -135,16 +135,15 @@
                                                             <button type="button"
                                                                 class="btn btn-icon btn-sm {{ $usuario->estado ? 'btn-warning' : 'btn-success' }} change-status-btn"
                                                                 data-toggle="modal" data-target="#statusModal"
-                                                                data-user-id="{{ $usuario->id }}"
+                                                                data-user-id="{{ $usuario->getRouteKey() }}"
                                                                 data-status="{{ $usuario->estado ? 'desactivar' : 'activar' }}"
                                                                 title="{{ $usuario->estado ? 'Desactivar' : 'Activar' }}">
-                                                                <i
-                                                                    class="fas {{ $usuario->estado ? 'fa-user-times' : 'fa-user-check' }}"></i>
+                                                                <i class="fas {{ $usuario->estado ? 'fa-user-times' : 'fa-user-check' }}"></i>
                                                             </button>
                                                             <button type="button"
                                                                 class="btn btn-icon btn-sm btn-danger delete-btn"
                                                                 data-toggle="modal" data-target="#deleteModal"
-                                                                data-user-id="{{ $usuario->id }}" title="Eliminar">
+                                                                data-user-id="{{ $usuario->getRouteKey() }}" title="Eliminar">
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
                                                         @endif
@@ -402,62 +401,110 @@
 
 @push('js')
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        $(document).ready(function() {
+            $.ajaxSetup({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                }
+            });
+
             let targetUserId = null;
             let targetStatus = null;
+            let targetButton = null;
 
-            document.querySelectorAll('.change-status-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    targetUserId = this.getAttribute('data-user-id');
-                    targetStatus = this.getAttribute('data-status');
-                    const actionText = targetStatus === 'activar' ? 'activar' : 'desactivar';
+            // --- LÓGICA DE CAMBIO DE ESTADO ---
+            $('.change-status-btn').on('click', function() {
+                targetButton = $(this);
+                targetUserId = $(this).data('user-id'); 
+                targetStatus = $(this).data('status');
+                
+                const actionText = targetStatus === 'activar' ? 'activar' : 'desactivar';
+                $('#statusActionText').text(actionText);
 
-                    document.getElementById('statusActionText').textContent = actionText;
-                    document.getElementById('confirmStatusChange').classList.remove('btn-primary',
-                        'btn-warning');
-                    document.getElementById('confirmStatusChange').classList.add(targetStatus ===
-                        'activar' ? 'btn-success' : 'btn-warning');
-                });
+                const confirmBtn = $('#confirmStatusChange');
+                confirmBtn.removeClass('btn-success btn-warning');
+                confirmBtn.addClass(targetStatus === 'activar' ? 'btn-success' : 'btn-warning');
             });
 
-            document.getElementById('confirmStatusChange').addEventListener('click', function() {
-                console.log(`Cambiando estado del usuario ${targetUserId} a ${targetStatus}...`);
+            $('#confirmStatusChange').on('click', function() {
+                const btnConfirm = $(this);
+                btnConfirm.prop('disabled', true).text('Procesando...');
 
-                const badge = document.getElementById(`status-badge-${targetUserId}`);
-                if (badge) {
-                    if (targetStatus === 'activar') {
-                        badge.classList.remove('badge-secondary');
-                        badge.classList.add('badge-success');
-                        badge.textContent = 'Activo';
+                $.ajax({
+                    url: '/usuarios/' + targetUserId + '/change-status',
+                    type: 'PATCH',
+                    success: function(response) {
+                        const badge = $('#status-badge-' + targetUserId);
+                        if (targetStatus === 'activar') {
+                            badge.removeClass('badge-secondary').addClass('badge-success').text('Activo');
+                        } else {
+                            badge.removeClass('badge-success').addClass('badge-secondary').text('Inactivo');
+                        }
 
-                    } else {
-                        badge.classList.remove('badge-success');
-                        badge.classList.add('badge-secondary');
-                        badge.textContent = 'Inactivo';
+                        // 2. Actualizar Botón (para que funcione la próxima vez sin recargar)
+                        if (targetStatus === 'activar') {
+                            targetButton.data('status', 'desactivar');
+                            targetButton.attr('title', 'Desactivar');
+                            targetButton.removeClass('btn-success').addClass('btn-warning');
+                            targetButton.find('i').removeClass('fa-user-check').addClass('fa-user-times');
+                        } else {
+                            targetButton.data('status', 'activar');
+                            targetButton.attr('title', 'Activar');
+                            targetButton.removeClass('btn-warning').addClass('btn-success');
+                            targetButton.find('i').removeClass('fa-user-times').addClass('fa-user-check');
+                        }
+
+                        $('#statusModal').modal('hide');
+
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                        $('#statusModal').modal('hide');
+                        if(typeof toastr !== 'undefined') toastr.error('Error al cambiar el estado.');
+                    },
+                    complete: function() {
+                        btnConfirm.prop('disabled', false).text('Confirmar');
                     }
-                }
-
-                $('#statusModal').modal('hide');
-                // IMPORTANTE: Después de la llamada AJAX exitosa, deberías recargar los botones
-                // de la fila si el cambio de estado afecta su apariencia (ej. cambiar de btn-warning a btn-success)
-            });
-
-
-            document.querySelectorAll('.delete-btn').forEach(button => {
-                button.addEventListener('click', function() {
-                    targetUserId = this.getAttribute('data-user-id');
                 });
             });
 
-            document.getElementById('confirmDelete').addEventListener('click', function() {
-                console.log(`Eliminando usuario ${targetUserId}...`);
+            // --- LÓGICA DE ELIMINACIÓN ---
+            $('.delete-btn').on('click', function() {
+                targetUserId = $(this).data('user-id');
+            });
 
-                const row = document.getElementById(`user-row-${targetUserId}`);
-                if (row) {
-                    row.remove();
-                }
+            $('#confirmDelete').on('click', function() {
+                const btnConfirm = $(this);
+                btnConfirm.prop('disabled', true).text('Eliminando...');
 
-                $('#deleteModal').modal('hide');
+                $.ajax({
+                    url: '/usuarios/' + targetUserId,
+                    type: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        $('#user-row-' + targetUserId).fadeOut(500, function() {
+                            $(this).remove();
+                        });
+                        $('#deleteModal').modal('hide');
+                        // Mostrar notificación de éxito
+                    },
+                    error: function(xhr) {
+                        console.error(xhr.responseText);
+                    
+                        if(xhr.responseJSON && xhr.responseJSON.message) {
+                            mensaje = xhr.responseJSON.message;
+                        }
+
+                        $('#deleteModal').modal('hide');
+                        if(typeof toastr !== 'undefined') toastr.error(mensaje);
+                        else alerta(mensaje);
+                    },
+                    complete: function() {
+                        btnConfirm.prop('disabled', false).html('<i class="fas fa-check"></i> Eliminar Permanentemente');
+                    }
+                });
             });
         });
     </script>

@@ -123,7 +123,6 @@
                         </button>
                     </div>
 
-                    <!-- Mensaje de intentos restantes (se mostrará solo si hay intentos fallidos) -->
                     @if(session('remaining_attempts'))
                         <div class="text-center" style="color: #ffcc00; margin-top: 10px;">
                             Intentos restantes: {{ session('remaining_attempts') }}
