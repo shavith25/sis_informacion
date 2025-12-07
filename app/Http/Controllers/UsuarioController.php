@@ -25,7 +25,7 @@ class UsuarioController extends Controller
 
     public function index()
     {
-        $usuarios = User::paginate(5);
+        $usuarios = User::where('estado', true)->paginate(5);
         return view('usuarios.index', compact('usuarios'));
     }
 
@@ -185,14 +185,10 @@ class UsuarioController extends Controller
                 return response()->json(['message' => 'No se puede eliminar un Administrador'], 403);
             }
 
-            if($usuario->url_image && Storage::disk('public')->exists($usuario->url_image)) {
-                Storage::disk('public')->delete($usuario->url_image);
-            }
+            // Soft delete: solo cambia el estado a inactivo
+            $usuario->update(['estado' => false]);
 
-            $usuario->roles()->detach();
-
-            $usuario->delete();
-            return response()->json(['message' => 'Usuario eliminado correctamente']);
+            return response()->json(['message' => 'Usuario desactivado correctamente']);
         } catch (\Exception $e) {
            Log::error("Error eliminando usuario ID: {$usuario->id}. Error: " . $e->getMessage());
         }

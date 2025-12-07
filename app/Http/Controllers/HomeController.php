@@ -29,7 +29,7 @@ class HomeController extends Controller
     {  
         $totalZonas = Zonas::count(); 
         $totalAreas = Area::count();
-        $totalUsuarios = User::count();
+        $totalUsuarios = User::where('estado', true)->count();
         $zonasPorMes = Zonas::select(
                     DB::raw("EXTRACT(MONTH FROM created_at) as mes"),
                     DB::raw("COUNT(*) as total")
