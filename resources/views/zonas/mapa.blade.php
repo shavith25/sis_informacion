@@ -131,8 +131,6 @@
             overflow-y: auto;
             padding: 2rem;
             background-color: #fcfcfc;
-
-            /* Estilo scrollbar Firefox */
             scrollbar-width: thin;
             scrollbar-color: #cbd5e0 #f1f1f1;
         }
@@ -351,15 +349,15 @@
                             class="fas fa-arrow-left me-1"></i> Volver al listado</a>
                 </div>
 
-                <div class="legend-container bg-white p-2 rounded shadow-sm border d-flex gap-3 align-items-center">
+                <div class="legend-container bg-white p-4 rounded shadow-sm border d-flex gap-5 align-items-center">
                     <div class="d-flex align-items-center"><span class="legend-color"
-                            style="background-color: #3388ff; opacity: 0.6;"></span><span
-                            class="small fw-bold text-secondary">Polígonos</span>
+                            style="background-color: #3388ff;"></span> <span
+                            class="small fw-bold text-dark">Polígonos</span>
                     </div>
 
                     <div class="d-flex align-items-center"><span class="legend-color"
                             style="background-color: #ff3333;"></span><span
-                            class="small fw-bold text-secondary">Marcadores</span>
+                            class="small fw-bold text-dark">Marcadores</span>
                     </div>
                 </div>
             </div>

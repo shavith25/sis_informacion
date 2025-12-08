@@ -12,7 +12,6 @@
 
             <div class="section-body" style="padding: 10px; position: relative; z-index: 2;">
                 <div class="row">
-                    {{-- TARJETA ZONAS (Ahora redirige directamente) --}}
                     <div class="col-lg-4 col-md-6 col-sm-12 mb-4">
                         <div class="card card-statistic-2 statistic-zone" style="cursor: pointer;" id="zonasCard">
                             <div class="card-icon card-icon-bg">
@@ -88,8 +87,6 @@
             </div>
         </section>
 
-        {{-- NOTA: Se ha eliminado el HTML del Modal "zonasModal" --}}
-
         <style>
             .dashboard-bg { overflow: hidden; border-radius: 12px; }
             .section-header { margin-bottom: 20px; padding: 10px 20px; border-bottom: none; }
@@ -133,7 +130,6 @@
                     options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true } } }
                 });
 
-                // --- CAMBIO AQUÍ: Redirección directa en lugar de Modal ---
                 document.getElementById('zonasCard').addEventListener('click', function() {
                     window.location.href = "{{ route('zonas.index') }}";
                 });

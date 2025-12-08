@@ -123,7 +123,7 @@
 
                     <hr>
 
-                    <div class="form-group mt-4 mb-4 d-flex justify-content-end">
+                    <div class="form-group mt-4 mb-4 d-flex justify-content-left">
                         <a href="{{ route('limites.departamentos.index') }}" class="btn btn-secondary mr-2">
                             <i class="fas fa-times"></i> Cancelar
                         </a>
@@ -165,8 +165,6 @@
 
 <style>
     .section-header h1 { color: #34395e; font-size: 24px; font-weight: 700; }
-    
-    /* Scrollbar Personalizado */
     .card-body::-webkit-scrollbar { width: 8px; }
     .card-body::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
     .card-body::-webkit-scrollbar-thumb { background: #cdd3d8; border-radius: 4px; }
