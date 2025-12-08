@@ -153,13 +153,32 @@
                         
                         <p class="lead mt-4">
                             Has ingresado correctamente al sistema. <br>
-                            Tu rol actual es: <span class="badge badge-primary">{{ Auth::user()->roles->pluck('name')->first() }}</span>
+                            Tu rol actual es: 
+                            <span class="badge badge-primary">{{ Auth::user()->roles->pluck('name')->first() ?? 'Sin Rol' }}</span>
                         </p>
 
-                        <div class="alert alert-light mt-4 d-inline-block text-left">
-                            <i class="fas fa-info-circle mr-2"></i> 
-                            Por favor, utiliza el <strong>menú lateral izquierdo</strong> para acceder a los módulos habilitados para tu cuenta 
-                            (como Revisión de Sugerencias o Comentarios).
+                        <div class="alert alert-light mt-4 d-inline-block text-left shadow-sm">
+                            <i class="fas fa-info-circle mr-2 text-primary"></i> 
+                            
+                            @if(Auth::user()->hasRole('Supervisor'))
+                                <strong>Perfil de Supervisor:</strong> Tu función es supervisar y validar la información del sistema. 
+                                Accede a los módulos de <em>Reportes</em> y <em>Sugerencias</em> para moderar el contenido.
+                            
+                            @elseif(Auth::user()->hasRole('Encargado'))
+                                <strong>Perfil de Encargado:</strong> Tienes control sobre la gestión administrativa de tu área.
+                                Revisa el menú para coordinar las actividades y actualizaciones del sistema.
+
+                            @elseif(Auth::user()->hasRole('Técnico Gobernación'))
+                                <strong>Técnico Departamental:</strong> Tienes permisos globales para la gestión de biodiversidad.
+                                Utiliza el menú para registrar <em>Zonas Protegidas</em>, <em>Especies</em> y actualizar datos a nivel departamental.
+
+                            @elseif(Auth::user()->hasRole('Técnico Municipal'))
+                                <strong>Técnico Municipal:</strong> Tienes permisos para gestionar datos locales.
+                                Ingresa al menú para registrar información sobre las áreas y especies de tu municipio asignado.
+
+                            @else
+                                <strong>Bienvenido:</strong> Por favor, utiliza el <strong>menú lateral izquierdo</strong> para acceder a las opciones habilitadas para tu cuenta.
+                            @endif
                         </div>
                     </div>
                 </div>

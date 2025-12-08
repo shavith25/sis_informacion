@@ -4,427 +4,408 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ strip_tags($item->titulo ?? 'Detalle') }} - Programa Gestión de la Biodiversidad (PGB)</title>
+    <title>{{ strip_tags($item->nombre ?? 'Detalle Especies') }} - Especies</title>
 
-    <link rel="icon" href="{{ url('img/logo3.png') }}" type="image/png">
     <link rel="stylesheet" href="{{ asset('css/style-public-areas.css') }}">
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 
     <style>
-        .cochabamba-header {
-            background-color: #0077c0;
-            padding: 0.5rem 0;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #333;
         }
 
-        .cochabamba-nav .nav-link {
-            color: white !important;
-            text-transform: uppercase;
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-left: 15px;
+        /* --- HEADER INSTITUCIONAL --- */
+        .header-container {
+            background-color: #0077c0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 3px solid #005c99;
+            padding: 10px 0;
+        }
+
+        .nav-link {
+            font-weight: 700; 
+            color: white !important; 
+            text-transform: uppercase; 
+            font-size: 0.9rem;
             letter-spacing: 0.5px;
             transition: opacity 0.3s;
         }
 
-        .cochabamba-nav .nav-link:hover {
+        .nav-link:hover {
             opacity: 0.8;
             text-decoration: underline;
         }
 
-        /* Ajuste del logo en el header */
-        .navbar-brand img {
-            max-height: 55px;
-            width: auto;
+        /* HERO VIDEO/IMAGEN */
+        .hero-section {
+            position: relative;
+            height: 70vh;
+            min-height: 400px;
+            background-color: #000;
+            overflow: hidden;
         }
 
-        /* --- ESTILOS GENERALES PREVIOS --- */
-        .img-detalle {
-            max-height: 400px;
-            max-width: 100%;
-            object-fit: cover;
-            border-radius: 10px;
-            margin-bottom: 2rem;
+        .hero-section video,
+        .hero-section img {
             width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.9;
         }
 
-        .carousel-control-prev-icon,
-        .carousel-control-next-icon {
-            background-color: rgba(0, 0, 0, 0.5);
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
+        .hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            padding: 5rem 0 2rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
         }
 
-        .carousel-control-prev,
-        .carousel-control-next {
-            width: 5%;
+        /* BADGES (ETIQUETAS) */
+        .badge-custom {
+            font-weight: 600;
+            padding: 0.6em 1em;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .bg-emblematica { background-color: #28a745 !important; color: white; }
+        .bg-vulnerable { background-color: #ffc107 !important; color: #212529; }
+        .bg-info-soft { background-color: #e3f2fd; color: #0077c0; }
+        .bg-secondary-soft { background-color: #e9ecef; color: #495057; }
+
+        /* CARRUSEL Y VISOR */
+        .carousel-container {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+            background-color: #fff;
+        }
+
+        .carousel-item {
+            height: 500px;
+            background-color: #f8f9fa; /* Fondo claro */
+            position: relative;
+        }
+
+        .carousel-item img {
+            height: 100%;
+            width: 100%;
+            object-fit: contain; /* Imagen completa */
+            object-position: center;
+        }
+
+        /* TARJETAS DE ARCHIVOS */
+        .file-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .file-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #0077c0;
+        }
+
+        /* FOOTER */
+        .footer-custom {
+            background-color: #0077c0; 
+            color: white;
+            border-top: 5px solid #005c99; 
+            padding-top: 3rem;
+            padding-bottom: 1rem;
+        }
+        
+        .footer-title {
+            color: #fff;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+
+        .footer-custom a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        .footer-custom a:hover {
+            opacity: 0.8;
         }
 
         .whatsapp-float {
             position: fixed;
-            width: 100px;
-            height: 40px;
-            bottom: 70px;
-            right: 20px;
+            bottom: 30px;
+            right: 30px;
             z-index: 1000;
+            transition: transform 0.3s;
         }
-
-        .whatsapp-float img {
-            width: 100%;
-            height: auto;
-        }
-
-        /* Video hero responsivo */
-        .hero-video video {
-            height: 40vh;
-            min-height: 200px;
-            object-fit: cover;
-            width: 100%;
-        }
-
-        /* Footer responsivo */
-        .bg-gradient-to-r {
-            background: linear-gradient(to right, #597ae7, #597ae7);
-        }
-
-        .hover\:bg-opacity-20:hover {
-            background-color: rgba(255, 255, 255, 0.2);
-        }
-
-        .transition-all {
-            transition: all 0.3s ease;
-        }
-
-        .duration-300 {
-            transition-duration: 300ms;
-        }
-
-        footer {
-            overflow-x: hidden;
-        }
-
-        @media (max-width: 576px) {
-            .footer-section img {
-                height: 70px !important;
-            }
-
-            .social-icons a {
-                width: 45px !important;
-                height: 45px !important;
-                padding: 0.75rem !important;
-            }
-
-            .modal-dialog {
-                margin: 1rem;
-                max-width: calc(100% - 2rem);
-            }
-
-            .modal-body iframe {
-                height: 60vh !important;
-            }
-
-            .whatsapp-float {
-                width: 50px;
-                height: 35px;
-                bottom: 15px;
-                right: 15px;
-            }
-        }
-
-        .card-title {
-            font-size: 1rem;
-        }
-
-        .card-text small {
-            font-size: 0.85rem;
-        }
-
-        body {
-            overflow-x: hidden;
-        }
+        .whatsapp-float:hover { transform: scale(1.1); }
     </style>
 </head>
 
 <body>
 
-    <header class="cochabamba-header">
-        <nav class="navbar navbar-expand-lg navbar-dark container">
-            <a class="navbar-brand" href="{{ url('/') }}">
-                <img src="{{ url('img/logo3.png') }}" alt="Gobernación de Cochabamba">
+    <header class="header-container">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="{{ url('/') }}" class="logo">
+                <img src="{{ url('img/logo3.png') }}" alt="Logo PGB" height="55">
             </a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto cochabamba-nav align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/areas-protegidas#inicio') }}">INICIO</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/areas-protegidas#areas') }}">ÁREAS PROTEGIDAS</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/areas-protegidas#especies') }}">ESPECIES</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/areas-protegidas#noticias') }}">NOTICIAS</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url('/areas-protegidas#conciencia') }}">CONCIENTIZACIÓN</a>
-                    </li>
+            
+            <nav class="d-none d-lg-block">
+                <ul class="nav nav-pills gap-3 m-0">
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#inicio') }}" class="nav-link">INICIO</a></li>
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#areas') }}" class="nav-link">ÁREAS PROTEGIDAS</a></li>
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#especies') }}" class="nav-link">ESPECIES</a></li>
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#noticias') }}" class="nav-link">NOTICIAS</a></li>
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#conciencia') }}" class="nav-link">CONCIENTIZACIÓN</a></li>
                 </ul>
-            </div>
-        </nav>
+            </nav>
+        </div>
     </header>
 
-    <section class="hero-video position-relative">
-        <video autoplay muted loop playsinline class="w-100"
-            style="height: 65vh; min-height: 200px; object-fit: cover;">
+    <section class="hero-section">
+        <video autoplay muted loop playsinline poster="{{ asset('img/poster-placeholder.jpg') }}">
             <source src="{{ asset('video/173868607267a23e78515b0.mp4') }}" type="video/mp4">
             Tu navegador no soporta el video.
         </video>
+        <div class="hero-overlay"></div>
     </section>
 
     <br>
 
-    <main class="container py-4">
-        <article class="mb-5">
-            <h1 class="mb-3">{!! $item->titulo !!}</h1>
+    <div class="container">
+        <h1 class="display-4 fw-bold mb-2 text-uppercase">{!! $item->titulo ?? 'Especie' !!}</h1>
+        @if($item->subtitulo)
+            <p class="h4 mb-0 opacity-90">{{ $item->subtitulo }}</p>
+        @endif
+    </div>
 
-            @if ($item->subtitulo)
-                <h4 class="text-muted mb-4">{{ $item->subtitulo }}</h4>
-            @endif
+    <main class="container py-5">
+        <div class="row g-5">
+            
+            <div class="col-lg-8">
+                
+                <div class="d-flex flex-wrap gap-2 mb-4 align-items-center p-3 bg-white rounded shadow-sm border">
+                    
+                    <span class="badge badge-custom bg-secondary-soft">
+                        <i class="bi bi-calendar-event me-2"></i>{{ \Carbon\Carbon::parse($item->fecha_publicacion)->format('d/m/Y') }}
+                    </span>
 
-            <p class="text-muted">
-                <strong>Especie:</strong>
-                @if (strtolower($item->tipo) === 'emblematica')
-                    <span class="badge bg-success">Emblemática</span>
-                @elseif(strtolower($item->tipo) === 'vulnerable')
-                    <span class="badge bg-warning text-dark">Vulnerable</span>
-                @else
-                    <span class="badge bg-secondary">{{ ucfirst($item->tipo ?? 'No especificado') }}</span>
-                @endif |
-                <strong>Fecha:</strong> {{ \Carbon\Carbon::parse($item->fecha_publicacion)->format('d/m/Y') }}
-            </p>
+                    @if(isset($item->tipo))
+                        @php $tipoEspecie = strtolower($item->tipo); @endphp
+                        @if($tipoEspecie === 'emblematica')
+                            <span class="badge badge-custom bg-emblematica">
+                                <i class="bi bi-star-fill me-2"></i>Tipo: Emblemática
+                            </span>
+                        @elseif($tipoEspecie === 'vulnerable')
+                            <span class="badge badge-custom bg-vulnerable">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>Tipo: Vulnerable
+                            </span>
+                        @else
+                            <span class="badge badge-custom bg-secondary-soft border">
+                                Tipo: {{ ucfirst($item->tipo) }}
+                            </span>
+                        @endif
+                    @endif
 
-            @if ($item->nombre_cientifico)
-                <p class="text-muted">
-                    <strong>Nombre Científico:</strong> <em>{{ $item->nombre_cientifico }}</em>
-                </p>
-            @endif
+                    @if($item->nombre_cientifico)
+                        <span class="badge badge-custom bg-info-soft">
+                            <i class="bi bi-journal-text me-2"></i>{{ $item->nombre_cientifico }}
+                        </span>
+                    @endif
+                </div>
 
-            <div class="mb-4 text-justify">
-                {!! $item->descripcion !!}
+                <div class="bg-white p-4 rounded-3 shadow-sm mb-5 border-top border-4" style="border-color: #0077c0 !important;">
+                    <h4 class="mb-3 fw-bold text-dark border-bottom pb-2">Descripción</h4>
+                    <div class="fs-6 text-secondary" style="line-height: 1.8; text-align: justify;">
+                        {!! $item->descripcion !!}
+                    </div>
+
+                    @if($item->habitat)
+                        <div class="mt-4">
+                            <h5 class="fw-bold text-primary">Hábitat</h5>
+                            <p class="text-secondary">{!! $item->habitat !!}</p>
+                        </div>
+                    @endif
+
+                    @if($item->amenazas)
+                        <div class="mt-3">
+                            <h5 class="fw-bold text-danger">Amenazas</h5>
+                            <p class="text-secondary">{!! $item->amenazas !!}</p>
+                        </div>
+                    @endif
+                </div>
+
+                @if($item->imagenes->count() > 0)
+                    <h4 class="mb-4 fw-bold text-dark"><i class="bi bi-images me-2 text-primary"></i>Galería de Imágenes</h4>
+                    <div class="carousel-container mb-5">
+                        @if($item->imagenes->count() == 1)
+                            @php
+                                $img = $item->imagenes->first();
+                                $ruta = str_replace('\\', '/', $img->path ?? $img->url ?? $img->ruta);
+                                if(!str_starts_with($ruta, 'storage/')) { $ruta = 'storage/' . $ruta; }
+                            @endphp
+                            <div class="carousel-item active">
+                                <img src="{{ asset($ruta) }}" alt="Imagen especie">
+                            </div>
+                        @else
+                            <div id="carouselEspecies" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    @foreach($item->imagenes as $key => $imagen)
+                                        @php
+                                            $rutaImagen = str_replace('\\', '/', $imagen->url ?? $imagen->path ?? $imagen->ruta);
+                                            if(!str_starts_with($rutaImagen, 'storage/')) {
+                                                $rutaImagen = 'storage/' . $rutaImagen;
+                                            }
+                                        @endphp
+                                        <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                            <img src="{{ asset($rutaImagen) }}" alt="Imagen {{ $key + 1 }}">
+                                        </div>
+                                    @endforeach
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselEspecies" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselEspecies" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                                </button>
+                            </div>
+                        @endif
+                    </div>
+                @endif
             </div>
 
-            @if ($item->habitat)
-                <h4 class="mt-4">Hábitat</h4>
-                <p>{!! $item->habitat !!}</p>
-            @endif
+            <div class="col-lg-4">
+                
+                @if($item->media->isNotEmpty())
+                    <div class="mb-5">
+                        <h5 class="mb-3 fw-bold text-uppercase border-bottom pb-2 text-primary">Documentos Adjuntos</h5>
+                        <div class="d-flex flex-column gap-3">
+                            @foreach($item->media as $medio)
+                                @php
+                                    $nombre_archivo = pathinfo($medio->archivo, PATHINFO_BASENAME);
+                                    $modalId = "modalDoc" . $medio->id;
+                                    
+                                    $rutaDoc = str_replace('\\', '/', $medio->archivo);
+                                    if(!str_starts_with($rutaDoc, 'storage/')) {
+                                        $rutaDoc = 'storage/' . $rutaDoc;
+                                    }
+                                @endphp
+                                <div class="file-card p-3 d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center overflow-hidden me-2">
+                                        <div class="text-danger fs-1 me-3">
+                                            <i class="bi bi-file-earmark-pdf-fill"></i>
+                                        </div>
+                                        <div class="text-truncate">
+                                            <h6 class="mb-0 text-truncate text-dark fw-bold" title="{{ $nombre_archivo }}">{{ $nombre_archivo }}</h6>
+                                            <small class="text-muted">PDF - Descargar</small>
+                                        </div>
+                                    </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-light border" type="button" data-bs-toggle="dropdown">
+                                            <i class="bi bi-three-dots-vertical"></i>
+                                        </button>
+                                        <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                            <li>
+                                                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#{{ $modalId }}">
+                                                    <i class="bi bi-eye me-2 text-primary"></i>Ver
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item" href="{{ asset($rutaDoc) }}" download>
+                                                    <i class="bi bi-download me-2 text-success"></i>Descargar
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
 
-            @if ($item->amenazas)
-                <h4 class="mt-4">Amenazas</h4>
-                <p>{!! $item->amenazas !!}</p>
-            @endif
-
-            @if ($item->distribucion)
-                <h4 class="mt-4">Distribución</h4>
-                <p>{!! $item->distribucion !!}</p>
-            @endif
-
-            @if ($item->imagenes->count() == 1)
-                <div class="text-center">
-                    <img src="{{ asset('storage/' . ($item->imagenes->first()->path ?? $item->imagenes->first()->url)) }}"
-                        class="img-fluid img-detalle mx-auto d-block" alt="{{ $item->titulo }}">
-                </div>
-            @elseif($item->imagenes->count() > 1)
-                <section class="mb-5">
-                    <h2 class="mb-3">Imágenes</h2>
-                    <div id="carouselImagenes" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            @foreach ($item->imagenes as $index => $imagen)
-                                <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                                    <img src="{{ asset('storage/' . ($imagen->path ?? $imagen->url)) }}"
-                                        class="d-block w-100" style="max-height:820px; object-fit:cover;"
-                                        alt="Imagen de {{ $item->titulo }}">
+                                <div class="modal fade" id="{{ $modalId }}" tabindex="-1" aria-hidden="true">
+                                    <div class="modal-dialog modal-xl modal-dialog-centered">
+                                        <div class="modal-content h-100 border-0 rounded-3 overflow-hidden">
+                                            <div class="modal-header bg-primary text-white py-2">
+                                                <h6 class="modal-title text-truncate w-75 m-0"><i class="bi bi-file-pdf me-2"></i>{{ $nombre_archivo }}</h6>
+                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <div class="modal-body p-0" style="height: 85vh;">
+                                                <iframe src="{{ asset($rutaDoc) }}" width="100%" height="100%" style="border:none;"></iframe>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             @endforeach
                         </div>
-
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselImagenes"
-                            data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Anterior</span>
-                        </button>
-
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselImagenes"
-                            data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Siguiente</span>
-                        </button>
                     </div>
-                </section>
-            @endif
-
-            @if ($item->media->isNotEmpty())
-                <h2 class="mt-5 mb-3">Archivos Relacionados</h2>
-                <div class="row g-4">
-                    @foreach ($item->media as $key => $medio)
-                        @php
-                            $nombre_archivo = pathinfo($medio->archivo, PATHINFO_BASENAME);
-                            $fecha_formateada = \Carbon\Carbon::parse($item->fecha_publicacion)->format('d/m/Y');
-                            $modal_id = 'documentoModal' . ($medio->id ?? $key);
-                        @endphp
-                        <div class="col-lg-4 col-md-6 col-12">
-                            <div class="card h-100 shadow-sm border-0">
-                                <div class="card-body d-flex flex-column">
-                                    <h5 class="card-title text-primary">
-                                        <i class="bi bi-file-earmark-pdf-fill me-2"></i> Documento
-                                    </h5>
-                                    <p class="card-text text-muted small mb-3">
-                                        <span> Nombre: {{ $nombre_archivo }}</span>
-                                        <span> Fecha de Publicación: {{ $fecha_formateada }}</span>
-                                    </p>
-                                    <div class="mt-auto">
-                                        <button type="button" class="btn btn-primary w-100" data-bs-toggle="modal"
-                                            data-bs-target="#{{ $modal_id }}">
-                                            <i class="bi bi-eye"></i> Visualizar
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="modal fade" id="{{ $modal_id }}" tabindex="-1"
-                            aria-labelledby="{{ $modal_id }}Label" aria-hidden="true">
-                            <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                                <div class="modal-content">
-                                    <div class="modal-header bg-light">
-                                        <h5 class="modal-title" id="{{ $modal_id }}Label">
-                                            <i class="bi bi-file-earmark-pdf-fill me-2 text-danger"></i>
-                                            {{ $nombre_archivo }}
-                                        </h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                            aria-label="Cerrar"></button>
-                                    </div>
-                                    <div class="modal-body p-0">
-                                        <div
-                                            class="alert alert-info rounded-0 mb-0 d-flex justify-content-between align-items-center small p-2">
-                                            <span>Ítem Relacionado: {{ strip_tags($item->titulo) }}</span>
-                                            <span>Fecha de Publicación: {{ $fecha_formateada }}</span>
-                                        </div>
-                                        <iframe src="{{ asset('storage/' . $medio->archivo) }}"
-                                            style="width: 100%; height: 75vh;" frameborder="0">
-                                            Tu navegador no soporta la previsualización.
-                                        </iframe>
-                                    </div>
-                                    <div class="modal-footer justify-content-between">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                            <i class="bi bi-x-circle"></i> Cerrar
-                                        </button>
-                                        <a href="{{ asset('storage/' . $medio->archivo) }}" class="btn btn-success"
-                                            download="{{ $nombre_archivo }}">
-                                            <i class="bi bi-download"></i> Descargar
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
-            @endif
-
-            @if ($item->media->where('tipo', 'video')->isNotEmpty())
-                <section class="mt-5">
-                    <h2 class="mb-3">Videos</h2>
-                    <div class="row g-3">
-                        @foreach ($item->media->where('tipo', 'video') as $video)
-                            <div class="col-md-6 col-12">
-                                <div class="ratio ratio-16x9">
-                                    <video controls class="rounded shadow-sm bg-dark w-100 h-100">
-                                        <source src="{{ asset('storage/' . $video->ruta) }}" type="video/mp4">
-                                        Tu navegador no soporta el elemento de video.
-                                    </video>
-                                </div>
-                            </div>
-                        @endforeach
-                    </div>
-                </section>
-            @endif
-        </article>
-    </main>
-
-    <footer class="footer-custom text-white py-5 px-4">
-        <div class="container">
-            <div class="row align-items-center justify-content-center g-4">
-
-                <div class="col-md-6 col-12 text-center text-md-start">
-                    <h3 class="fw-bold mb-3">INFORMACIÓN DE CONTACTO</h3>
-                    <ul class="list-unstyled small mb-2">
-                        <li><i class="bi bi-envelope me-2"></i>Email:
-                            gobernaciondecochabamba@gobernaciondecochabamba.bo</li>
-                        <li><i class="bi bi-telephone me-2"></i>Teléfonos: + (591) 71701056</li>
-                        <li><i class="bi bi-geo-alt me-2"></i><strong>Dirección:</strong><br>Av. Aroma N°: O-327 -
-                            Plaza San Sebastián<br>Edificio del Órgano Ejecutivo</li>
-                    </ul>
-                </div>
-
-                <div class="col-md-2 col-12 text-center">
-                    <div class="d-flex justify-content-center">
-                        <img src="{{ url('img/logo3.png') }}" alt="Programa Gestión de la Biodiversidad (PGB)"
-                            height="70" class="rounded shadow-sm">
-                    </div>
-                </div>
-
-                <div class="col-md-4 col-12 text-center text-md-end">
-                    <h3 class="fw-bold mb-3">REDES SOCIALES</h3>
-                    <div class="social-icons d-flex justify-content-center justify-content-md-end gap-3">
-                        <a href="https://www.facebook.com/GobernacionDeCochabamba/" target="_blank"
-                            class="text-white bg-white bg-opacity-10 rounded-circle p-3 d-flex align-items-center justify-content-center text-decoration-none hover:bg-opacity-20 transition-all duration-300"
-                            style="width: 50px; height: 50px;">
-                            <i class="bi bi-facebook fs-4"></i>
-                        </a>
-                        <a href="https://www.youtube.com/@gobernaciondecochabamba8326" target="_blank"
-                            class="text-white bg-white bg-opacity-10 rounded-circle p-3 d-flex align-items-center justify-content-center text-decoration-none hover:bg-opacity-20 transition-all duration-300"
-                            style="width: 50px; height: 50px;">
-                            <i class="bi bi-youtube fs-4"></i>
-                        </a>
-                        <a href="https://www.tiktok.com/@gobernaciondecochabamba" target="_blank"
-                            class="text-white bg-white bg-opacity-10 rounded-circle p-3 d-flex align-items-center justify-content-center text-decoration-none hover:bg-opacity-20 transition-all duration-300"
-                            style="width: 50px; height: 50px;">
-                            <i class="bi bi-tiktok fs-4"></i>
-                        </a>
-                    </div>
-                </div>
-
-            </div>
-
-            <br>
-
-            <div class="copyright text-center">
-                <p class="mb-0 small">
-                    Programa Gestión de la Biodiversidad (PGB) &copy; {{ date('Y') }} Todos los derechos reservados
-                    | Gobierno Autónomo Departamental de Cochabamba.
-                </p>
+                @endif
             </div>
         </div>
+    </main>
+
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="row g-4 justify-content-between">
+                
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="footer-title">Información de Contacto</h5>
+                    <ul class="list-unstyled text-white opacity-90 small">
+                        <li class="mb-2 d-flex align-items-center">
+                            <i class="bi bi-envelope-fill text-warning me-2"></i>
+                            gobernaciondecochabamba@gobernaciondecochabamba.bo
+                        </li>
+                        <li class="mb-2 d-flex align-items-center">
+                            <i class="bi bi-telephone-fill text-warning me-2"></i>
+                            + (591) 71701056
+                        </li>
+                        <li class="d-flex align-items-start">
+                            <i class="bi bi-geo-alt-fill text-warning me-2 mt-1"></i>
+                            <span>Av. Aroma N°: O-327<br>Plaza San Sebastián<br>Edificio del Órgano Ejecutivo</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-4 col-md-12 text-center my-auto">
+                    <img src="{{ url('img/logo3.png') }}" alt="Logo Footer" height="80" class="mb-3">
+                </div>
+
+                <div class="col-lg-3 col-md-6 text-md-end">
+                    <h5 class="footer-title">Redes Sociales</h5>
+                    <div class="d-flex justify-content-md-end gap-3">
+                        <a href="https://www.facebook.com/GobernacionDeCochabamba" class="btn btn-outline-light rounded p-2" target="_blank"><i class="bi bi-facebook fs-5"></i></a>
+                        <a href="https://www.youtube.com/@gobernaciondecochabamba8326" class="btn btn-outline-light rounded p-2" target="_blank"><i class="bi bi-youtube fs-5"></i></a>
+                        <a href="https://www.tiktok.com/@gobernaciondecochabamba" class="btn btn-outline-light rounded p-2" target="_blank"><i class="bi bi-tiktok fs-5"></i></a>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="border-white mt-5 opacity-25">
+            
+            <div class="text-center small opacity-75">
+                Programa Gestión de la Biodiversidad (PGB) © {{ date('Y') }} Todos los derechos reservados | Gobierno Autónomo Departamental de Cochabamba.
+            </div>
+        </div>
+
+        <a href="https://wa.me/59171701056" target="_blank" class="whatsapp-float">
+            <img src="{{ asset('img/wsp.png') }}" alt="WhatsApp" width="55" class="shadow rounded-circle">
+        </a>
     </footer>
 
-    @if (file_exists(public_path('img/wsp.png')))
-        <a href="https://wa.me/59171701056" target="_blank" class="whatsapp-float">
-            <img src="{{ asset('img/wsp.png') }}" alt="WhatsApp">
-        </a>
-    @endif
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-
 </body>
-
 </html>
