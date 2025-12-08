@@ -8,7 +8,7 @@
 @endpush
 
 @section('content')
-    <div class="container-fluid">
+    <div class="container-fluid p-0">
 
         <header class="sig-header">
             <div class="container">
@@ -18,28 +18,27 @@
                             <i class="bi bi-geo-alt-fill me-3"></i> Sistema de Información Geográfica (SIG)
                         </h1>
                         <p class="system-subtitle lead mb-0">
-                            Plataforma integral para el analisis, gestión y visualización de datos geoespaciales.
+                            Plataforma integral para el análisis, gestión y visualización de datos geoespaciales.
                         </p>
                     </div>
                 </div>
             </div>
         </header>
 
-        <br><br>
+        <br>
 
-        <div class="container main-container">
+        <div class="container main-container mt-n5">
             <div class="row align-items-center module-header">
                 <div class="col-md-8">
                     <h2 class="display-4 fw-bold gradient-text mb-3">
                         <i class="bi bi-life-preserver me-3"></i> Panel de Ayuda SIG
                     </h2>
                     <p class="lead text-muted mb-0 fs-4">
-                        Documentación técnica, manual de usuario y guías especializada del Sistema de Información
-                        Geográfica.
+                        Documentación técnica, manual de usuario y guías especializadas.
                     </p>
                 </div>
                 <div class="col-md-4 text-end">
-                    <div class="module-icon">
+                    <div class="module-icon ms-auto">
                         <i class="bi bi-file-earmark-pdf-fill display-4 text-white"></i>
                     </div>
                 </div>
@@ -47,61 +46,62 @@
 
             <div class="row">
                 <div class="col-lg-6 upload-section">
-                    <div class="mb-5">
-                        <h3 class="text-sig-primary fw-bold mb-4 display-5">
-                            <i class="bi bi-cloud-upload-fill me-3"></i> Cargar Documentos
+                    <div class="mb-4">
+                        <h3 class="text-sig-primary fw-bold mb-3 display-6">
+                            <i class="bi bi-cloud-upload-fill me-2"></i> Cargar Documentos
                         </h3>
-                        <p class="text-muted mb-4 fs-5">
-                            Suba manuales, guías y documentación técnica en formato PDF.
+                        <p class="text-muted mb-2 fs-6">
+                            Suba manuales y documentación técnica (PDF).
                         </p>
                     </div>
 
                     <form id="uploadForm" action="{{ route('ayuda.subir') }}" method="POST" enctype="multipart/form-data">
                         @csrf
-                        <label for="fileInput" class="upload-area mb-5" id="uploadArea">
-                            <div class="upload-icon">
-                                <i class="bi bi-cloud-arrow-up-fill"></i>
+                        <label for="fileInput" class="upload-area" id="uploadArea">
+                            <div class="upload-content-wrapper">
+                                <div class="upload-icon">
+                                    <i class="bi bi-cloud-arrow-up-fill"></i>
+                                </div>
+                                <h4 class="text-sig-primary mb-1 fw-bold">Arrastre el archivo PDF aquí</h4>
+                                <p class="text-muted mb-5 small">O haga clic para seleccionar</p>
+
+                                <span class="btn btn-sig-primary mb-3">
+                                    <i class="bi bi-folder2-open me-2"></i> Seleccionar Archivo
+                                </span>
+
+                                <p class="mt-1 x-small text-muted fst-italic mb-0" style="font-size: 1.2rem;">
+                                    <i class="bi bi-info-circle me-2"></i> Solo PDF. Máx: 20MB.
+                                </p>
                             </div>
-                            <h3 class="text-sig-primary mb-4">Arrastre el archivo PDF aquí</h3>
-                            <p class="text-muted mb-4 fs-5">O haga clic para seleccionar</p>
-
-                            <span class="btn btn-sig-pdf btn-lg mb-4">
-                                <i class="bi bi-folder2-open me-3"></i> Seleccionar Archivo PDF
-                            </span>
-
-                            <p class="mt-4 small text-muted fs-6">
-                                <i class="bi bi-info-circle me-2"></i> Solo se permiten archivos PDF. Tamaño máximo: 15MB.
-                            </p>
                         </label>
 
                         <input type="file" name="pdf_file" id="fileInput" class="d-none" accept=".pdf" required>
                     </form>
 
-                    <div id="fileInfo" class="document-info d-none">
-                        <div class="d-flex justify-content-between align-items-start mb-4">
-                            <div class="grow">
-                                <h4 class="text-sig-primary mb-3">
-                                    <i class="bi bi-file-earmark-pdf-fill me-3"></i>
+                    <div id="fileInfo" class="document-info d-none mt-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <div class="grow text-truncate me-2">
+                                <h5 class="text-sig-primary mb-1 text-truncate">
+                                    <i class="bi bi-file-earmark-pdf-fill me-2"></i>
                                     <span id="fileName">document.pdf</span>
-                                </h4>
-                                
-                                <div class="d-flex gap-3 mb-4 flex-wrap">
-                                    <span class="badge bg-primary fs-6 p-3" id="fileSize">0 MB</span>
-                                    <span class="badge bg-success fs-6 p-3">PDF Válido</span>
-                                    <span class="badge bg-warning fs-6 p-3" id="fileStatus">Listo</span>
+                                </h5>
+                                <div class="d-flex gap-2">
+                                    <span class="badge bg-primary" id="fileSize">0 MB</span>
+                                    <span class="badge bg-warning text-dark" id="fileStatus">Listo</span>
                                 </div>
                             </div>
-                            <button type="button" class="btn-close fs-5" onclick="clearFileSelection()"></button>
+                            
+                            <button type="button" class="btn-close" aria-label="Close" onclick="clearFileSelection()"></button>
                         </div>
 
-                        <div class="progress-sig mb-4">
+                        <div class="progress-sig mb-3">
                             <div id="uploadProgress" class="progress-bar-sig" style="width: 0%;"></div>
                         </div>
-                        <div class="d-flex gap-3 flex-wrap">
-                            <button class="btn btn-sig-primary flex-fill p-3" onclick="startUpload()">
-                                <i class="bi bi-cloud-check me-3"></i> Subir Documento
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-sig-primary flex-fill" onclick="startUpload()">
+                                <i class="bi bi-cloud-check me-2"></i> Subir
                             </button>
-                            <button class="btn btn-outline-secondary p-3" onclick="clearFileSelection()">
+                            <button class="btn btn-outline-secondary" onclick="clearFileSelection()">
                                 <i class="bi bi-x-circle me-2"></i> Cancelar
                             </button>
                         </div>
@@ -109,120 +109,92 @@
                 </div>
 
                 <div class="col-lg-6">
-                    <div class="mb-5">
-                        <h3 class="text-sig-primary fw-bold mb-4 display-5">
-                            <i class="bi bi-eye-fill me-3"></i> Vista Previa del Documento
+                    <div class="mb-4">
+                        <h3 class="text-sig-primary fw-bold mb-3 display-6">
+                            <i class="bi bi-eye-fill me-2"></i> Documentos Disponibles
                         </h3>
-                        
-                        <p class="text-muted fs-5">
-                            Visualice el contenido del documento PDF antes de descargarlo.
+                        <p class="text-muted fs-6 mb-0">
+                            Visualice o descargue la documentación existente.
                         </p>
                     </div>
 
-                    <section class="section" style="overflow: auto; margin-top: 100px; height: calc(100vh - 250px);">
+                    <section class="section" style="overflow: auto; max-height: 600px;">
                         @if ($documentos->isNotEmpty())
                             <div id="documentList">
                                 @foreach ($documentos as $documento)
-                                    <div class="document-item card mb-3">
-                                        <div class="card-body d-flex justify-content-between align-items-center flex-wrap">
-                                            <div class="me-3 mb-2 mb-md-0">
-                                                <h5 class="card-title mb-1 fs-5">
+                                    <div class="document-item card mb-2">
+                                        <div class="card-body p-3 d-flex justify-content-between align-items-center">
+                                            <div class="me-2 text-truncate">
+                                                <h6 class="card-title mb-0 text-truncate" title="{{ $documento->nombre_original }}">
                                                     <i class="bi bi-file-earmark-pdf-fill text-danger me-2"></i>
                                                     {{ $documento->nombre_original }}
-                                                </h5>
-                                                <small class="text-muted">Subido: {{ $documento->created_at->format('d/m/Y H:i') }}</small>
+                                                </h6>
+                                                <small class="text-muted" style="font-size: 0.75rem;">{{ $documento->created_at->format('d/m/Y') }}</small>
                                             </div>
-                                            <div class="d-flex gap-2 flex-wrap">
-                                                <button class="btn btn-sm btn-outline-primary" onclick="viewDocument('{{ asset('storage/' . $documento->ruta_archivo) }}', '{{ $documento->nombre_original }}')"><i class="bi bi-eye"></i> Ver</button>
-                                                <a href="{{ asset('storage/' . $documento->ruta_archivo) }}" class="btn btn-sm btn-outline-success" download="{{ $documento->nombre_original }}"><i class="bi bi-download"></i> Descargar</a>
-                                                <button class="btn btn-sm btn-outline-danger delete-doc-btn" onclick="confirmDelete({{ $documento->id }}, '{{ $documento->nombre_original }}')" data-doc-id="{{ $documento->id }}"><i class="bi bi-trash"></i> Eliminar</button>
+                                            <div class="btn-group btn-group-sm">
+                                                <button class="btn btn-outline-primary" onclick="viewDocument('{{ asset('storage/' . $documento->ruta_archivo) }}', '{{ $documento->nombre_original }}')"><i class="bi bi-eye"></i> Ver</button>
+                                                <a href="{{ asset('storage/' . $documento->ruta_archivo) }}" class="btn btn-outline-success" download="{{ $documento->nombre_original }}"><i class="bi bi-download"></i> Descargar</a>
+                                                <button class="btn btn-outline-danger delete-doc-btn" onclick="confirmDelete({{ $documento->id }}, '{{ $documento->nombre_original }}')" data-doc-id="{{ $documento->id }}"><i class="bi bi-trash"></i> Eliminar</button>
                                             </div>
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
                         @else
-                            <div class="text-center py-5" id="emptyState">
-                                <i class="bi bi-file-text" style="font-size: 48px; color: #ccc;"></i>
-                                <h5 class="mt-3 text-muted">No hay documentos de ayuda disponibles.</h5>
-                                <p class="text-muted">Sube un archivos PDF o Word para verlos aqui.</p>
+                            <div class="text-center py-5 border rounded bg-light" id="emptyState">
+                                <i class="bi bi-folder-x" style="font-size: 3rem; color: #ccc;"></i>
+                                <h6 class="mt-2 text-muted">No hay documentos.</h6>
                             </div>
                         @endif
                     </section>
                 </div>
             </div>
 
-            <div class="mt-5">
-                <h3 class="text-center mb-4"><i class="bi bi-question-circle"></i> ¿Cómo funciona el sistema SIG?</h3>
-                <div class="row">
-                    <div class="col-md-6 mb-4">
-                        <div class="bg-primary p-4 rounded text-dark">
-                            <h5><span class="step-number">1: </span> Captura de datos.</h5>
-                            <p>Los SIG recopilan Geográficos de diversas fuente como mapas en Google Earth, y bases de datos existentes.</p>
+            <div class="mt-5 pt-4 border-top">
+                <h4 class="text-center mb-4 text-muted">¿Cómo funciona el sistema SIG?</h4>
+                <div class="row g-3">
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-3 bg-light rounded text-center h-100 border">
+                            <span class="step-number mb-2">1</span>
+                            <h6 class="fw-bold">Captura</h6>
+                            <p class="small text-muted mb-0">Recopilación de datos geográficos.</p>
                         </div>
                     </div>
-                    <div class="col-md-6 mb-4">
-                        <div class="bg-primary p-4 rounded text-dark">
-                            <h5><span class="step-number">2: </span> Almacenamiento y gestión.</h5>
-                            <p>Los datos se almacenan y organizan en bases de datos geográficas que permiten almacenar Información atributiva de manera eficiente.</p>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-3 bg-light rounded text-center h-100 border">
+                            <span class="step-number mb-2">2</span>
+                            <h6 class="fw-bold">Gestión</h6>
+                            <p class="small text-muted mb-0">Almacenamiento en bases de datos.</p>
                         </div>
                     </div>
-                    <div class="col-lg-6 mb-4">
-                        <div class="bg-primary p-4 rounded text-dark">
-                            <h5><span class="step-number">3: </span> Análisis espacial.</h5>
-                            <p>Los SIG permiten realizar análisis espaciales complejos, como la superposición de capas, cálculos de rutas y modelos predictivos.</p>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-3 bg-light rounded text-center h-100 border">
+                            <span class="step-number mb-2">3</span>
+                            <h6 class="fw-bold">Análisis</h6>
+                            <p class="small text-muted mb-0">Cálculos espaciales y modelos.</p>
                         </div>
                     </div>
-                    <div class="col-lg-6 mb-4">
-                        <div class="bg-primary p-4 rounded text-dark">
-                            <h5><span class="step-number">4: </span> Visualización y presentación.</h5>
-                            <p>Los resultados del análisis se pueden visualizar mediante mapas temáticos, gráficos y tablas, facilitando la interpretación de los datos.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="mt-2">
-                <h3 class="text-center mb-4">Caracteristicas Principales del SIG.</h3>
-                <div class="row">
-                    <div class="col-lg-4 mb-4">
-                        <div class="card feature-card">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="bi bi-layers"></i> Gestión de capas</h5>
-                                <p class="card-text">Organización de información en capas temáticas superpuestas para análisis integrado.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="card feature-card">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="bi bi-geo"></i> Geoprocesamiento</h5>
-                                <p class="card-text">Herramientas para manipular, analizar y modelar datos espaciales súgun necesidades especificas.</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-4">
-                        <div class="card feature-card">
-                            <div class="card-body">
-                                <h5 class="card-title"><i class="bi bi-map"></i> Creación de mapas</h5>
-                                <p class="card-text">Generación de mapas temáticos personalizados con elementos cartográficos profesionales.</p>
-                            </div>
+                    <div class="col-md-3 col-sm-6">
+                        <div class="p-3 bg-light rounded text-center h-100 border">
+                            <span class="step-number mb-2">4</span>
+                            <h6 class="fw-bold">Visualización</h6>
+                            <p class="small text-muted mb-0">Mapas temáticos y gráficos.</p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Modal para visualizar PDF -->
-        <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-xl modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="pdfModalLabel">
-                            <i class="bi bi-filetype-pdf text-danger"></i> Visualizar Documento
-                        </h5>
+        <div class="modal fade" id="pdfModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-centered" style="height: 80vh;">
+                <div class="modal-content h-100">
+                    <div class="modal-header py-2 bg-light">
+                        <h6 class="modal-title m-0" id="pdfModalLabel">
+                            <i class="bi bi-filetype-pdf text-danger me-2"></i> Visualizar
+                        </h6>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"> Cerrar</button>
                     </div>
-                    <div class="modal-body p-0" style="height: 80vh;">
+                    <div class="modal-body p-0 h-100">
                         <iframe id="pdfViewer" src="" width="100%" height="100%" style="border:none;"></iframe>
                     </div>
                 </div>
@@ -233,6 +205,8 @@
 
 @push('scripts')
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const fileInput = document.getElementById('fileInput');
@@ -244,23 +218,15 @@
             const fileSizeSpan = document.getElementById('fileSize');
             const fileStatusSpan = document.getElementById('fileStatus');
             const uploadProgress = document.getElementById('uploadProgress');
+            const pdfModalEl = document.getElementById('pdfModal');
+            const pdfModal = new bootstrap.Modal(pdfModalEl);
             const pdfViewer = document.getElementById('pdfViewer');
-            const pdfPlaceholder = document.getElementById('pdfPlaceholder');
-            const pdfTitle = document.getElementById('pdfModalLabel'); 
-            const downloadLink = document.getElementById('downloadLink');
-
-            const pdfModal = new bootstrap.Modal(document.getElementById('pdfModal'));
+            
             let fileURL = null;
-            let uploadedDocId = null;
 
             const showAlert = (title, text, icon = 'info') => {
                 if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        title: title,
-                        text: text,
-                        icon: icon,
-                        confirmButtonText: 'Aceptar'
-                    });
+                    Swal.fire({ title, text, icon, confirmButtonText: 'Aceptar', confirmButtonColor: '#1e83e9' });
                 } else {
                     alert(`${title}: ${text}`);
                 }
@@ -269,34 +235,29 @@
             const showFileInfo = (file) => {
                 if (file.type !== 'application/pdf') {
                     showAlert('Formato Inválido', 'Solo se permiten archivos PDF.', 'error');
-                    clearFileSelection();
+                    clearFileSelection(); 
                     return;
                 }
-
                 const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
-
                 fileNameSpan.textContent = file.name;
                 fileSizeSpan.textContent = `${sizeMB} MB`;
-                fileStatusSpan.textContent = 'Listo para subir';
+                fileStatusSpan.textContent = 'Listo';
                 uploadProgress.style.width = '0%';
                 uploadProgress.classList.remove('bg-success');
-
                 uploadArea.classList.add('d-none');
                 fileInfo.classList.remove('d-none');
-
-                if (fileURL) {
-                    URL.revokeObjectURL(fileURL);
-                }
-                fileURL = URL.createObjectURL(file);
-                // No mostramos la vista previa hasta que se suba
             };
 
+            // --- LÓGICA DE LA X (CANCELAR SELECCIÓN) ---
             window.clearFileSelection = () => {
-                fileInput.value = '';
-                uploadedDocId = null;
-
+                fileInput.value = ''; 
+                
                 uploadArea.classList.remove('d-none');
                 fileInfo.classList.add('d-none');
+
+                uploadProgress.style.width = '0%';
+                uploadProgress.classList.remove('bg-success');
+                fileStatusSpan.textContent = 'Listo';
 
                 if (fileURL) {
                     URL.revokeObjectURL(fileURL);
@@ -304,73 +265,48 @@
                 }
             };
 
+            // --- LÓGICA DEL VISOR PDF ---
             window.viewDocument = (url, title) => {
-                const pdfViewerIframe = document.getElementById('pdfViewer');
-                const pdfModalLabel = document.getElementById('pdfModalLabel');
-
-                pdfModalLabel.textContent = title;
-                pdfViewerIframe.src = url;
+                document.getElementById('pdfModalLabel').textContent = title;
+                pdfViewer.src = url;
                 pdfModal.show();
             };
 
-            const deleteDocument = (docId, docTitle) => {
-                const docElement = document.querySelector(`.document-item .delete-doc-btn[data-doc-id="${docId}"]`).closest('.document-item');
+            pdfModalEl.addEventListener('hidden.bs.modal', function (event) {
+                pdfViewer.src = "";
+            });
 
-                fetch(`{{ url('/documento') }}/${docId}`, {
-                        method: 'DELETE',
-                        headers: {
-                            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').content,
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            return response.json().then(error => {
-                                throw new Error(error.message || 'Error desconocido')
-                            });
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        showAlert('Eliminado', data.message || `Documento ${docTitle} eliminado.`, 'success');
-                        if (docElement) {
-                            docElement.remove();
-                        }
-                    })
-                    .catch(error => {
-                        showAlert('Error de Eliminación', error.message, 'error');
-                        console.error('Error:', error);
-                    });
-            };
-
+            // --- LÓGICA DE ELIMINACIÓN ---
             window.confirmDelete = (docId, docTitle) => {
-                if (typeof Swal === 'undefined') {
-                    if (confirm(`¿Estás seguro de que deseas eliminar el documento "${docTitle}"?`)) {
-                        deleteDocument(docId, docTitle);
-                    }
-                    return;
-                }
-
                 Swal.fire({
-                    title: '¿Estás seguro?',
-                    text: "El documento se eliminará permanentemente.",
+                    title: '¿Eliminar archivo?',
+                    text: `Se eliminará "${docTitle}" permanentemente.`,
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#dc3545',
-                    cancelButtonColor: '#6c757d',
-                    confirmButtonText: 'Sí, Eliminar',
+                    confirmButtonText: 'Sí, eliminar',
                     cancelButtonText: 'Cancelar'
                 }).then((result) => {
                     if (result.isConfirmed) {
-                        deleteDocument(docId, docTitle);
+                        fetch(`{{ url('/documento') }}/${docId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            Swal.fire('Eliminado', data.message, 'success').then(() => location.reload());
+                        })
+                        .catch(err => showAlert('Error', 'No se pudo eliminar', 'error'));
                     }
                 });
             };
 
+            // Event Listeners para Drag & Drop e Input
             fileInput.addEventListener('change', (e) => {
-                if (fileInput.files.length > 0) {
-                    showFileInfo(fileInput.files[0]);
-                }
+                if (fileInput.files.length > 0) showFileInfo(fileInput.files[0]);
             });
 
             uploadArea.addEventListener('click', () => fileInput.click());
@@ -392,19 +328,15 @@
                 }
             });
 
+            // Subida AJAX
             window.startUpload = () => {
-                if (!fileInput || fileInput.files.length === 0) {
-                    showAlert('Error de Subida', 'Por favor, selecciona un archivo PDF para subir.', 'warning');
-                    return;
-                }
-
+                if (!fileInput.files.length) return;
                 fileStatusSpan.textContent = 'Subiendo...';
                 const formData = new FormData(document.getElementById('uploadForm'));
                 const xhr = new XMLHttpRequest();
-
                 xhr.open('POST', "{{ route('ayuda.subir') }}");
-                xhr.setRequestHeader('X-CSRF-TOKEN', document.head.querySelector('meta[name="csrf-token"]').content);
-
+                xhr.setRequestHeader('X-CSRF-TOKEN', document.querySelector('meta[name="csrf-token"]').content);
+                
                 xhr.upload.addEventListener('progress', (e) => {
                     if (e.lengthComputable) {
                         const percent = Math.round((e.loaded / e.total) * 100);
@@ -412,31 +344,17 @@
                     }
                 });
 
-                xhr.onreadystatechange = () => {
-                    if (xhr.readyState === 4) {
-                        let data;
-                        try {
-                            data = JSON.parse(xhr.responseText);
-                        } catch (e) {
-                            showAlert('Error Crítico de Servidor', 'Respuesta inesperada del servidor.', 'error');
-                            fileStatusSpan.textContent = 'Error de Servidor';
-                            return;
-                        }
-
-                        if (xhr.status === 201) {
-                            uploadProgress.classList.add('bg-success');
-                            fileStatusSpan.textContent = '¡Subida Completa!';
-                            showAlert('¡Éxito!', data.message, 'success');
-                            window.location.reload();
-                        } else {
-                            uploadProgress.style.width = '0%';
-                            fileStatusSpan.textContent = 'Error de Subida';
-                            const errorMessage = data.errors ? Object.values(data.errors).flat().join('\n') : data.message;
-                            showAlert('Fallo la Subida', errorMessage, 'error');
-                        }
+                xhr.onload = () => {
+                    if (xhr.status === 201) {
+                        const data = JSON.parse(xhr.responseText);
+                        Swal.fire('¡Éxito!', data.message, 'success').then(() => window.location.reload());
+                    } else {
+                        showAlert('Error', 'Error al subir el archivo', 'error');
+                        fileStatusSpan.textContent = 'Error';
+                        uploadProgress.style.width = '0%';
                     }
                 };
-
+                xhr.onerror = () => showAlert('Error', 'Error de red', 'error');
                 xhr.send(formData);
             };
         });
