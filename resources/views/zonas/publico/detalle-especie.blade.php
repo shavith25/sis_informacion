@@ -14,7 +14,7 @@
 
     <style>
         .cochabamba-header {
-            background-color: #0077c0; /* Azul institucional */
+            background-color: #0077c0; 
             padding: 0.5rem 0;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
@@ -36,7 +36,7 @@
 
         /* Ajuste del logo en el header */
         .navbar-brand img {
-            max-height: 55px; /* Un poco más grande para que luzca como la imagen */
+            max-height: 55px; 
             width: auto;
         }
 
@@ -178,7 +178,7 @@
 
     <section class="hero-video position-relative">
         <video autoplay muted loop playsinline class="w-100"
-            style="height: 40vh; min-height: 200px; object-fit: cover;">
+            style="height: 65vh; min-height: 200px; object-fit: cover;">
             <source src="{{ asset('video/173868607267a23e78515b0.mp4') }}" type="video/mp4">
             Tu navegador no soporta el video.
         </video>
@@ -237,7 +237,7 @@
                             @foreach ($item->imagenes as $index => $imagen)
                                 <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
                                     <img src="{{ asset('storage/' . ($imagen->path ?? $imagen->url)) }}"
-                                        class="d-block w-100" style="max-height:500px; object-fit:cover;"
+                                        class="d-block w-100" style="max-height:820px; object-fit:cover;"
                                         alt="Imagen de {{ $item->titulo }}">
                                 </div>
                             @endforeach

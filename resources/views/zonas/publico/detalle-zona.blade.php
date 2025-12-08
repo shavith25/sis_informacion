@@ -19,6 +19,7 @@
     border-radius: 10px;
     margin-bottom: 2rem; 
     }
+    
     .carousel-control-prev-icon,
     .carousel-control-next-icon {
         background-color: rgba(0, 0, 0, 0.5);
@@ -26,6 +27,7 @@
         width: 40px;
         height: 40px;
     }
+
     .carousel-control-prev,
     .carousel-control-next {
         width: 5%; 
@@ -94,7 +96,7 @@
             <div class="carousel-inner">
                 @foreach($item->imagenes as $index => $imagen)
                 <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                    <img src="{{ asset('storage/' . $imagen->url) }}" class="d-block w-100" style="max-height:500px; object-fit:cover;" alt="Imagen de {{ $item->nombre }}">
+                    <img src="{{ asset('storage/' . $imagen->url) }}" class="d-block w-100" style="max-height:820px; object-fit:cover;" alt="Imagen de {{ $item->nombre }}">
                 </div>
                 @endforeach
             </div>
@@ -127,7 +129,7 @@
     </section>
     @endif
     <section class="mb-5">
-        <h2 class="mb-3">Especies</h2>
+        <h2 class="mb-5">Especies</h2>
             <div class="card-grid">
                     @forelse($item->especies as $especie)
                         <div class="card">
@@ -140,7 +142,7 @@
                                 <div class="meta">
                                     <span>Tipo: Vulnerable</span>
                                 </div>
-                                <a href="{{ route('detalle.show', ['tipo'=>'especie','id'=>$especie->id]) }}" class="read-more">Saber más →</a>
+                                <a href="{{ route('detalle.show', ['tipo' => 'especie', 'id' => $especie]) }}" class="read-more">Saber más →</a>
                             </div>
                         </div>
                     @empty
