@@ -14,15 +14,15 @@
 
     <style>
         .cochabamba-header {
-            background-color: #0077c0; 
+            background-color: #0077c0;
             padding: 0.5rem 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
         .cochabamba-nav .nav-link {
             color: white !important;
             text-transform: uppercase;
-            font-weight: 600; 
+            font-weight: 600;
             font-size: 0.95rem;
             margin-left: 15px;
             letter-spacing: 0.5px;
@@ -36,7 +36,7 @@
 
         /* Ajuste del logo en el header */
         .navbar-brand img {
-            max-height: 55px; 
+            max-height: 55px;
             width: auto;
         }
 
@@ -116,7 +116,7 @@
                 height: 45px !important;
                 padding: 0.75rem !important;
             }
-            
+
             .modal-dialog {
                 margin: 1rem;
                 max-width: calc(100% - 2rem);
@@ -134,10 +134,17 @@
             }
         }
 
-        .card-title { font-size: 1rem; }
-        .card-text small { font-size: 0.85rem; }
-        
-        body { overflow-x: hidden; }
+        .card-title {
+            font-size: 1rem;
+        }
+
+        .card-text small {
+            font-size: 0.85rem;
+        }
+
+        body {
+            overflow-x: hidden;
+        }
     </style>
 </head>
 
@@ -195,7 +202,14 @@
             @endif
 
             <p class="text-muted">
-                <strong>Especie:</strong> {{ ucfirst($item->tipo ?? 'No especificado') }} |
+                <strong>Especie:</strong>
+                @if (strtolower($item->tipo) === 'emblematica')
+                    <span class="badge bg-success">Emblemática</span>
+                @elseif(strtolower($item->tipo) === 'vulnerable')
+                    <span class="badge bg-warning text-dark">Vulnerable</span>
+                @else
+                    <span class="badge bg-secondary">{{ ucfirst($item->tipo ?? 'No especificado') }}</span>
+                @endif |
                 <strong>Fecha:</strong> {{ \Carbon\Carbon::parse($item->fecha_publicacion)->format('d/m/Y') }}
             </p>
 
@@ -242,11 +256,13 @@
                                 </div>
                             @endforeach
                         </div>
+
                         <button class="carousel-control-prev" type="button" data-bs-target="#carouselImagenes"
                             data-bs-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
                             <span class="visually-hidden">Anterior</span>
                         </button>
+
                         <button class="carousel-control-next" type="button" data-bs-target="#carouselImagenes"
                             data-bs-slide="next">
                             <span class="carousel-control-next-icon" aria-hidden="true"></span>

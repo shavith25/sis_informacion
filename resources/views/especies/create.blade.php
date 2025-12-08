@@ -4,7 +4,6 @@
 
 @section('content')
 <section class="section">
-    {{-- ENCABEZADO DE LA SECCIÓN --}}
     <div class="section-header">
         <h1 style="color: #6c757d; font-weight: 700;">
             <i class="fas fa-plus mr-2"></i> Crear Nueva Especie
@@ -169,8 +168,7 @@
 
         /* 3. Card con Scroll interno (Layout Fijo) */
         .card-fixed-height {
-            /* Ajusta el 200px según el alto de tu header/footer */
-            height: calc(100vh - 200px);
+            height: calc(100vh - 240px);
             display: flex;
             flex-direction: column;
             margin-bottom: 0;
@@ -235,7 +233,6 @@
     <script src="https://unpkg.com/trix@2.0.0/dist/trix.umd.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Función para previsualizar archivos
             function setupFilePreview(inputId, previewContainerId, isImage) {
                 const input = document.getElementById(inputId);
                 const previewContainer = document.getElementById(previewContainerId);

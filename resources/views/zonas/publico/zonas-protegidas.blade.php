@@ -275,7 +275,7 @@
                             <h3>{!! $especie->titulo !!}</h3>
                             <p>{{ \Illuminate\Support\Str::limit($especie->descripcion, 200, '...') }}</p>
                             <div class="meta">
-                                <span>Tipo: Emblemática</span>
+                                <span class="badge bg-success text-white">Tipo: Emblemática</span>
                             </div>
 
                             @php
@@ -312,7 +312,7 @@
                             <h3>{!! $especie->titulo !!}</h3>
                             <p>{{ \Illuminate\Support\Str::limit($especie->descripcion, 200, '...') }}</p>
                             <div class="meta">
-                                <span>Tipo: Vulnerable</span>
+                                <span class="badge bg-warning text-dark">Tipo: Vulnerable</span>
                             </div>
 
                             @php
