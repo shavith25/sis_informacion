@@ -96,14 +96,14 @@
 
         .carousel-item {
             height: 500px;
-            background-color: #f8f9fa; /* Fondo claro */
+            background-color: #f8f9fa; 
             position: relative;
         }
 
         .carousel-item img {
             height: 100%;
             width: 100%;
-            object-fit: contain; /* Imagen completa */
+            object-fit: contain; 
             object-position: center;
         }
 

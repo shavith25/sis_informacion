@@ -8,8 +8,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
-
-// 1. IMPORTANTE: Importar estas clases
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Contracts\Encryption\DecryptException;
 
@@ -30,10 +28,6 @@ class User extends Authenticatable
         'estado' => 'boolean',
     ];
 
-    // =======================================================================
-    // NUEVA LÓGICA DE ENCRIPTACIÓN SEGURA (LARAVEL CRYPT)
-    // =======================================================================
-
     /**
      * Al generar una URL (route('usuarios.edit', $user)), Laravel llamará a esto.
      * Devuelve una cadena larga encriptada en lugar del ID.
@@ -50,13 +44,10 @@ class User extends Authenticatable
     public function resolveRouteBinding($value, $field = null)
     {
         try {
-            // Intentamos desencriptar
             $idReal = Crypt::decryptString($value);
-            
-            // Buscamos el usuario por el ID desencriptado
+
             return $this->where('id', $idReal)->firstOrFail();
         } catch (DecryptException $e) {
-            // Si el código no es válido o fue alterado, damos error 404
             abort(404);
         }
     }

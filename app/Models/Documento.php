@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class Documento extends Model
 {
@@ -21,30 +23,16 @@ class Documento extends Model
 
     public function getRouteKey()
     {
-        $rand = rand(10000, 99999);
-        $mezcla = $this->getKey() ^ $rand; // XOR
-        return dechex($rand) . 'x' . dechex($mezcla);
+        return Crypt::encryptString($this->getKey());
     }
 
     public function resolveRouteBinding($value, $field = null)
     {
-        if (is_numeric($value)) {
-            return $this->where('id', $value)->firstOrFail();
+        try {
+            $idReal = Crypt::decryptString($value);
+            return $this->where('id', $idReal)->firstOrFail();
+        } catch (DecryptException $e) {
+            abort(404);
         }
-
-        if (str_contains($value, 'x')) {
-            try {
-                $partes = explode('x', $value);
-                if (count($partes) === 2) {
-                    $aleatorio = hexdec($partes[0]);
-                    $mezcla = hexdec($partes[1]);
-                    $idReal = $mezcla ^ $aleatorio;
-                    
-                    return $this->where('id', $idReal)->firstOrFail();
-                }
-            } catch (\Exception $e) {}
-        }
-
-        abort(404);
     }
 }

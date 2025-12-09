@@ -319,7 +319,7 @@
                                             @endif
                                         </div>
                                         
-                                        <a href="{{ route('detalle.show', ['tipo' => 'especie', 'id' => $especie]) }}" 
+                                        <a href="{{ route('detalle.show', ['tipo' => 'especie', 'id' => $especie->id]) }}" 
                                            class="btn btn-outline-primary btn-sm rounded-pill w-100">
                                            Ver Detalle <i class="bi bi-arrow-right-short"></i>
                                         </a>
@@ -332,13 +332,10 @@
             </div>
 
             <div class="col-lg-4">
-                
-                {{-- LÓGICA CORREGIDA PARA MEDIOS: Verifica si existen medios en $item o en $item->datos --}}
                 @php
                     $medios = collect();
-                    if(isset($item->media)) $medios = $medios->merge($item->media); // Si la zona tiene medios directos
-                    if(isset($item->datos->medios)) $medios = $medios->merge($item->datos->medios); // Si están en datos
-                    // Eliminar duplicados si los hubiera
+                    if(isset($item->media)) $medios = $medios->merge($item->media); 
+                    if(isset($item->datos->medios)) $medios = $medios->merge($item->datos->medios); 
                     $medios = $medios->unique('id');
                 @endphp
 
@@ -408,7 +405,7 @@
                     <div class="mb-4">
                         <h5 class="mb-3 fw-bold text-uppercase border-bottom pb-2 text-primary">Videos</h5>
                         @foreach($item->videos as $video)
-                             @php
+                            @php
                                 $rutaVideo = str_replace('\\', '/', $video->url ?? $video->path); 
                                 if(!str_starts_with($rutaVideo, 'storage/')) {
                                     $rutaVideo = 'storage/' . $rutaVideo;

@@ -10,9 +10,9 @@ class DocumentoController extends Controller
 {
     public function index()
     {
-        $documentos = Documento::orderBy('fecha_publicacion', 'desc') 
-                            ->orderBy('id', 'desc')            
-                            ->paginate(4);                     
+        $documentos = Documento::orderBy('fecha_publicacion', 'desc')
+                            ->orderBy('id', 'desc')
+                            ->paginate(4);
         return view('documentos.index', compact('documentos'));
     }
 
@@ -23,7 +23,6 @@ class DocumentoController extends Controller
 
     public function store(Request $request)
     {
-    
         $request->validate([
             'titulo' => 'required|string|max:255',
             'resumen' => 'required|string',

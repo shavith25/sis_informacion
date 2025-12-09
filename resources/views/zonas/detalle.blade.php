@@ -127,7 +127,7 @@
                 <div class="carousel-inner image-carousel-inner">
                     @foreach($zona->imagenes as $index => $imagen)
                     <div class="carousel-item {{ $index === 0 ? 'active' : '' }}">
-                        <a href="{{ asset('storage/' . $imagen->url) }}" data-lightbox="gallery-{{ $zona->id }}" data-title="{{ $zona->nombre }} - Imagen {{ $index + 1 }}">
+                        <a href="{{ asset('storage/' . $imagen->url) }}" data-lightbox="gallery-{{ $zona }}" data-title="{{ $zona->nombre }} - Imagen {{ $index + 1 }}">
                             <img src="{{ asset('storage/' . $imagen->url) }}" class="d-block w-100 carousel-image" alt="Imagen {{ $index + 1 }}">
                         </a>
                     </div>

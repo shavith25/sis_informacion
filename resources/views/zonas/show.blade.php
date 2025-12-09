@@ -1,629 +1,350 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html lang="es">
 
-@section('content')
-<div class="container">
-    <div class="section-header">
-        <h3 class="page__heading text-white mb-3">
-            Detalle de Zona: {{ $zona->nombre }}
-        </h3>
-    </div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ strip_tags($especie->titulo ?? 'Detalle Especies') }} - Especies</title>
 
-    <!-- Modal para descripción completa -->
-    <div class="modal fade" id="descripcionModal" tabindex="-1" role="dialog" aria-labelledby="descripcionModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white">
-                    <h5 class="modal-title" id="descripcionModalLabel">Descripción Completa</h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p id="descripcionCompleta">{{ $zona->descripcion ?? 'No hay descripción disponible' }}</p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div style="overflow-x: hidden; overflow-y:auto; height: calc(100vh - 200px);">
-
+    <link rel="stylesheet" href="{{ asset('css/style-public-areas.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     
-        <div class="row">
-            <div class="col-lg-4 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-primary text-white">
-                        <h5 class="mb-0">
-                            <i class="fas fa-info-circle me-2"></i> Información General
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2"><i class="fas fa-tag me-2"></i> Nombre</h6>
-                            <p class="fw-bold">{{ $zona->nombre }}</p>
-                        </div>
+    <link rel="icon" href="{{ url('img/logo3.png') }}" type="image/png">
 
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2"><i class="fas fa-layer-group me-2"></i> Área</h6>
-                            <p class="fw-bold">{{ $zona->area->area ?? 'No especificado' }}</p>
-                        </div>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            color: #333;
+        }
 
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2"><i class="fas fa-info-circle me-2"></i> Descripción</h6>
-                            @php
-                                $descripcion = $zona->descripcion ?? 'No hay descripción disponible';
-                                $descripcionCorta = \Illuminate\Support\Str::limit($descripcion, 100, '...');
-                            @endphp
-                            <p class="fw-bold">
-                                {{ $descripcionCorta }}
-                                @if(strlen($descripcion) > 100)
-                                    <a href="#" class="text-primary" data-toggle="modal" data-target="#descripcionModal">Leer todo</a>
-                                @endif
-                            </p>
-                        </div>
+        /* --- HEADER INSTITUCIONAL --- */
+        .header-container {
+            background-color: #0077c0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 3px solid #005c99;
+            padding: 10px 0;
+        }
 
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2"><i class="fas fa-power-off me-2"></i> Estado</h6>
-                            <span class="badge bg-{{ $zona->estado ? 'success' : 'secondary' }} text-white p-2">
-                                {{ $zona->estado ? 'Activo' : 'Inactivo' }}
-                            </span>
-                        </div>
+        .nav-link {
+            font-weight: 700; 
+            color: white !important; 
+            text-transform: uppercase; 
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            transition: opacity 0.3s;
+        }
 
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2"><i class="fas fa-calendar-alt me-2"></i> Fecha de Registro</h6>
-                            <p class="fw-bold">{{ $zona->created_at->format('d/m/Y H:i') }}</p>
-                        </div>
+        .nav-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
 
-                        <!-- Mostrar información del último historial -->
-                        @if($zona->ultimoHistorial)
-                        <div class="mb-3">
-                            <h6 class="text-muted mb-2"><i class="fas fa-map-marked-alt me-2"></i> Última Actualización</h6>
-                            <p class="fw-bold">{{ $zona->ultimoHistorial->created_at->format('d/m/Y H:i') }}</p>
-                            <p class="small text-muted">
-                                Tipo: {{ ucfirst($zona->ultimoHistorial->tipo_coordenada) }}<br>
-                                Elementos: {{ count($zona->ultimoHistorial->coordenadas) }}
-                            </p>
-                        </div>
-                        @endif
-                    </div>
-                </div>
-            </div>
+        /* HERO VIDEO/IMAGEN */
+        .hero-section {
+            position: relative;
+            height: 60vh; /* Ajustado para que no sea tan alto */
+            min-height: 350px;
+            background-color: #000;
+            overflow: hidden;
+        }
 
-            <!-- Columna del mapa -->
-            <div class="col-lg-8 mb-4">
-                <div class="card shadow-sm h-100">
-                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">
-                            <i class="fas fa-map me-2"></i> Mapa de la Zona
-                        </h5>
-                        <div>
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-light dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
-                                <i class="fas fa-download me-1"></i> Exportar
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#" id="export-image"><i class="fas fa-image me-2"></i> Imagen PNG</a></li>
-                                <li><a class="dropdown-item" href="#" id="export-kml"><i class="fas fa-file-code me-2"></i> KML</a></li>
-                                <li><a class="dropdown-item" href="#" id="export-kmz"><i class="fas fa-file-archive me-2"></i> KMZ</a></li>
-                                <li><a class="dropdown-item" href="#" id="export-shp"><i class="fas fa-map me-2"></i> SHP</a></li>
-                            </ul>
-                        </div>
+        .hero-section img, .hero-section video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+        }
 
+        .hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            padding: 5rem 0 2rem;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
 
-                        </div>
-                    </div>
-                    <div class="card-body p-0 position-relative">
-                        <div id="map" style="height: 570px; width: 100%;"></div>
-                        <div class="map-overlay p-2">
-                            <span class="badge bg-primary me-2 text-white"><i class="fas fa-square-full"></i> Polígono</span>
-                            <span class="badge bg-danger text-white"><i class="fas fa-map-marker-alt"></i> Marcador</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        /* BADGES (ETIQUETAS) */
+        .badge-custom {
+            font-weight: 600;
+            padding: 0.6em 1em;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            display: inline-flex;
+            align-items: center;
+        }
+        
+        .bg-emblematica { background-color: #28a745 !important; color: white; }
+        .bg-vulnerable { background-color: #ffc107 !important; color: #212529; }
+        .bg-info-soft { background-color: #e3f2fd; color: #0077c0; }
+        .bg-secondary-soft { background-color: #e9ecef; color: #495057; }
 
-        <!-- Sección de multimedia -->
-        @if((isset($zona->imagenes) && count($zona->imagenes) > 0) || (isset($zona->videos) && count($zona->videos) > 0))
-        <div class="card shadow-sm mt-4">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">
-                    <i class="fas fa-images me-2"></i> Multimedia
-                </h5>
-            </div>
-            <div class="card-body">
-                
-                @if(isset($zona->imagenes) && count($zona->imagenes) > 0)
-                <div class="mb-4">
-                    <h6 class="text-muted mb-3"><i class="fas fa-image me-2"></i> Imágenes</h6>
-                    <div class="row gallery">
-                        @foreach($zona->imagenes as $imagen)
-                        <div class="col-md-3 col-6 mb-4">
-                            <div class="image-container" style="height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 8px;">
-                            
-                                <a href="{{ asset('storage/' . $imagen->url) }}" data-lightbox="zona-images" data-title="{{ $zona->nombre }}" style="display: block; width: 100%; height: 100%;">
-                                    <img src="{{ asset('storage/' . $imagen->url) }}" class="img-fluid" alt="Imagen de {{ $zona->nombre }}" style="object-fit: contain; width: 100%; height: 100%;">
-                                </a>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
+        /* CARRUSEL Y VISOR */
+        .carousel-container {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #dee2e6;
+            background-color: #fff;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
 
-                @if(isset($zona->videos) && count($zona->videos) > 0)
-                <div>
-                    <h6 class="text-muted mb-3"><i class="fas fa-video me-2"></i> Videos</h6>
-                    <div class="row">
-                        @foreach($zona->videos as $video)
-                        <div class="col-md-6 mb-3">
-                            <div class="ratio ratio-16x9" style="width: 300px ; height:200px">
-                                
-                                <video controls class="rounded shadow-sm bg-dark" style="width: 100%; height: 100%;">
-                                    <source src="{{ asset('storage/' . $video->url) }}" type="video/mp4">
-                                    Tu navegador no soporta el elemento de video.
-                                </video>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                </div>
-                @endif
+        .carousel-item {
+            height: 500px;
+            background-color: #f8f9fa; 
+            position: relative;
+        }
 
-            </div>
-        </div>
-        @endif
+        .carousel-item img {
+            height: 100%;
+            width: 100%;
+            object-fit: contain; 
+            object-position: center;
+        }
 
-        <!-- Botones de acción -->
-        <div class="d-flex justify-content-between" style="margin-top: -0.5rem;">
-            <a href="{{ route('zonas.index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-arrow-left me-2"></i> Volver al listado
+        /* TARJETAS DE ARCHIVOS */
+        .file-card {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            transition: all 0.2s;
+        }
+        .file-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            border-color: #0077c0;
+        }
+
+        /* FOOTER */
+        .footer-custom {
+            background-color: #0077c0; 
+            color: white;
+            border-top: 5px solid #005c99; 
+            padding-top: 3rem;
+            padding-bottom: 1rem;
+            margin-top: auto;
+        }
+        
+        .footer-title {
+            color: #fff;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            border-bottom: 2px solid rgba(255,255,255,0.3);
+            display: inline-block;
+            padding-bottom: 0.5rem;
+        }
+
+        .footer-custom a {
+            color: white;
+            text-decoration: none;
+            transition: opacity 0.3s;
+        }
+        .footer-custom a:hover {
+            opacity: 0.8;
+        }
+
+        .whatsapp-float {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1000;
+            transition: transform 0.3s;
+        }
+        .whatsapp-float:hover { transform: scale(1.1); }
+    </style>
+</head>
+
+<body>
+
+    <header class="header-container">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="{{ url('/') }}" class="text-decoration-none d-flex align-items-center">
+                <img src="{{ url('img/logo3.png') }}" alt="Logo PGB" height="55" class="bg-white rounded p-1">
             </a>
-            <div>
-                <a href="{{ route('zonas.edit', $zona) }}" class="btn btn-warning me-2">
-                    <i class="fas fa-edit me-2"></i> Editar
-                </a>
-                <form action="{{ route('zonas.change-status', $zona) }}" method="POST" class="d-inline">
-                    @csrf
-                    @method('PATCH')
-                    <button type="submit" class="btn btn-{{ $zona->estado ? 'danger' : 'success' }}">
-                        <i class="fas {{ $zona->estado ? 'fa-toggle-off' : 'fa-toggle-on' }} me-2"></i>
-                        {{ $zona->estado ? 'Desactivar' : 'Activar' }}
-                    </button>
-                </form>
+            
+            <nav class="d-none d-lg-block">
+                <ul class="nav nav-pills gap-3 m-0">
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#inicio') }}" class="nav-link">INICIO</a></li>
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#areas') }}" class="nav-link">ÁREAS PROTEGIDAS</a></li>
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#especies') }}" class="nav-link active">ESPECIES</a></li>
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#noticias') }}" class="nav-link">NOTICIAS</a></li>
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#conciencia') }}" class="nav-link">CONCIENTIZACIÓN</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    {{-- HERO SECTION CON IMAGEN PRINCIPAL --}}
+    <section class="hero-section">
+        @if($especie->imagenes->count() > 0)
+            <img src="{{ asset('storage/' . $especie->imagenes->first()->url) }}" alt="{{ $especie->titulo }}">
+        @else
+            <img src="{{ asset('img/no-image.jpg') }}" alt="Sin imagen" style="filter: grayscale(1);">
+        @endif
+        
+        <div class="hero-overlay w-100">
+            <div class="container text-center">
+                <h1 class="display-3 fw-bold text-uppercase mb-2">{{ $especie->titulo }}</h1>
+                @if($especie->zona)
+                    <p class="h4 mb-0 opacity-90"><i class="fas fa-map-marker-alt me-2"></i> {{ $especie->zona->nombre }}</p>
+                @endif
             </div>
         </div>
-    </div>
-</div>
+    </section>
 
-<!-- Incluir Leaflet.js y HTML2Canvas -->
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/css/lightbox.min.css" />
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
-<!-- tokml -->
-<script src="https://cdn.jsdelivr.net/npm/@mapbox/tokml@0.4.0/tokml.min.js"></script>
-<script src="https://unpkg.com/tokml@0.4.0/tokml.js"></script>
-
-<!-- JSZip -->
-
-{{-- <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script> --}}
-{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.min.js"></script> --}}
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
-
-<!-- shp-write -->
-<script src="https://cdn.jsdelivr.net/npm/shp-write@0.3.0/shpwrite.min.js"></script>
-
-
-<style>
-    .card {
-        border-radius: 10px;
-        border: none;
-        transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .card:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-    }
-
-    .card-header {
-        border-radius: 10px 10px 0 0 !important;
-    }
-
-    #map {
-        border-radius: 0 0 10px 10px;
-        z-index: 1;
-    }
-
-    .map-overlay {
-        position: absolute;
-        bottom: 10px;
-        right: 10px;
-        z-index: 1000;
-        background: rgba(255,255,255,0.9);
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    }
-
-    .gallery {
-        display: flex;
-        flex-wrap: wrap;
-        margin: -8px; /* Compensa el margen de las columnas */
-    }
-
-    .image-container {
-        transition: transform 0.3s ease;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-
-    .image-container:hover {
-        transform: scale(1.03);
-    }
-
-    .image-container img {
-        transition: transform 0.3s ease;
-    }
-
-    .btn-action {
-        min-width: 120px;
-    }
-
-    .text-muted {
-        color: #6c757d !important;
-    }
-
-    .badge {
-        font-weight: 500;
-    }
-</style>
-
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Variable global para almacenar los colores asignados
-    const assignedColors = {};
-    const coordenadas = @json($coordenadas);
-    
-    // --- Funciones auxiliares ---
-    function getRandomColor() {
-        const letters = '0123456789ABCDEF';
-        let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
-        return color;
-    }
-
-    // Convierte HEX (#RRGGBB) a KML AABBGGRR (Alpha-Blue-Green-Red)
-    function hexToKmlColor(hex, alpha = 'ff') {
-        hex = hex.startsWith('#') ? hex.slice(1) : hex;
-        if (hex.length !== 6) return "7d00ff00";
-        
-        const r = hex.substring(0, 2);
-        const g = hex.substring(2, 4);
-        const b = hex.substring(4, 6);
-        return `${alpha}${b}${g}${r}`;
-    }
-
-    function generarGeoJSONDesdeCoordenadas(coordenadas) {
-        const features = [];
-        let featureIndex = 0;
-
-        if (Array.isArray(coordenadas[0]) && Array.isArray(coordenadas[0][0])) {
-            coordenadas.forEach((poligonoCoords, index) => {
-                const uniqueId = `polygon_${featureIndex++}`;
-                const featureColor = assignedColors[uniqueId] || getRandomColor();
-                assignedColors[uniqueId] = featureColor;
-
-                const coordsLngLat = poligonoCoords.map(c => [c[1], c[0]]);
-                if (coordsLngLat.length > 2 && (coordsLngLat[0][0] !== coordsLngLat[coordsLngLat.length - 1][0] || coordsLngLat[0][1] !== coordsLngLat[coordsLngLat.length - 1][1])) {
-                    coordsLngLat.push(coordsLngLat[0]);
-                }
-                
-                features.push({
-                    type: 'Feature',
-                    geometry: { type: 'Polygon', coordinates: [coordsLngLat] },
-                    properties: { 
-                        name: `Polígono ${index + 1}`, 
-                        description: `Puntos: ${poligonoCoords.length}`, 
-                        color: featureColor, 
-                        tipo: 'poligono' 
-                    }
-                });
-            });
-        } else {
-            coordenadas.forEach((item, index) => {
-                const uniqueId = (item.tipo === 'poligono') ? `polygon_${featureIndex}` : `marker_${featureIndex}`;
-                const featureColor = getRandomColor();
-                assignedColors[uniqueId] = featureColor;
-                
-                if (item.tipo === 'poligono' && item.coordenadas && Array.isArray(item.coordenadas)) {
-                    const coordsLngLat = item.coordenadas.map(coord => [coord.lng, coord.lat]);
-                    if (coordsLngLat.length > 2 && (coordsLngLat[0][0] !== coordsLngLat[coordsLngLat.length - 1][0] || coordsLngLat[0][1] !== coordsLngLat[coordsLngLat.length - 1][1])) {
-                        coordsLngLat.push(coordsLngLat[0]);
-                    }
-                    features.push({
-                        type: 'Feature',
-                        geometry: { type: 'Polygon', coordinates: [coordsLngLat] },
-                        properties: { 
-                            name: `Polígono ${index + 1}`, 
-                            description: `Puntos: ${item.coordenadas.length}`, 
-                            color: featureColor, 
-                            tipo: 'poligono' 
-                        }
-                    });
-                } else if (item.tipo === 'marcador' && item.coordenadas) {
-                    features.push({
-                        type: 'Feature',
-                        geometry: { type: 'Point', coordinates: [item.coordenadas.lng, item.coordenadas.lat] },
-                        properties: { 
-                            name: `Marcador ${index + 1}`, 
-                            description: `Lat: ${item.coordenadas.lat.toFixed(6)}, Lng: ${item.coordenadas.lng.toFixed(6)}`, 
-                            color: featureColor, 
-                            tipo: 'marcador' 
-                        }
-                    });
-                }
-                featureIndex++;
-            });
-        }
-
-        return { type: 'FeatureCollection', features: features };
-    }
-
-    // --- Inicialización del Mapa Leaflet ---
-    let initialLatLng = [-17.3895, -66.1568];
-
-    const map = L.map('map', {
-        zoomControl: true,
-        scrollWheelZoom: true
-    }).setView(initialLatLng, 18);
-
-    L.layerGroup([
-        L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            attribution: '© Esri, i-cubed, USDA, USGS, etc.',
-            maxZoom: 18
-        }),
-        L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}', {
-            attribution: 'Labels © Esri'
-        })
-    ]).addTo(map);
-
-    const bounds = L.latLngBounds();
-    const featureGroup = L.featureGroup().addTo(map);
-
-    // --- DIBUJAR GEOMETRÍAS CON COLORES ALEATORIOS ---
-    if (coordenadas.length > 0) {
-        let currentIndex = 0;
-
-        if (Array.isArray(coordenadas[0]) && Array.isArray(coordenadas[0][0])) {
-            // Formato: Array de arrays de coordenadas
-            coordenadas.forEach((poligonoCoords, index) => {
-                const uniqueId = `polygon_${currentIndex++}`;
-                const randomColor = getRandomColor();
-                assignedColors[uniqueId] = randomColor;
-                
-                const latLngs = poligonoCoords.map(coord => [coord[0], coord[1]]);
-                const polygon = L.polygon(latLngs, {
-                    color: randomColor,
-                    fillColor: randomColor,
-                    fillOpacity: 0.4,
-                    weight: 3
-                }).addTo(featureGroup);
-                
-                bounds.extend(polygon.getBounds());
-                polygon.bindPopup(`<strong>Polígono ${index + 1}</strong><br>Puntos: ${poligonoCoords.length}<br>Color: <span style="display:inline-block;width:15px;height:15px;background:${randomColor};border:1px solid #000;"></span> ${randomColor}`);
-            });
-        } else {
-            // Formato: Array de objetos con tipo y coordenadas
-            coordenadas.forEach(function(item, index) {
-                const randomColor = getRandomColor();
-                
-                if (item.tipo === 'poligono' && item.coordenadas && Array.isArray(item.coordenadas)) {
-                    const uniqueId = `polygon_${currentIndex}`;
-                    assignedColors[uniqueId] = randomColor;
-                    
-                    const latLngs = item.coordenadas.map(coord => [coord.lat, coord.lng]);
-                    const polygon = L.polygon(latLngs, {
-                        color: randomColor,
-                        fillColor: randomColor,
-                        fillOpacity: 0.4,
-                        weight: 3
-                    }).addTo(featureGroup);
-                    
-                    polygon.bindPopup(`<strong>Polígono ${index + 1}</strong><br>Puntos: ${item.coordenadas.length}<br>Color: <span style="display:inline-block;width:15px;height:15px;background:${randomColor};border:1px solid #000;"></span> ${randomColor}`);
-                    bounds.extend(polygon.getBounds());
-                    
-                } else if (item.tipo === 'marcador' && item.coordenadas) {
-                    const uniqueId = `marker_${currentIndex}`;
-                    assignedColors[uniqueId] = randomColor;
-                    
-                    const marker = L.marker([item.coordenadas.lat, item.coordenadas.lng], {
-                        icon: L.divIcon({
-                            className: 'custom-marker',
-                            html: `<i class="fas fa-map-marker-alt" style="color: ${randomColor}; font-size: 32px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);"></i>`,
-                            iconSize: [32, 32],
-                            iconAnchor: [16, 32]
-                        })
-                    }).addTo(featureGroup);
-                    
-                    marker.bindPopup(`<strong>Marcador ${index + 1}</strong><br>Lat: ${item.coordenadas.lat.toFixed(6)}<br>Lng: ${item.coordenadas.lng.toFixed(6)}<br>Color: <span style="display:inline-block;width:15px;height:15px;background:${randomColor};border:1px solid #000;"></span> ${randomColor}`);
-                    bounds.extend(marker.getLatLng());
-                }
-                currentIndex++;
-            });
-        }
-
-        // Ajustar vista para mostrar todos los elementos
-        if (bounds.isValid()) {
-            setTimeout(() => {
-                map.fitBounds(bounds, { padding: [50, 50] });
-                map.invalidateSize();
-            }, 100);
-        }
-    } else {
-        L.marker(initialLatLng).addTo(map)
-            .bindPopup('<strong>Zona sin coordenadas definidas</strong>')
-            .openPopup();
-    }
-
-    // --- EXPORTACIÓN PNG ---
-    document.getElementById('export-image').addEventListener('click', function (e) {
-        e.preventDefault();
-        
-        html2canvas(document.getElementById('map'), {
-            useCORS: true,
-            allowTaint: true
-        }).then(canvas => {
-            const link = document.createElement('a');
-            link.download = `zona_{{ $zona->nombre }}_${new Date().toISOString().slice(0,10)}.png`;
-            link.href = canvas.toDataURL();
-            link.click();
-        });
-    });
-
-    // --- EXPORTACIÓN KML ---
-    document.getElementById('export-kml').addEventListener('click', function (e) {
-        e.preventDefault();
-
-        const geojson = generarGeoJSONDesdeCoordenadas(coordenadas);
-        let kmlStyles = '';
-        const uniqueColors = new Set();
-
-        geojson.features.forEach(feature => {
-            if (feature.properties && feature.properties.color) {
-                uniqueColors.add(feature.properties.color);
-            }
-        });
-
-        // Generar estilos KML
-        uniqueColors.forEach(hexColor => {
-            const kmlColorLinea = hexToKmlColor(hexColor, 'ff');
-            const kmlColorRelleno = hexToKmlColor(hexColor, '80');
-            const styleId = `style_${hexColor.replace('#', '')}`;
+    <main class="container py-5">
+        <div class="row g-5">
             
-            kmlStyles += `
-                <Style id="${styleId}_polygon">
-                    <LineStyle><color>${kmlColorLinea}</color><width>3</width></LineStyle>
-                    <PolyStyle><color>${kmlColorRelleno}</color></PolyStyle>
-                </Style>`;
+            {{-- COLUMNA IZQUIERDA: INFORMACIÓN Y GALERÍA --}}
+            <div class="col-lg-8">
+                
+                <div class="d-flex flex-wrap gap-2 mb-4 align-items-center p-3 bg-white rounded shadow-sm border">
+                    
+                    <span class="badge badge-custom bg-secondary-soft">
+                        <i class="bi bi-calendar-event me-2"></i>Publicado: {{ $especie->created_at->format('d/m/Y') }}
+                    </span>
+
+                    @if(isset($especie->tipo))
+                        @php $tipoEspecie = strtolower($especie->tipo); @endphp
+                        @if($tipoEspecie === 'emblematica')
+                            <span class="badge badge-custom bg-emblematica">
+                                <i class="bi bi-star-fill me-2"></i>Tipo: Emblemática
+                            </span>
+                        @elseif($tipoEspecie === 'vulnerable')
+                            <span class="badge badge-custom bg-vulnerable">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>Tipo: Vulnerable
+                            </span>
+                        @else
+                            <span class="badge badge-custom bg-secondary-soft border">
+                                Tipo: {{ ucfirst($especie->tipo) }}
+                            </span>
+                        @endif
+                    @endif
+                </div>
+
+                <div class="bg-white p-4 rounded-3 shadow-sm mb-5 border-top border-4" style="border-color: #0077c0 !important;">
+                    <h4 class="mb-3 fw-bold text-dark border-bottom pb-2">Descripción</h4>
+                    <div class="fs-6 text-secondary" style="line-height: 1.8; text-align: justify;">
+                        {!! nl2br(e($especie->descripcion)) !!}
+                    </div>
+                </div>
+
+                @if($especie->imagenes->count() > 0)
+                    <h4 class="mb-4 fw-bold text-dark"><i class="bi bi-images me-2 text-primary"></i>Galería de Imágenes</h4>
+                    <div class="carousel-container mb-5">
+                        <div id="carouselEspecies" class="carousel slide" data-bs-ride="carousel">
+                            <div class="carousel-inner">
+                                @foreach($especie->imagenes as $key => $imagen)
+                                    <div class="carousel-item {{ $key == 0 ? 'active' : '' }}">
+                                        <img src="{{ asset('storage/' . $imagen->url) }}" alt="Imagen {{ $key + 1 }}">
+                                    </div>
+                                @endforeach
+                            </div>
+                            @if($especie->imagenes->count() > 1)
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carouselEspecies" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carouselEspecies" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon bg-dark rounded-circle p-2" aria-hidden="true"></span>
+                                </button>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+            </div>
+
+            <div class="col-lg-4">
+                @if($especie->media->count() > 0)
+                    <div class="mb-5">
+                        <h5 class="mb-3 fw-bold text-uppercase border-bottom pb-2 text-primary">Documentos Adjuntos</h5>
+                        <div class="d-flex flex-column gap-3">
+                            @foreach($especie->media as $medio)
+                                @php
+                                    $nombre_archivo = pathinfo($medio->archivo, PATHINFO_BASENAME);
+                                    $rutaDoc = str_starts_with($medio->archivo, 'public/') ? str_replace('public/', '', $medio->archivo) : $medio->archivo;
+                                    $urlDescarga = asset('storage/' . $rutaDoc);
+                                    
+                                    $icono = str_contains($medio->tipo, 'pdf') ? 'bi-file-earmark-pdf-fill text-danger' : 'bi-file-earmark-word-fill text-primary';
+                                @endphp
+                                <div class="file-card p-3 d-flex align-items-center justify-content-between">
+                                    <div class="d-flex align-items-center overflow-hidden me-2">
+                                        <div class="fs-1 me-3">
+                                            <i class="bi {{ $icono }}"></i>
+                                        </div>
+                                        <div class="text-truncate">
+                                            <h6 class="mb-0 text-truncate text-dark fw-bold" title="{{ $nombre_archivo }}">{{ $nombre_archivo }}</h6>
+                                            <small class="text-muted text-uppercase">{{ $medio->tipo }}</small>
+                                        </div>
+                                    </div>
+                                    <a href="{{ $urlDescarga }}" target="_blank" class="btn btn-sm btn-light border" title="Descargar">
+                                        <i class="bi bi-download text-success"></i>
+                                    </a>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
+                
+                {{-- Widget Volver --}}
+                <div class="card border-0 shadow-sm">
+                    <div class="card-body text-center">
+                        <a href="{{ url('/areas-protegidas#especies') }}" class="btn btn-outline-primary w-100 fw-bold">
+                            <i class="bi bi-arrow-left me-2"></i> Volver al listado
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-custom">
+        <div class="container">
+            <div class="row g-4 justify-content-between">
+                <div class="col-lg-4 col-md-6">
+                    <h5 class="footer-title">Información de Contacto</h5>
+                    <ul class="list-unstyled text-white opacity-90 small">
+                        <li class="mb-2"><i class="bi bi-envelope-fill text-warning me-2"></i> gobernaciondecochabamba@gobernaciondecochabamba.bo</li>
+                        <li class="mb-2"><i class="bi bi-telephone-fill text-warning me-2"></i> + (591) 71701056</li>
+                        <li><i class="bi bi-geo-alt-fill text-warning me-2"></i> Av. Aroma N°: O-327<br>Plaza San Sebastián</li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-4 col-md-12 text-center my-auto">
+                    <img src="{{ url('img/logo3.png') }}" alt="Logo Footer" height="80" class="mb-3">
+                </div>
+
+                <div class="col-lg-3 col-md-6 text-md-end">
+                    <h5 class="footer-title">Redes Sociales</h5>
+                    <div class="d-flex justify-content-md-end gap-3">
+                        <a href="https://www.facebook.com/GobernacionDeCochabamba" class="btn btn-outline-light rounded p-2" target="_blank"><i class="bi bi-facebook fs-5"></i></a>
+                        <a href="https://www.youtube.com/@gobernaciondecochabamba8326" class="btn btn-outline-light rounded p-2" target="_blank"><i class="bi bi-youtube fs-5"></i></a>
+                        <a href="https://www.tiktok.com/@gobernaciondecochabamba" class="btn btn-outline-light rounded p-2" target="_blank"><i class="bi bi-tiktok fs-5"></i></a>
+                    </div>
+                </div>
+            </div>
             
-            kmlStyles += `
-                <Style id="${styleId}_marker">
-                    <IconStyle>
-                        <color>${kmlColorLinea}</color>
-                        <Icon><href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href></Icon>
-                        <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
-                    </IconStyle>
-                </Style>`;
-        });
+            <hr class="border-white mt-5 opacity-25">
+            <div class="text-center small opacity-75">
+                Programa Gestión de la Biodiversidad (PGB) © {{ date('Y') }} Todos los derechos reservados.
+            </div>
+        </div>
+        <a href="https://wa.me/59171701056" target="_blank" class="whatsapp-float">
+            <img src="{{ asset('img/wsp.png') }}" alt="WhatsApp" width="55" class="shadow rounded-circle">
+        </a>
+    </footer>
 
-        // Generar KML
-        let kml = tokml(geojson, {
-            documentName: 'Zona {{ $zona->nombre }}',
-            documentDescription: 'Datos de polígonos y marcadores con colores aleatorios.',
-            name: 'name',
-            description: 'description',
-            style: (feature) => {
-                if (feature.properties && feature.properties.color) {
-                    const hexColor = feature.properties.color;
-                    const styleId = `style_${hexColor.replace('#', '')}`;
-                    return feature.geometry.type === 'Polygon' ? `#${styleId}_polygon` : `#${styleId}_marker`;
-                }
-                return '';
-            }
-        });
-
-        kml = kml.replace('</Document>', `${kmlStyles}</Document>`);
-
-        const blob = new Blob([kml], { type: 'application/vnd.google-earth.kml+xml' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = `zona_{{ $zona->nombre }}_${new Date().toISOString().slice(0,10)}.kml`;
-        link.click();
-    });
-    
-    // --- EXPORTACIÓN KMZ ---
-    document.getElementById('export-kmz').addEventListener('click', function (e) {
-        e.preventDefault();
-
-        const geojson = generarGeoJSONDesdeCoordenadas(coordenadas);
-        let kmlStyles = '';
-        const uniqueColors = new Set();
-
-        geojson.features.forEach(feature => {
-            if (feature.properties && feature.properties.color) {
-                uniqueColors.add(feature.properties.color);
-            }
-        });
-
-        uniqueColors.forEach(hexColor => {
-            const kmlColorLinea = hexToKmlColor(hexColor, 'ff');
-            const kmlColorRelleno = hexToKmlColor(hexColor, '80');
-            const styleId = `style_${hexColor.replace('#', '')}`;
-            
-            kmlStyles += `<Style id="${styleId}_polygon"><LineStyle><color>${kmlColorLinea}</color><width>3</width></LineStyle><PolyStyle><color>${kmlColorRelleno}</color></PolyStyle></Style>`;
-            kmlStyles += `<Style id="${styleId}_marker"><IconStyle><color>${kmlColorLinea}</color><Icon><href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href></Icon><hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/></IconStyle></Style>`;
-        });
-
-        let kml = tokml(geojson, {
-            documentName: 'Zona {{ $zona->nombre }}',
-            documentDescription: 'Datos de polígonos y marcadores.',
-            name: 'name',
-            description: 'description',
-            style: (feature) => {
-                if (feature.properties && feature.properties.color) {
-                    const hexColor = feature.properties.color;
-                    const styleId = `style_${hexColor.replace('#', '')}`;
-                    return feature.geometry.type === 'Polygon' ? `#${styleId}_polygon` : `#${styleId}_marker`;
-                }
-                return '';
-            }
-        });
-
-        kml = kml.replace('</Document>', `${kmlStyles}</Document>`);
-
-        const zip = new JSZip();
-        zip.file('doc.kml', kml);
-        
-        zip.generateAsync({ type: 'blob' }).then(blob => {
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `zona_{{ $zona->nombre }}_${new Date().toISOString().slice(0,10)}.kmz`;
-            link.click();
-        });
-    });
-
-    // --- EXPORTACIÓN SHP ---
-    document.getElementById('export-shp').addEventListener('click', function (e) {
-        e.preventDefault();
-
-        const geojson = generarGeoJSONDesdeCoordenadas(coordenadas);
-
-        shpwrite.download(geojson, {
-            folder: 'zona_shp', 
-            filename: `zona_{{ $zona->nombre }}_${new Date().toISOString().slice(0,10)}`,
-            types: {
-                point: 'Marcadores',
-                polygon: 'Poligonos'
-            }
-        });
-    });
-
-    // Configurar lightbox para las imágenes
-    if (typeof lightbox !== 'undefined') {
-        lightbox.option({
-            'resizeDuration': 200,
-            'wrapAround': true,
-            'albumLabel': 'Imagen %1 de %2'
-        });
-    }
-});
-
-</script>
-@endsection
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

@@ -46,7 +46,7 @@
             </div>
             
             <div class="card-body custom-scroll-area p-4">
-                <form action="{{ route('especies.update', $especie->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('especies.update', $especie) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 

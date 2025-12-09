@@ -14,7 +14,7 @@ class EspecieController extends Controller
 {
     public function index()
     {
-        $especies = Especie::with('imagenes')->get();
+        $especies = Especie::with('imagenes')->paginate(10); 
         return view('especies.index', compact('especies'));
     }
 
@@ -55,8 +55,6 @@ class EspecieController extends Controller
         if ($request->hasFile('documentos')) {
             foreach ($request->file('documentos') as $archivo) {
                 $ruta = $archivo->store('documentos', 'public');
-                
-                // Usamos str_contains para mayor seguridad detectando mime types
                 $tipo = str_contains($archivo->getMimeType(), 'pdf') ? 'pdf' : 'word';
 
                 $especie->media()->create([
@@ -106,8 +104,11 @@ class EspecieController extends Controller
         if ($request->has('eliminar_imagenes')) {
             foreach ($request->eliminar_imagenes as $imagen_id) {
                 $imagen = EspecieImagen::find($imagen_id);
+                // Validación extra de seguridad
                 if ($imagen && $imagen->especie_id == $especie->id) {
-                    Storage::disk('public')->delete($imagen->url);
+                    if(Storage::disk('public')->exists($imagen->url)){
+                        Storage::disk('public')->delete($imagen->url);
+                    }
                     $imagen->delete();
                 }
             }
@@ -129,7 +130,9 @@ class EspecieController extends Controller
             foreach ($request->eliminar_documentos as $doc_id) {
                 $doc = $especie->media()->find($doc_id);
                 if ($doc) {
-                    Storage::disk('public')->delete($doc->archivo);
+                    if(Storage::disk('public')->exists($doc->archivo)){
+                        Storage::disk('public')->delete($doc->archivo);
+                    }
                     $doc->delete();
                 }
             }
@@ -155,7 +158,7 @@ class EspecieController extends Controller
     {
         $especie->load(['imagenes', 'media']);
 
-        // 2. Eliminar Imágenes Físicas de la ESPECIE (No toca la zona)
+        // Eliminar Imágenes Físicas
         foreach ($especie->imagenes as $imagen) {
             if(Storage::disk('public')->exists($imagen->url)){
                 Storage::disk('public')->delete($imagen->url);
@@ -163,7 +166,7 @@ class EspecieController extends Controller
             $imagen->delete();
         }
 
-        // 3. Eliminar Documentos Físicos de la ESPECIE
+        // Eliminar Documentos Físicos
         foreach ($especie->media as $doc) {
             if(Storage::disk('public')->exists($doc->archivo)){
                 Storage::disk('public')->delete($doc->archivo);
