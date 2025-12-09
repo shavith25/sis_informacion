@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Departamento;
 use App\Models\Provincia;
 use App\Models\Media;
@@ -8,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Area;
 use App\Models\Zonas;
+
 class DepartamentoController extends Controller
 {
     function __construct()
@@ -20,8 +22,8 @@ class DepartamentoController extends Controller
 
     public function index()
     {
-        $departamentos =Departamento::paginate(5);
-        return view('limites.departamentos.index',compact('departamentos'));
+        $departamentos = Departamento::paginate(5);
+        return view('limites.departamentos.index', compact('departamentos'));
     }
 
     public function create()
@@ -89,11 +91,11 @@ class DepartamentoController extends Controller
         ]);
 
         if ($request->has('delete_media')) {
-                $medias = Media::whereIn('id', $request->delete_media)->get();
-                foreach ($medias as $media) {
-                    $media->delete();
-                }
+            $medias = Media::whereIn('id', $request->delete_media)->get();
+            foreach ($medias as $media) {
+                $media->delete();
             }
+        }
             
         if ($request->hasFile('media')) {
             foreach ($request->file('media') as $file) {
@@ -127,20 +129,21 @@ class DepartamentoController extends Controller
 
     public function getByDepartamento($id)
     {
-        $departamento = Departamento::resolveRouteBinding($id);
+        $departamento = Departamento::find($id);
 
         if (!$departamento) {
             return response()->json(['error' => 'Departamento no encontrado'], 404);
         }
-            $provincias = DB::table('provincias')
+        
+        $provincias = DB::table('provincias')
             ->select([
                 'id',
                 'nombre',
                 'tipo_geometria',
                 'geometria'
-                ])
-                ->where('id_departamento', $id)
-                ->get();
+            ])
+            ->where('id_departamento', $id)
+            ->get();
 
 
         return response()->json([

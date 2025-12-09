@@ -1,12 +1,10 @@
 @extends('layouts.app')
 
-@push('css')
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.css">
 
-    <link rel="stylesheet" href="{{ asset('css/mapa-areas/index.css') }}">
-@endpush
+<link rel="stylesheet" href="{{ asset('css/mapa-areas/index.css') }}">
 
 @section('content')
     <section class="section">
@@ -106,7 +104,7 @@
                                         <div class="tab-pane fade show active" id="tab4" role="tabpanel"
                                             aria-labelledby="tab4-tab">
 
-                                            <div style="height: 600px; display: flex; flex-direction: column;">
+                                            <div style="height: 600px; display: flex-direction: column;">
                                                 <div id="mensaje-exito-zona-incidencia"
                                                     class="alert alert-success mt-3 d-none"></div>
                                                 <div id="errores-zona-incidencia" class="alert alert-danger mt-3 d-none">
@@ -137,9 +135,7 @@
                                                                     <option value="inundacion">Inundación</option>
                                                                     <option value="sequia">Sequía</option>
                                                                     <option value="loteamiento">Loteamiento</option>
-                                                                    <option value="afectacion_biodiversidad">
-                                                                        Afectación a la biodiversidad
-                                                                    </option>
+                                                                    <option value="afectacion_biodiversidad">Afectación a la biodiversidad</option>
                                                                     <option value="otro">Otros</option>
                                                                 </select>
                                                             </div>
@@ -151,7 +147,7 @@
                                                                     class="form-label text-white">Zona:</label>
                                                                 <select name="zona_id" id="zona_id"
                                                                     class="form-control" required>
-                                                                    <option value="">Seleccione una área protegida</option>
+                                                                    <option value="">Seleccione una Área Protegida</option>
                                                                     @foreach ($zonas as $zona)
                                                                         <option value="{{ $zona->id }}"
                                                                             {{ old('zona_id') == $zona->id ? 'selected' : '' }}>
@@ -160,6 +156,7 @@
                                                                     @endforeach
                                                                 </select>
                                                             </div>
+
                                                             <div class="col-md-6">
                                                                 <label for="fecha_incidencia"
                                                                     class="form-label text-white">Fecha:</label>
@@ -223,7 +220,7 @@
                                                                 <button type="button"
                                                                     class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center p-2"
                                                                     id="image-upload-area-incidencia">
-                                                                    <i class="fas fa-plus-circle me-2"></i> Añadir Imagen(es)
+                                                                    <i class="fas fa-plus-circle me-2"></i> Subir Imagenes
                                                                     <span class="ms-auto badge bg-secondary"
                                                                         id="image-count-display-incidencia">0</span>
                                                                 </button>
@@ -239,7 +236,7 @@
                                                                 <button type="button"
                                                                     class="btn btn-outline-light w-100 d-flex align-items-center justify-content-center p-2"
                                                                     id="video-upload-area-incidencia">
-                                                                    <i class="fas fa-plus-circle me-2"></i> Añadir Video(s)
+                                                                    <i class="fas fa-plus-circle me-2"></i> Subir Videos
                                                                     <span class="ms-auto badge bg-secondary"
                                                                         id="video-count-display-incidencia">0</span>
                                                                 </button>
@@ -261,6 +258,7 @@
                                     </div>
 
                                 </div>
+
                                 <div class="map-tools d-flex flex-column align-items-left p-2">
                                     <button class="btn btn-light btn-xl " onclick="toggleCard()">
                                         <span
@@ -281,15 +279,10 @@
                                         </svg>
                                     </button>
                                     <div class="layer-container" onmouseleave="hideLayerPanel()">
-                                        <button id="layer-button" class="btn btn-light btn-xl layer-button"
-                                            onmouseenter="showLayerPanel()">
-                                            🗺️
-                                        </button>
-
                                         <div id="layer-panel" class="layer-panel">
 
                                             <div id="layerAccordion">
-                                                <div class="card bg-white text-black border-0">
+                                                <div class="card bg-white text-black border-2">
                                                     <div class="card-header p-1" id="headingBaseMap">
                                                         <h2 class="mb-0">
                                                             <button class="btn btn-link text-left text-black p-2 w-100"
@@ -368,5 +361,4 @@
     </script>
     <script src="{{ asset('js/mapa-areas/index.js') }}"></script>
 
-    <script></script>
 @endpush

@@ -2,223 +2,335 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reporte de Zonas y Áreas Protegidas</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 12px;
+            color: #333;
             margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            width: 100%;
             padding: 20px;
         }
 
-        h3 {
-            text-align: center;
-            margin-bottom: 20px;
+        /* --- UTILIDADES --- */
+        .text-center { text-align: center; }
+        .text-right { text-align: right; }
+        .text-bold { font-weight: bold; }
+        .mb-10 { margin-bottom: 10px; }
+        .mb-20 { margin-bottom: 20px; }
+        .w-100 { width: 100%; }
+        .uppercase { text-transform: uppercase; }
+
+        /* --- HEADER --- */
+        .header-container {
+            border-bottom: 2px solid #004a80; /* Azul Institucional */
+            padding-bottom: 10px;
+            margin-bottom: 30px;
+        }
+        
+        .header-title {
+            color: #004a80;
+            font-size: 18px;
+            margin: 0;
         }
 
-        table {
+        .header-subtitle {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        /* --- SECCIONES DE ÁREAS --- */
+        .area-container {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+        
+        .area-header {
+            background-color: #004a80;
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+            border-radius: 4px 4px 0 0;
+        }
+
+        /* --- ZONAS (Estilo Ficha) --- */
+        .zona-card {
+            border: 1px solid #ddd;
+            border-top: none; 
+            padding: 15px;
+            background-color: #fff;
+            margin-bottom: 15px;
+        }
+
+        .info-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
+        }
+        .info-table th {
+            text-align: left;
+            color: #555;
+            width: 120px;
+            vertical-align: top;
+            padding: 4px 0;
         }
 
-        table, th, td {
-            border: 1px solid black;
-            padding: 10px;
+        .info-table td {
+            color: #000;
+            padding: 4px 0;
+            vertical-align: top;
+        }
+
+        /* --- IMAGEN DEL MAPA --- */
+        .map-container {
+            border: 1px solid #eee;
+            padding: 5px;
+            background: #f9f9f9;
+            text-align: center;
+            border-radius: 4px;
+        }
+
+        .map-img {
+            max-height: 350px;
+            max-width: 100%;
+            object-fit: contain;
+        }
+
+        .no-img {
+            padding: 40px;
+            color: #999;
+            font-style: italic;
+            background: #f0f0f0;
+        }
+
+        /* --- TABLA DE EVENTOS --- */
+        .event-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 11px;
+        }
+        .event-table th {
+            background-color: #f1f1f1;
+            border-bottom: 2px solid #ddd;
+            padding: 6px;
             text-align: left;
         }
-
-        th {
-            background-color:#e3f2fd ; 
+        .event-table td {
+            border-bottom: 1px solid #eee;
+            padding: 6px;
         }
 
-        body {
-        font-family: Arial, sans-serif;
-        font-size: 11px; 
-        line-height: 1.4;
+        /* --- RESUMEN KPI (ESTADÍSTICAS) --- */
+        .kpi-table {
+            width: 100%;
+            border-spacing: 10px;
+            border-collapse: separate; 
         }
 
-        h3 {
-        font-size: 16px;
+        .kpi-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            padding: 15px;
+            text-align: center;
+            background: #fff;
         }
 
-        h4 {
-        font-size: 14px;
+        .kpi-number {
+            font-size: 24px;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
         }
 
-        table, th, td {
-        font-size: 11px;
+        .kpi-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: #777;
+            letter-spacing: 0.5px;
         }
+
+        /* Colores para KPIs */
+        .kpi-blue { border-top: 4px solid #004a80; color: #004a80; }
+        .kpi-green { border-top: 4px solid #28a745; color: #28a745; }
+        .kpi-red { border-top: 4px solid #dc3545; color: #dc3545; }
+        .kpi-orange { border-top: 4px solid #fd7e14; color: #fd7e14; }
+        .kpi-purple { border-top: 4px solid #6f42c1; color: #6f42c1; }
+        .kpi-cyan { border-top: 4px solid #17a2b8; color: #17a2b8; }
+        
     </style>
 </head>
 <body>
-    <div class="container">
-    <table style="width: 100%; border: none; margin-bottom: 15px;">
-            <tr>
-                <td style="width: 60px; border: none;">
-                    <img src="{{ public_path('img/imagen2.jpg') }}" alt="Logo" height="90">
-                </td>
-                <td style="text-align: right; border: none; font-size: 11px;">
-                    <strong>Programa Gestión de la Biodiversidad (PGB)</strong><br>
-                    Gobierno Autónomo Departamental de Cochabamba
-                </td>
-            </tr>
-        </table>
 
-        <h3 style="text-align: center;">Zonas por Áreas Protegidas</h3>
+    <table class="w-100 header-container">
+        <tr>
+            <td width="20%">
+                <img src="{{ public_path('img/imagen2.jpg') }}" alt="Logo" style="height: 80px; width: auto;">
+            </td>
+            <td width="80%" class="text-right">
+                <h1 class="header-title">GOBIERNO AUTÓNOMO DEPARTAMENTAL DE COCHABAMBA</h1>
+                <div class="header-subtitle">Programa Gestión de la Biodiversidad (PGB)</div>
+                <div style="font-size: 11px; color: #888; margin-top: 5px;">Fecha de reporte: {{ date('d/m/Y') }}</div>
+            </td>
+        </tr>
+    </table>
+
+    <h2 class="text-center mb-20" style="color: #333; text-decoration: underline;">REPORTE TÉCNICO DE ZONAS Y ÁREAS PROTEGIDAS</h2>
+
     @foreach($zonasPorArea as $area)
-    <div class="area-block">
-        <table class="zona-table">
-            <thead>
-                <tr>
-                    <th colspan="2" style="background-color: #dfe6e9; font-size: 16px; text-align: left;">
-                        Área Protegidas: {{ $area->area }}
-                    </th>
-                </tr>
-                <tr>
-                    <th>Nombre de Zona</th>
-                    <th>Descripción</th>
-                </tr>
-            </thead>
-            <tbody>
+        <div class="area-container">
+            <div class="area-header">
+                <span class="text-bold">ÁREA PROTEGIDA:</span> {{ strtoupper($area->area) }}
+            </div>
+
+            <div class="zona-card">
                 @if($area->zonas && count($area->zonas) > 0)
                     @foreach($area->zonas as $zona)
-                        @php
-                            $bgColor = $loop->index % 2 === 0 ? '#f2f2f2' : '#ffffff';
-                        @endphp
-
-                        <tr style="background-color: {{ $bgColor }};">
-                            <td>{{ $zona->nombre }}</td>
-                            <td>{{ $zona->descripcion }}</td>
-                        </tr>
-                        <tr style="background-color: {{ $bgColor }};">
-                            <td colspan="2">
-                                <strong>Imagen del Mapa:</strong><br>
-                                    @php
-                                        
-                                        $imagenMapa = $zona->historial->firstWhere('imagen_mapa', '!=', null)->imagen_mapa ?? null;
-                                    @endphp
-
-                                    @if($imagenMapa)
-                                        <img src="{{ $imagenMapa }}" alt="Mapa de Zona" style="width: 100%; max-height: 400px; object-fit: contain;">
-                                    @else
-                                        <div class="zona-img">Sin imagen disponible</div>
-                                    @endif
-
-                            </td>
-                        </tr>
                         
-                        @if($zona->eventos && count($zona->eventos) > 0)
-                            <tr style="background-color: {{ $bgColor }};">
-                                <td colspan="2">
-                                    <strong>Eventos:</strong>
-                                    <table style="width: 100%; margin-top: 10px; border: 1px solid #ccc; border-collapse: collapse;">
-                                        <thead>
-                                            <tr>
-                                                <th style="background-color: #f1f8e9;">Nombre</th>
-                                                <th style="background-color: #f1f8e9;">Descripción</th>
-                                                <th style="background-color: #f1f8e9;">Tipo</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach($zona->eventos as $evento)
-                                                <tr>
-                                                    <td>{{ $evento->titulo ?? 'Sin nombre' }}</td>
-                                                    <td>{{ $evento->descripcion ?? 'Sin descripción' }}</td>
-                                                    <td>{{ $evento->tipo ?? 'Sin descripción' }}</td>
-                                                </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
-                                </td>
+                        <table class="info-table">
+                            <tr>
+                                <th>Nombre de Zona:</th>
+                                <td class="text-bold" style="font-size: 13px;">{{ $zona->nombre }}</td>
                             </tr>
+                            <tr>
+                                <th>Descripción:</th>
+                                <td>{{ $zona->descripcion }}</td>
+                            </tr>
+                        </table>
+
+                        <div class="mb-10">
+                            <strong>Mapa Satelital de Referencia:</strong>
+                        </div>
+                        <div class="map-container mb-20">
+                            @php
+                                $imagenMapa = $zona->historial->firstWhere('imagen_mapa', '!=', null)->imagen_mapa ?? null;
+                            @endphp
+
+                            @if($imagenMapa)
+                                <img src="{{ $imagenMapa }}" class="map-img">
+                            @else
+                                <div class="no-img">No hay imagen cartográfica disponible para esta zona.</div>
+                            @endif
+                        </div>
+
+                        @if($zona->eventos && count($zona->eventos) > 0)
+                            <div class="mb-10" style="background: #f8f9fa; padding: 10px; border-left: 3px solid #004a80;">
+                                <strong style="color: #004a80;">Registro de Incidencias / Eventos:</strong>
+                                <table class="event-table">
+                                    <thead>
+                                        <tr>
+                                            <th width="30%">Evento</th>
+                                            <th width="50%">Detalle</th>
+                                            <th width="20%">Tipo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($zona->eventos as $evento)
+                                            <tr>
+                                                <td>{{ $evento->titulo ?? 'N/A' }}</td>
+                                                <td>{{ $evento->descripcion ?? 'Sin descripción' }}</td>
+                                                <td><span style="background: #eee; padding: 2px 5px; border-radius: 3px; font-size: 10px;">{{ strtoupper($evento->tipo) }}</span></td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
                         @endif
+
+                        @if(!$loop->last)
+                            <hr style="border: 0; border-top: 1px dashed #ccc; margin: 20px 0;">
+                        @endif
+
                     @endforeach
                 @else
-                    <tr>
-                        <td colspan="2" style="text-align: center; color: #888;">No hay zonas registradas para esta área</td>
-                    </tr>
+                    <div class="text-center" style="padding: 20px; color: #666;">
+                        No existen zonas registradas para esta área protegida.
+                    </div>
                 @endif
-            </tbody>
-        </table>
-    </div>
-@endforeach
+            </div>
+        </div>
+    @endforeach
 
-<table style="width: 100%; margin-bottom: 20px; border-collapse: collapse; text-align: center;">
-            
-            <tr>
-                <td colspan="3" style="background-color: #e3f2fd; padding: 15px; border: 1px solid #90caf9;">
-                    <div style="font-size: 20px; font-weight: bold; color: #0d47a1;">
-                        {{ $totalAreas }}
-                    </div>
-                    <div style="font-size: 12px; color: #555;">Total de Áreas Protegidas</div>
-                </td>
-                <td colspan="4" style="background-color: #f1f8e9; padding: 15px; border: 1px solid #a5d6a7;">
-                    <div style="font-size: 20px; font-weight: bold; color: #1b5e20;">
-                        {{ $totalZonas }}
-                    </div>
-                    <div style="font-size: 12px; color: #555;">Total de Zonas</div>
-                </td>
-            </tr>
-        
-            <tr>
-                <td style="background-color: #fff3e0; padding: 15px; border: 1px solid #ffcc80;">
-                    <div style="font-size: 18px; font-weight: bold; color: #e65100;">
-                        {{ $totalIncendios }}
-                    </div>
-                    <div style="font-size: 11px; color: #555;">Total de Incendios</div>
-                </td>
-                <td style="background-color: #fce4ec; padding: 15px; border: 1px solid #f8bbd0;">
-                    <div style="font-size: 18px; font-weight: bold; color: #c2185b;">
-                        {{ $totalAvasallamientos }}
-                    </div>
-                    <div style="font-size: 11px; color: #555;">Total de Avasallamientos</div>
-                </td>
-                <td style="background-color: #e0f7fa; padding: 15px; border: 1px solid #80deea;">
-                    <div style="font-size: 18px; font-weight: bold; color: #006064;">
-                        {{ $totalInundaciones }}
-                    </div>
-                    <div style="font-size: 11px; color: #555;">Total de Inundaciones</div>
-                </td>
-                <td style="background-color: #ede7f6; padding: 15px; border: 1px solid #b39ddb;">
-                    <div style="font-size: 18px; font-weight: bold; color: #4527a0;">
-                        {{ $totalOtros }}
-                    </div>
-                    <div style="font-size: 11px; color: #555;">Total de Otros</div>
-                </td>
-                <td style="background-color: #fffde7; padding: 15px; border: 1px solid #fff59d;">
-                    <div style="font-size: 18px; font-weight: bold; color: #f57f17;">
-                        {{ $totalSequias }}
-                    </div>
-                    <div style="font-size: 11px; color: #555;">Total de Sequías</div>
-                </td>
-                <td style="background-color: #f3e5f5; padding: 15px; border: 1px solid #ce93d8;">
-                    <div style="font-size: 18px; font-weight: bold; color: #6a1b9a;">
-                        {{ $totalLoteamientos }}
-                    </div>
-                    <div style="font-size: 11px; color: #555;">Total de Loteamientos</div>
-                </td>
-                <td style="background-color: #e8f5e9; padding: 15px; border: 1px solid #a5d6a7;">
-                    <div style="font-size: 18px; font-weight: bold; color: #2e7d32;">
-                        {{ $totalBiodiversidad }}
-                    </div>
-                    <div style="font-size: 11px; color: #555;">Afectación a la biodiversidad</div>
-                </td>
-            </tr>
-        </table>
-    </div>
+    <div style="page-break-before: always;"></div>
+
+    <h2 class="text-center mb-20" style="color: #004a80;">RESUMEN ESTADÍSTICO</h2>
+
+    <table class="kpi-table mb-20">
+        <tr>
+            <td width="50%">
+                <div class="kpi-card kpi-blue">
+                    <span class="kpi-number">{{ $totalAreas }}</span>
+                    <span class="kpi-label">Áreas Protegidas</span>
+                </div>
+            </td>
+            <td width="50%">
+                <div class="kpi-card kpi-green">
+                    <span class="kpi-number">{{ $totalZonas }}</span>
+                    <span class="kpi-label">Zonas Monitoreadas</span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <h4 style="margin-bottom: 10px; color: #555; border-bottom: 1px solid #ddd; padding-bottom: 5px;">Desglose de Incidencias</h4>
     
-    <div style="page-break-before: always; text-align: center;">
-        <h3 style="text-decoration: none !important;">Resumen en Gráfico de Problemas</h3>
+    <table class="kpi-table mb-20">
+        <tr>
+            <td>
+                <div class="kpi-card kpi-red">
+                    <span class="kpi-number">{{ $totalIncendios }}</span>
+                    <span class="kpi-label">Incendios</span>
+                </div>
+            </td>
+            <td>
+                <div class="kpi-card kpi-orange">
+                    <span class="kpi-number">{{ $totalAvasallamientos }}</span>
+                    <span class="kpi-label">Avasallamientos</span>
+                </div>
+            </td>
+            <td>
+                <div class="kpi-card kpi-cyan">
+                    <span class="kpi-number">{{ $totalInundaciones }}</span>
+                    <span class="kpi-label">Inundaciones</span>
+                </div>
+            </td>
+            <td>
+                <div class="kpi-card kpi-purple">
+                    <span class="kpi-number">{{ $totalLoteamientos }}</span>
+                    <span class="kpi-label">Loteamientos</span>
+                </div>
+            </td>
+        </tr>
+    </table>
 
+    <table class="kpi-table mb-20">
+        <tr>
+            <td width="33%">
+                <div class="kpi-card" style="border-top: 4px solid #f9ca24; color: #f9ca24;">
+                    <span class="kpi-number">{{ $totalSequias }}</span>
+                    <span class="kpi-label">Sequías</span>
+                </div>
+            </td>
+            <td width="33%">
+                <div class="kpi-card" style="border-top: 4px solid #6ab04c; color: #6ab04c;">
+                    <span class="kpi-number">{{ $totalBiodiversidad }}</span>
+                    <span class="kpi-label">Afect. Biodiversidad</span>
+                </div>
+            </td>
+            <td width="33%">
+                <div class="kpi-card" style="border-top: 4px solid #535c68; color: #535c68;">
+                    <span class="kpi-number">{{ $totalOtros }}</span>
+                    <span class="kpi-label">Otros</span>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+    <div class="text-center" style="margin-top: 30px; border: 1px solid #eee; padding: 20px; border-radius: 8px;">
+        <h4 class="text-center mb-10" style="color: #333;">Representación Gráfica Porcentual</h4>
         <img src="https://quickchart.io/chart?c={
-            type:'pie',
+            type:'doughnut',
             data: {
                 labels:[
                     'Incendios',
@@ -238,11 +350,25 @@
                         {{ $totalLoteamientos }},
                         {{ $totalBiodiversidad }},
                         {{ $totalOtros }}
+                    ],
+                    backgroundColor: [
+                        'rgb(220, 53, 69)',
+                        'rgb(253, 126, 20)',
+                        'rgb(23, 162, 184)',
+                        'rgb(249, 202, 36)',
+                        'rgb(111, 66, 193)',
+                        'rgb(40, 167, 69)',
+                        'rgb(83, 92, 104)'
                     ]
                 }]
+            },
+            options: {
+                plugins: {
+                    datalabels: { display: true, color: 'white' }
+                }
             }
         }" 
-        alt="Gráficos de Pastel de Problemas" style="width: 500px; height: auto;">
+        alt="Gráfico de Problemas" style="width: 450px; height: auto;">
     </div>
 
 </body>
