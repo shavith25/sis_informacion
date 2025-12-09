@@ -47,8 +47,8 @@
                         </div>
                     @endif
 
-                    {{-- FORMULARIO: Flex 1 para ocupar espacio y min-height 0 para permitir scroll interno --}}
-                    <form action="{{ route('zonas.update', $zona->id) }}" method="POST" enctype="multipart/form-data" id="zona-form" 
+            
+                    <form action="{{ route('zonas.update', $zona) }}" method="POST" enctype="multipart/form-data" id="zona-form" 
                         style="display: flex; flex-direction: column; flex: 1; min-height: 0;">
                         @csrf
                         @method('PUT')
@@ -204,8 +204,7 @@
                             </div>
                         </div>
                         
-                        {{-- FOOTER: Fijo al final del formulario, siempre visible dentro del layout --}}
-                        <div class="card-footer bg-whitesmoke text-right" style="flex-shrink: 0;">
+                        <div class="card-footer bg-whitesmoke text-left" style="flex-shrink: 0;">
                             <a href="{{ route('zonas.index') }}" class="btn btn-secondary mr-2">
                                 <i class="fas fa-times mr-1"></i> Cancelar
                             </a>

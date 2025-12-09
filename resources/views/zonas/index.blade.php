@@ -29,6 +29,16 @@
 
         <div class="row zona-card-list" style="max-height: calc(100vh - 250px); overflow-y: auto; padding: 5px;">
             @forelse ($zonas as $zona)
+                
+                {{-- ENCRIPTACIÓN MANUAL SEGURA --}}
+                @php
+                    try {
+                        $idEncriptado = Illuminate\Support\Facades\Crypt::encryptString($zona->id);
+                    } catch (\Exception $e) {
+                        $idEncriptado = $zona->id; // Fallback
+                    }
+                @endphp
+
                 <div class="col-xl-4 col-lg-6 col-md-6 mb-4">
                     <div class="card h-100 shadow-sm custom-zona-card">
                         
@@ -86,24 +96,29 @@
                             </p>
 
                             <div class="mt-auto d-flex justify-content-between border-top pt-3">
-                                <a href="{{ route('zonas.show', $zona) }}" class="btn btn-outline-info btn-sm">
+                                {{-- DETALLES --}}
+                                <a href="{{ route('zonas.show', $idEncriptado) }}" class="btn btn-outline-info btn-sm">
                                     <i class="fas fa-eye"></i> Detalles
                                 </a>
                                 
                                 <div>
-                                    <a href="{{ route('zonas.edit', $zona) }}" class="btn btn-warning btn-sm text-white" title="Editar">
+                                    {{-- EDITAR --}}
+                                    <a href="{{ route('zonas.edit', $idEncriptado) }}" class="btn btn-warning btn-sm text-white" title="Editar">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
                                     
+                                    {{-- CAMBIAR ESTADO --}}
                                     <button type="button" 
                                             class="btn btn-{{ $zona->estado ? 'danger' : 'success' }} btn-sm ml-1"
-                                            onclick="confirmarEstado({{ $zona->id }}, {{ $zona->estado }})"
+                                            onclick="confirmarEstado('{{ $idEncriptado }}', {{ $zona->estado }})" {{-- Pasamos ID encriptado --}}
                                             title="{{ $zona->estado ? 'Desactivar' : 'Activar' }}">
                                         <i class="fas {{ $zona->estado ? 'fa-toggle-off' : 'fa-toggle-on' }}"></i> 
                                         {{ $zona->estado ? 'Desactivar' : 'Activar' }}
                                     </button>
 
-                                    <form id="form-status-{{ $zona->id }}" action="{{ route('zonas.change-status', $zona) }}" method="POST" style="display: none;">
+                                    {{-- FORMULARIOS OCULTOS --}}
+                                    {{-- Usamos un ID único basado en el loop para el selector JS, pero la ruta tiene el ID encriptado --}}
+                                    <form id="form-status-{{ $loop->index }}" action="{{ route('zonas.change-status', $idEncriptado) }}" method="POST" style="display: none;">
                                         @csrf @method('PATCH')
                                     </form>
                                 </div>
@@ -120,7 +135,6 @@
             @endforelse
         </div>
         
-        {{-- Paginación corregida si usas paginate() en el controlador --}}
         @if(method_exists($zonas, 'links'))
             <div class="d-flex justify-content-center mt-3">
                 {{ $zonas->links() }}
@@ -131,8 +145,13 @@
 @endsection
 
 @push('js')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    function confirmarEstado(id, estadoActual) {
+    function confirmarEstado(idEncriptado, estadoActual) {
+        // Encontramos el índice basado en el botón clickeado o buscamos el formulario correcto
+        // Para simplificar, buscamos el formulario cuya acción termine en este ID encriptado
+        const form = document.querySelector(`form[action*="${idEncriptado}"]`);
+        
         const accion = estadoActual ? 'desactivar' : 'activar';
         const colorBtn = estadoActual ? '#d33' : '#28a745';
         
@@ -146,8 +165,8 @@
             confirmButtonText: 'Sí, proceder',
             cancelButtonText: 'Cancelar'
         }).then((result) => {
-            if (result.isConfirmed) {
-                document.getElementById('form-status-' + id).submit();
+            if (result.isConfirmed && form) {
+                form.submit();
             }
         });
     }
@@ -156,7 +175,6 @@
 
 @push('css')
 <style>
-    /* Botón Registrar - Azul puro */
     .btn-primary {
         background-color: #6777ef !important;
         border-color: #6777ef !important;
@@ -167,8 +185,6 @@
         background-color: #394eea !important;
         box-shadow: 0 2px 6px #828db0;
     }
-
-    /* Tarjetas */
     .custom-zona-card {
         border: none;
         border-radius: 8px;
@@ -179,8 +195,6 @@
         transition: transform 0.3s;
         box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
     }
-
-    /* Contenedor de imagen */
     .card-img-top-container {
         height: 200px;
         width: 100%;

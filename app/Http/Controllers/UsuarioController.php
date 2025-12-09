@@ -36,9 +36,9 @@ class UsuarioController extends Controller
         return view('usuarios.crear', compact('roles'));
     }
 
-    public function show()
+    public function show($id)
     {
-        //
+        return redirect()->route('usuarios.index');
     }
 
     public function store(Request $request)

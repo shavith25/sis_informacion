@@ -6,7 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\ZonaMedio;
 use App\Models\Especie;
+use Illuminate\Support\Facades\Crypt; 
+use Illuminate\Contracts\Encryption\DecryptException;
+
 class Zonas extends Model
+
 {
     use HasFactory;
 
@@ -26,32 +30,17 @@ class Zonas extends Model
 
     public function getRouteKey()
     {
-        $rand = rand(10000, 99999);
-        $mezcla = $this->getKey() ^ $rand; // Operación XOR para mezclar los valores
-        return dechex($rand) . 'x' . dechex($mezcla);
+        return Crypt::encryptString($this->getKey());
     }
 
     public function resolveRouteBinding($value, $field = null)
     {
-        if (is_numeric($value)) {
-            return $this->where('id', $value)->firstOrFail();
+        try {
+            $idReal = Crypt::decryptString($value);
+            return $this->where('id', $idReal)->firstOrFail();
+        } catch (DecryptException $e) {
+            abort(404);
         }
-
-        if (str_contains($value, 'x')) {
-            try {
-                $partes = explode('x', $value);
-                if (count($partes) === 2) {
-                    $aleatorio = hexdec($partes[0]);
-                    $mezcla = hexdec($partes[1]);
-                    $idReal = $mezcla ^ $aleatorio;
-
-                    return $this->where('id', $idReal)->firstOrFail();
-                }
-            } catch (\Exception $e) {
-                // Ignorar errores y continuar
-            }
-        }
-        abort(404);
     }
 
     public function medios()

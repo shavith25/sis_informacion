@@ -23,25 +23,6 @@
                         </div>
 
                         <div class="card-body">
-                            {{-- Alertas de éxito/error --}}
-                            @if (session('success'))
-                                <div class="alert alert-success alert-dismissible show fade">
-                                    <div class="alert-body">
-                                        <button class="close" data-dismiss="alert"><span>&times;</span></button>
-                                        <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
-                                    </div>
-                                </div>
-                            @endif
-                            
-                            @if (session('error'))
-                                <div class="alert alert-danger alert-dismissible show fade">
-                                    <div class="alert-body">
-                                        <button class="close" data-dismiss="alert"><span>&times;</span></button>
-                                        <i class="fas fa-exclamation-circle mr-2"></i> {{ session('error') }}
-                                    </div>
-                                </div>
-                            @endif
-
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover" id="table-roles">
                                     <thead style="background-color: #6777ef;">
