@@ -38,22 +38,20 @@
                                 </div>
                             @endif
 
+                            {{-- ENCRIPTACIÓN MANUAL CON CRYPT DE LARAVEL --}}
                             @php
-                                $randUpdate = rand(10000, 99999);
-                                $tokenUpdate = dechex($randUpdate) . 'x' . dechex($role->id ^ $randUpdate);
+                                $idEncriptado = Illuminate\Support\Facades\Crypt::encryptString($role->id);
                             @endphp
 
-                            {!! Form::model($role, ['method' => 'PATCH', 'route' => ['roles.update', $tokenUpdate]]) !!}
+                            {!! Form::model($role, ['method' => 'PATCH', 'route' => ['roles.update', $idEncriptado]]) !!}
 
                             <div class="form-scroll-container">
                                 <div class="p-4">
-
                                     <div class="row">
                                         <div class="col-12">
                                             <div class="form-group">
                                                 <label for="name" class="font-weight-bold">
-                                                    <i class="fas fa-user-tag text-primary"></i> Nombre del Rol <span
-                                                        class="text-danger">*</span>
+                                                    <i class="fas fa-user-tag text-primary"></i> Nombre del Rol <span class="text-danger">*</span>
                                                 </label>
                                                 {!! Form::text('name', null, ['class' => 'form-control', 'required']) !!}
                                             </div>
@@ -78,8 +76,7 @@
                                                             <div class="col-md-6 col-lg-4 mb-2">
                                                                 <div class="custom-control custom-checkbox">
                                                                     {{ Form::checkbox('permission[]', $value->id, in_array($value->id, $rolePermissions) ? true : false, ['class' => 'custom-control-input', 'id' => 'perm_' . $value->id]) }}
-                                                                    <label class="custom-control-label"
-                                                                        for="perm_{{ $value->id }}">
+                                                                    <label class="custom-control-label" for="perm_{{ $value->id }}">
                                                                         {{ $value->name }}
                                                                     </label>
                                                                 </div>
@@ -90,15 +87,14 @@
                                             </div>
                                         @endforeach
                                     </div>
-
                                     <div class="mb-2"></div>
                                 </div>
                             </div>
+                            
                             <div class="card-footer text-right bg-whitesmoke border-top">
                                 <a href="{{ route('roles.index') }}" class="btn btn-secondary mr-2">
                                     <i class="fas fa-times"></i> Cancelar
                                 </a>
-
                                 <button type="submit" class="btn btn-primary btn-action-custom">
                                     <i class="fas fa-sync-alt mr-1"></i> Actualizar Rol
                                 </button>
@@ -112,135 +108,3 @@
         </div>
     </section>
 @endsection
-
-@push('css')
-    <style>
-        /* Estilos Base */
-        .section-header h1 {
-            color: #34395e;
-            font-size: 24px;
-            font-weight: 700;
-        }
-
-        /* Estilo del Card Principal */
-        .card-fixed-height {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.03);
-            border-radius: 5px;
-            border: none;
-            display: flex;
-            flex-direction: column;
-            background: #fff;
-        }
-
-        /* CONFIGURACIÓN DEL SCROLL */
-        .form-scroll-container {
-            max-height: 60vh;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-
-        /* Scrollbar Estilizado */
-        .form-scroll-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .form-scroll-container::-webkit-scrollbar-track {
-            background: #f1f1f1;
-            border-radius: 4px;
-        }
-
-        .form-scroll-container::-webkit-scrollbar-thumb {
-            background: #c5caff;
-            border-radius: 4px;
-        }
-
-        .form-scroll-container::-webkit-scrollbar-thumb:hover {
-            background: #aeb4f5;
-        }
-
-        /* Divisores de Sección */
-        .form-divider {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .form-section-title {
-            font-weight: 700;
-            color: #6777ef;
-            margin: 0;
-            padding-right: 15px;
-        }
-
-        .form-divider::after {
-            content: "";
-            flex: 1;
-            height: 1px;
-            background: #e4e6fc;
-        }
-
-        /* Inputs y Checkboxes */
-        .form-control {
-            border-radius: 0.25rem;
-            height: 42px;
-        }
-
-        .form-control:focus {
-            border-color: #6777ef;
-            box-shadow: 0 0 0 0.2rem rgba(103, 119, 239, .25);
-        }
-
-        .custom-control-label {
-            cursor: pointer;
-            user-select: none;
-        }
-
-        /* Botones */
-        .btn-primary {
-            background-color: #6777ef;
-            border-color: #6777ef;
-            box-shadow: 0 2px 6px #acb5f6;
-            color: #fff;
-        }
-
-        .btn-primary:hover,
-        .btn-primary:focus,
-        .btn-primary:active {
-            background-color: #394eea !important;
-            border-color: #394eea !important;
-            color: #fff !important;
-        }
-
-        .btn-secondary {
-            background-color: #cdd3d8;
-            border-color: #cdd3d8;
-            color: #212529;
-        }
-
-        /* Estilo para el botón de acción (Azul Sólido) */
-        .btn-action-custom {
-            background-color: #2f55d4 !important;
-            border-color: #2f55d4 !important;
-            color: #ffffff !important;
-            box-shadow: none !important;
-            border-radius: 50px;
-            padding: 0.55rem 1.5rem;
-            font-weight: 600;
-            transition: opacity 0.3s ease;
-        }
-
-        /* Estados Hover / Focus / Active */
-        .btn-action-custom:hover,
-        .btn-action-custom:focus,
-        .btn-action-custom:active {
-            background-color: #2f55d4 !important;
-            /* Se mantiene AZUL */
-            border-color: #2f55d4 !important;
-            color: #ffffff !important;
-            box-shadow: none !important;
-            outline: none !important;
-            opacity: 0.9;
-            transform: none !important;
-        }
-    </style>
-@endpush

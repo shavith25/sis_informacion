@@ -12,77 +12,77 @@
 
         <div class="section-body">
             <div class="row">
-                <div class="col-lg-8">
-                    <div class="card">
+                <div class="col-lg-12"> <div class="card">
                         <div class="card-header">
-                            <h4><i class="fas fa-users-cog mr-2"></i> Listado de Roles</h4>
+                            <h4><i class="fas fa-list mr-2"></i> Listado de Roles</h4>
                             <div class="card-header-action">
-                                <a href="{{ route('roles.create') }}" class="btn btn-primary btn-create">
+                                <a href="{{ route('roles.create') }}" class="btn btn-create">
                                     <i class="fas fa-plus mr-1"></i> Nuevo Rol
                                 </a>
                             </div>
                         </div>
 
                         <div class="card-body">
-                            @if (session('error'))
-                                <div class="alert alert-danger alert-dismissible show fade">
+                            {{-- Alertas de éxito/error --}}
+                            @if (session('success'))
+                                <div class="alert alert-success alert-dismissible show fade">
                                     <div class="alert-body">
-                                        <button class="close" data-dismiss="alert">
-                                            <span>&times;</span>
-                                        </button>
-                                        <i class="fas fa-exclamation-circle mr-2"></i> {{ session('error') }}
+                                        <button class="close" data-dismiss="alert"><span>&times;</span></button>
+                                        <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
                                     </div>
                                 </div>
                             @endif
-
-                            @if ($errors->has('name'))
+                            
+                            @if (session('error'))
                                 <div class="alert alert-danger alert-dismissible show fade">
                                     <div class="alert-body">
-                                        <button class="close" data-dismiss="alert">
-                                            <span>&times;</span>
-                                        </button>
-                                        <i class="fas fa-exclamation-circle mr-2"></i> {{ $errors->first('name') }}
+                                        <button class="close" data-dismiss="alert"><span>&times;</span></button>
+                                        <i class="fas fa-exclamation-circle mr-2"></i> {{ session('error') }}
                                     </div>
                                 </div>
                             @endif
 
                             <div class="table-responsive">
                                 <table class="table table-striped table-hover" id="table-roles">
-                                    <thead>
-                                        <tr class="bg-light text-white">
-                                            <th width="70%">Nombre del Rol</th>
-                                            <th class="text-center">Acciones</th>
+                                    <thead style="background-color: #6777ef;">
+                                        <tr class="text-white">
+                                            <th width="70%" style="color:white;">Nombre del Rol</th>
+                                            <th class="text-center" style="color:white;">Acciones</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         @foreach ($roles as $role)
                                             <tr>
                                                 <td>
-                                                    <span class="badge badge-light" style="font-size: 1em;">
-                                                        <i class="fas fa-user-tag mr-2"></i> {{ $role->name }}
+                                                    <span class="badge badge-light" style="font-size: 0.9em; border: 1px solid #eee;">
+                                                        <i class="fas fa-user-tag mr-2 text-primary"></i> {{ $role->name }}
                                                     </span>
                                                 </td>
 
+                                                {{-- CORRECCIÓN 1: Usar Crypt para coincidir con el Controlador --}}
                                                 @php
-                                                    $rand = rand(10000, 99999);
-                                                    $token = dechex($rand) . 'x' . dechex($role->id ^ $rand);
+                                                    $idEncriptado = \Illuminate\Support\Facades\Crypt::encryptString($role->id);
                                                 @endphp
 
                                                 <td class="text-center">
-                                                    <a href="{{ route('roles.edit', $token) }}"
-                                                        class="btn btn-icon btn-sm btn-action-blue mr-1" data-toggle="tooltip"
+                                                    {{-- Botón Editar --}}
+                                                    <a href="{{ route('roles.edit', $idEncriptado) }}"
+                                                        class="btn btn-icon btn-action-blue mr-1" data-toggle="tooltip"
                                                         title="Editar rol">
-                                                        <i class="fas fa-edit"></i>
+                                                        <i class="fas fa-pencil-alt"></i>
                                                     </a>
 
-                                                    <button class="btn btn-icon btn-sm btn-danger" data-toggle="tooltip"
+                                                    {{-- Botón Eliminar --}}
+                                                    {{-- Nota: El ID del form usa el ID real para el JS, pero el ACTION usa el encriptado --}}
+                                                    <button class="btn btn-icon btn-action-red" data-toggle="tooltip"
                                                         title="Eliminar rol"
                                                         onclick="confirmDelete('{{ $role->id }}', '{{ $role->name }}')">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
                                                     
+                                                    {{-- CORRECCIÓN 2: La ruta destroy recibe el ID encriptado --}}
                                                     <form id="delete-form-{{ $role->id }}"
-                                                        action="{{ route('roles.destroy', $role->id) }}" method="POST"
+                                                        action="{{ route('roles.destroy', $idEncriptado) }}" method="POST"
                                                         style="display: none;">
                                                         @csrf
                                                         @method('DELETE')
@@ -107,86 +107,72 @@
 
 @push('css')
     <style>
-        .btn-create {
+    /* Botón Nuevo Rol */
+    .btn-create {
         background-color: #2f55d4 !important;
         border-color: #2f55d4 !important;
         color: #ffffff !important;
         border-radius: 50px;
         padding: 0.5rem 1.25rem;
         font-weight: 600;
-        box-shadow: none !important;
-        transition: opacity 0.3s ease;
+        box-shadow: 0 2px 6px rgba(47, 85, 212, 0.4) !important;
+        transition: all 0.3s ease;
     }
 
-    .btn-create:hover, .btn-create:focus, .btn-create:active {
-        background-color: #2f55d4 !important;
-        color: #ffffff !important;
-        box-shadow: none !important;
-        opacity: 0.9;
+    .btn-create:hover {
+        background-color: #2442a8 !important;
+        transform: translateY(-2px);
     }
 
-    /* --- Botones de Acción en la Tabla (Circulares) --- */
+    /* Botones de Acción Circulares */
     .btn-icon {
-        width: 32px;
-        height: 32px;
+        width: 35px;
+        height: 35px;
         padding: 0;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         border-radius: 50% !important; 
         border: none !important;
-        box-shadow: none !important;
-        transition: transform 0.2s ease, opacity 0.2s;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1) !important;
+        transition: all 0.2s ease;
     }
     
-    /* Estilo Azul (Editar) */
+    /* Editar (Azul) */
     .btn-action-blue {
         background-color: #2f55d4 !important;
         color: #ffffff !important;
     }
     
     .btn-action-blue:hover {
-        background-color: #2f55d4 !important;
+        background-color: #1e3a8a !important;
         color: #ffffff !important;
-        opacity: 0.85;
-        transform: translateY(-2px); 
+        transform: scale(1.1); 
     }
 
+    /* CORRECCIÓN 3: Eliminar estilo duplicado que ponía el botón rojo en azul */
+    /* Eliminar (Rojo) */
     .btn-action-red {
         background-color: #fc544b !important;
         color: #ffffff !important;
     }
 
     .btn-action-red:hover {
-        background-color: #fc544b !important;
+        background-color: #d63026 !important;
         color: #ffffff !important;
-        opacity: 0.85;
-        transform: translateY(-2px);
+        transform: scale(1.1);
     }
 
-    .btn-action-red {
-        background-color: #2f55d4 !important; 
-        color: #ffffff !important;
-    }
-
-    .btn-action-red:hover {
-        background-color: #2f55d4 !important;
-        opacity: 0.9;
-    }
-
-    /* Otros estilos de la tabla */
+    /* Tabla */
     .table th {
         font-weight: 600;
         text-transform: uppercase;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         letter-spacing: 0.5px;
+        border: none;
     }
-    .badge-light {
-        background-color: #f8f9fa;
-        color: #444;
-        font-weight: 500;
-        padding: 0.5em 1em;
-        border: 1px solid #eee;
+    .table td {
+        vertical-align: middle;
     }
     </style>
 @endpush
@@ -199,41 +185,20 @@
         });
 
         function confirmDelete(id, name) {
-            console.log('entra')
             Swal.fire({
                 title: '¿Eliminar Rol?',
-                html: `Estás a punto de eliminar el rol <strong>${name}</strong>. ¿Deseas continuar?`,
+                html: `Estás a punto de eliminar el rol <strong>${name}</strong>.<br>Esta acción no se puede deshacer.`,
                 icon: 'warning',
                 showCancelButton: true,
-                confirmButtonColor: '#6777ef',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Sí, eliminar',
+                confirmButtonColor: '#fc544b',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: '<i class="fas fa-trash"></i> Sí, eliminar',
                 cancelButtonText: 'Cancelar'
             }).then((result) => {
                 if (result.isConfirmed) {
                     document.getElementById(`delete-form-${id}`).submit();
                 }
             });
-
         }
     </script>
-    @if (session('error'))
-        <script>
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: '{{ session('error') }}',
-            });
-        </script>
-    @endif
-
-    @if (session('success'))
-        <script>
-            Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: '{{ session('success') }}',
-            });
-        </script>
-    @endif
 @endpush
