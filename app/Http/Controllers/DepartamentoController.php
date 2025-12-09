@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Area;
 use App\Models\Zonas;
+use Illuminate\Support\Facades\Crypt;
 
 class DepartamentoController extends Controller
 {
@@ -65,10 +66,6 @@ class DepartamentoController extends Controller
 
     public function edit(Departamento $departamento)
     {
-        if (is_string($departamento->geometria)) {
-            $departamento->geometria = json_decode($departamento->geometria, true);
-        }
-
         return view('limites.departamentos.edit', compact('departamento'));
     }
 
@@ -129,22 +126,23 @@ class DepartamentoController extends Controller
 
     public function getByDepartamento($id)
     {
-        $departamento = Departamento::find($id);
+        try {
+            // Intentamos desencriptar primero
+            $idReal = Crypt::decryptString($id);
+            $departamento = Departamento::find($idReal);
+        } catch (\Exception $e) {
+            // Si falla, asumimos que podría ser un ID numérico directo (legacy)
+            $departamento = Departamento::find($id);
+        }
 
         if (!$departamento) {
             return response()->json(['error' => 'Departamento no encontrado'], 404);
         }
         
         $provincias = DB::table('provincias')
-            ->select([
-                'id',
-                'nombre',
-                'tipo_geometria',
-                'geometria'
-            ])
-            ->where('id_departamento', $id)
+            ->select(['id', 'nombre', 'tipo_geometria', 'geometria'])
+            ->where('id_departamento', $departamento->id) // Usamos el ID real
             ->get();
-
 
         return response()->json([
             'departamento_nombre' => $departamento->nombre,

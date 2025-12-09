@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\Provincia;
 use App\Models\Departamento;
 use App\Models\Media;
+use Illuminate\Support\Facades\Crypt;
+
 class ProvinciaController extends Controller
 {
     function __construct()
@@ -34,7 +36,7 @@ class ProvinciaController extends Controller
      */
     public function create()
     {
-        $departamentos = Departamento::select('id', 'nombre')->get();
+        $departamentos = Departamento::all();
         return view('limites.provincias.create', compact('departamentos'));
     }
 
@@ -46,48 +48,27 @@ class ProvinciaController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate(
-            [
-                'id_departamento' => 'required|exists:departamentos,id',
-                'nombre'          => 'required|string|max:255',
-                'descripcion'     => 'nullable|string',
-                'geometria'       => 'nullable|json',
-                'media.*'         => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov,avi',
-            ],
-            [
-                'id_departamento.required' => 'Debe seleccionar un departamento para la provincia.',
-                'nombre.required'          => 'El campo nombre es obligatorio.',
-                'geometria.json'           => 'El formato de la geometría no es válido.',
-                'media.*.mimes'            => 'Solo se permiten archivos de tipo: jpg, jpeg, png, gif, mp4, mov, avi.',
-            ]
-        );
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'id_departamento' => 'required|exists:departamentos,id',
+            'descripcion' => 'nullable|string',
+            'geometria' => 'required|json',
+            'media.*' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,mov,avi|max:20480'
+        ]);
+
+        $provincia = Provincia::create([
+            'nombre' => $request->nombre,
+            'id_departamento' => $request->id_departamento,
+            'descripcion' => $request->descripcion,
+            'tipo_geometria' => 'geojson',
+            'geometria' => json_decode($request->geometria, true)
+        ]);
         
-        // Usar los datos validados para la creación
-        $provinciaData = $validatedData;
-        $provinciaData['geometria'] = !empty($validatedData['geometria']) ? json_decode($validatedData['geometria'], true) : null;
-        $provinciaData['tipo_geometria'] = !empty($validatedData['geometria']) ? 'geojson' : null;
-
-        try {
-            $provincia = Provincia::create($provinciaData);
-        } catch (\Illuminate\Database\QueryException $e) {
-
-            if ($e->getCode() == '23505') {
-                return redirect()->back()
-                    ->withInput() // Mantiene los datos del formulario que el usuario ya llenó.
-                    ->with('error', 'Error: Ha ocurrido un conflicto de ID en la base de datos. Esto puede deberse a una desincronización. Por favor, intente guardar de nuevo. Si el problema persiste, contacte al administrador.');
-            }
-
-            throw $e;
-        }
-
-
         if ($request->hasFile('media')) {
             foreach ($request->file('media') as $archivo) {
-                $path = $archivo->store('provincias', 'public');
-                $provincia->media()->create([
-                    'archivo' => $path,
-                    'tipo' => $archivo->getClientMimeType()
-                ]);
+                $ruta = $archivo->store('provincias', 'public');
+                $tipo = str_starts_with($archivo->getMimeType(), 'video') ? 'video' : 'imagen';
+                $provincia->media()->create(['tipo' => $tipo, 'archivo' => $ruta]);
             }
         }
 
@@ -113,11 +94,7 @@ class ProvinciaController extends Controller
      */
     public function edit(Provincia $provincia)
     {
-        $departamentos = Departamento::select('id', 'nombre')->get();
-        
-        if (is_string($provincia->geometria)) {
-            $provincia->geometria = json_decode($provincia->geometria, true);
-        }
+        $departamentos = Departamento::all();
 
         return view('limites.provincias.edit', compact('provincia', 'departamentos'));
     }
@@ -132,47 +109,30 @@ class ProvinciaController extends Controller
 
      public function update(Request $request, Provincia $provincia)
     {
-        $validatedData = $request->validate(
-            [
-                'id_departamento' => 'required|exists:departamentos,id',
-                'nombre'          => 'required|string|max:255',
-                'descripcion'     => 'nullable|string',
-                'geometria'       => 'nullable|json',
-                'media.*'         => 'nullable|file|mimes:jpg,jpeg,png,gif,mp4,mov,avi',
-            ],
-            [
-                'id_departamento.required' => 'Debe seleccionar un departamento para la provincia.',
-                'nombre.required'          => 'El campo nombre es obligatorio.',
-                'geometria.json'           => 'El formato de la geometría no es válido.',
-                'media.*.mimes'            => 'Solo se permiten archivos de tipo: jpg, jpeg, png, gif, mp4, mov, avi.',
-            ]
-        );
-
-        $geometria = !empty($validatedData['geometria']) ? json_decode($validatedData['geometria'], true) : null;
-        $tipo_geometria = !empty($validatedData['geometria']) ? 'geojson' : null;
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'id_departamento' => 'required|exists:departamentos,id',
+            'descripcion' => 'nullable|string',
+            'geometria' => 'required|json',
+        ]);
 
         $provincia->update([
-            'id_departamento' => $validatedData['id_departamento'],
-            'nombre'          => $validatedData['nombre'],
-            'descripcion'     => $validatedData['descripcion'] ?? null,
-            'tipo_geometria'  => $tipo_geometria,
-            'geometria'       => $geometria,
+            'nombre' => $request->nombre,
+            'id_departamento' => $request->id_departamento,
+            'descripcion' => $request->descripcion,
+            'tipo_geometria' => 'geojson',
+            'geometria' => json_decode($request->geometria, true),
         ]);
 
         if ($request->has('delete_media')) {
-            $medias = Media::whereIn('id', $request->delete_media)->get();
-            foreach ($medias as $media) {
-                $media->delete();
-            }
+            Media::destroy($request->delete_media);
         }
-
+        
         if ($request->hasFile('media')) {
-            foreach ($request->file('media') as $archivo) {
-                $path = $archivo->store('provincias', 'public');
-                $provincia->media()->create([
-                    'archivo' => $path,
-                    'tipo' => $archivo->getClientMimeType()
-                ]);
+            foreach ($request->file('media') as $file) {
+                $path = $file->store('provincias', 'public');
+                $tipo = str_contains($file->getMimeType(), 'video') ? 'video' : 'image';
+                $provincia->media()->create(['archivo' => $path, 'tipo' => $tipo]);
             }
         }
 
@@ -187,18 +147,12 @@ class ProvinciaController extends Controller
      */
     public function destroy(Provincia $provincia)
     {
-        foreach ($provincia->media as $media) {
-            $media->delete();
+        if ($provincia->media->count() > 0) {
+            foreach ($provincia->media as $media) {
+                $media->delete();
+            }
         }
-
         $provincia->delete();
-
         return redirect()->route('limites.provincias.index')->with('success', 'Provincia eliminada correctamente.');
-    }
-    
-    public function destroyMedia(Media $media)
-    {
-        $media->delete();
-        return back()->with('success', 'Medio eliminado correctamente.');
     }
 }
