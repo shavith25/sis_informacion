@@ -25,6 +25,7 @@ class UsuarioController extends Controller
 
     public function index()
     {
+        // Paginamos los usuarios activos
         $usuarios = User::where('estado', true)->paginate(5);
         return view('usuarios.index', compact('usuarios'));
     }
@@ -33,6 +34,11 @@ class UsuarioController extends Controller
     {
         $roles = Role::pluck('name', 'name')->all();
         return view('usuarios.crear', compact('roles'));
+    }
+
+    public function show()
+    {
+        //
     }
 
     public function store(Request $request)
@@ -70,15 +76,17 @@ class UsuarioController extends Controller
 
         $input['password'] = Hash::make($input['password']);
         $input['estado'] = true;
+        
         $user = User::create($input);
         $user->assignRole($request->input('roles'));
 
-        return redirect()->route('usuarios.index');
+        return redirect()->route('usuarios.index')->with('success', 'Usuario creado correctamente.');
     }
 
     /**
-     * CORRECCIÓN: Usamos (User $usuario) en vez de ($id)
-     * Laravel desencriptará automáticamente el ID aquí.
+     * Laravel detecta automáticamente que el parámetro de ruta es un ID encriptado
+     * y usa tu método 'resolveRouteBinding' del modelo User para desencriptarlo.
+     * La variable $usuario ya llega como el objeto real.
      */
     public function edit(User $usuario)
     {
@@ -87,9 +95,6 @@ class UsuarioController extends Controller
         return view('usuarios.editar', ['user' => $usuario, 'roles' => $roles, 'userRole' => $userRole]);
     }
 
-    /**
-     * CORRECCIÓN: Usamos (User $usuario) para el Update también
-     */
     public function update(Request $request, User $usuario)
     {
         $messages = [
@@ -106,6 +111,7 @@ class UsuarioController extends Controller
 
         $this->validate($request, [
             'name' => 'required',
+            // Usamos $usuario->id porque la variable ya fue resuelta por Laravel
             'email' => ['required', 'email', Rule::unique('users')->ignore($usuario->id)],
             'password' => 'same:confirm-password',
             'roles' => 'required',
@@ -133,7 +139,6 @@ class UsuarioController extends Controller
         }
 
         $usuario->update($input);
-    
         $usuario->syncRoles($request->input('roles'));
 
         return redirect()->route('usuarios.index')->with('success', 'Usuario actualizado correctamente.');
@@ -141,13 +146,12 @@ class UsuarioController extends Controller
 
     public function changeStatus(User $usuario)
     {
-            try {
+        try {
             if ($usuario->hasRole('Administrador') && $usuario->id == 1) {
                 return response()->json(['message' => 'No se puede desactivar al Super Admin'], 403);
             }
 
             $nuevoEstado = !$usuario->estado;
-
             $actualizado = $usuario->update(['estado' => $nuevoEstado]);
 
             if ($actualizado) {
@@ -164,13 +168,20 @@ class UsuarioController extends Controller
         }
     }
 
+    /**
+     * AQUÍ ESTÁ LA CORRECCIÓN PRINCIPAL
+     * Si recibes un ID encriptado por POST/GET (no por URL amigable),
+     * debes desencriptarlo manualmente usando la lógica del modelo.
+     */
     public function editHidden(Request $request)
     {
         $request->validate([
             'id_usuario' => 'required',
         ]);
 
-        $usuario = User::findOrFail($request->input('id_usuario'));
+        // Instanciamos un User vacío para acceder a su método de resolución
+        // Esto toma el ID encriptado (ej: 75bcd14) y encuentra el usuario real
+        $usuario = (new User)->resolveRouteBinding($request->input('id_usuario'));
 
         $roles = Role::pluck('name', 'name')->all();
         $userRole = $usuario->roles->pluck('name', 'name')->all();
@@ -183,6 +194,7 @@ class UsuarioController extends Controller
         if(request()->ajax()) {
             $inactiveUsers = User::where('estado', 0)->get(['id', 'name', 'email', 'url_image']);
 
+            // Agregamos el ID encriptado (uuid) para que el frontend lo use en los botones
             $inactiveUsers->each(function ($user) {
                 $user->uuid = $user->getRouteKey();
             });
@@ -200,12 +212,13 @@ class UsuarioController extends Controller
                 return response()->json(['message' => 'No se puede eliminar un Administrador'], 403);
             }
 
-            // Soft delete: solo cambia el estado a inactivo
+            // Soft delete lógico (cambiar estado)
             $usuario->update(['estado' => false]);
 
             return response()->json(['message' => 'Usuario desactivado correctamente']);
         } catch (\Exception $e) {
             Log::error("Error eliminando usuario ID: {$usuario->id}. Error: " . $e->getMessage());
+            return response()->json(['message' => 'Error interno al eliminar'], 500);
         }
     }
 }

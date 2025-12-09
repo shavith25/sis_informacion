@@ -7,61 +7,56 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Support\Facades\Hash;
-
-
 use Spatie\Permission\Traits\HasRoles;
+
+// 1. IMPORTANTE: Importar estas clases
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
-    /**
-     * Atributos que se pueden asignar masivamente
-     */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'url_image',
-        'estado',
+        'name', 'email', 'password', 'url_image', 'estado',
     ];
 
-    /**
-     * Atributos ocultos al convertir a JSON
-     */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password', 'remember_token',
     ];
 
-    /**
-     * Conversión de tipos de datos
-     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'estado' => 'boolean',
     ];
 
+    // =======================================================================
+    // NUEVA LÓGICA DE ENCRIPTACIÓN SEGURA (LARAVEL CRYPT)
+    // =======================================================================
+
     /**
-     * Atributos que deben ser ocultados para arrays
+     * Al generar una URL (route('usuarios.edit', $user)), Laravel llamará a esto.
+     * Devuelve una cadena larga encriptada en lugar del ID.
      */
-    // Genera un código Hexadecimal basado en el ID del usuario
     public function getRouteKey()
     {
-        $idOculto = $this->getKey() ^ 123456789; // Máscara XOR
-        return dechex($idOculto);
+        return Crypt::encryptString($this->getKey());
     }
 
     /**
-     * Resuelve la vinculación de ruta utilizando el ID oculto
+     * Al recibir una URL entrante (/usuarios/{encrypted_id}), Laravel llamará a esto.
+     * Desencripta la cadena para encontrar el ID real en la BD.
      */
     public function resolveRouteBinding($value, $field = null)
     {
         try {
-            $idReal = hexdec($value) ^ 123456789; // Máscara XOR inversa
+            // Intentamos desencriptar
+            $idReal = Crypt::decryptString($value);
+            
+            // Buscamos el usuario por el ID desencriptado
             return $this->where('id', $idReal)->firstOrFail();
-        } catch (\Exception $e) {
+        } catch (DecryptException $e) {
+            // Si el código no es válido o fue alterado, damos error 404
             abort(404);
         }
     }
