@@ -395,6 +395,7 @@
                                             : $zona->ultimoHistorial->coordenadas)
                                         : null;
                                     $tipos = $coordenadasData ? array_column($coordenadasData, 'tipo') : [];
+                                    $idEncriptado = Crypt::encryptString($zona->id);
                                 @endphp
                                 <tr class="zona-row" data-zona-id="{{ $zona->id }}" style="cursor: pointer;">
                                     <td class="fw-bold text-dark">{{ $zona->nombre }}</td>
@@ -418,7 +419,7 @@
 
                                         <button type="button" title="Eliminar"
                                             class="btn btn-danger btn-sm btn-action-sm btn-eliminar-zona"
-                                            data-id="{{ $zona->id }}" data-nombre="{{ $zona->nombre }}"><i
+                                            data-id="{{ $idEncriptado }}" data-nombre="{{ $zona->nombre }}"><i
                                                 class="fas fa-trash"></i>
                                         </button>
                                     </td>
