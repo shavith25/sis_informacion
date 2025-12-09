@@ -125,7 +125,8 @@
         'reportes.index': '{{ route("public.reportes.index") }}',
         'reportes.store': '{{ route("public.reportes.store") }}',
         'archivos.index': '{{ route("public.archivos.index") }}',
-        'archivos.store': '{{ route("public.archivos.store") }}'
+        'archivos.store': '{{ route("public.archivos.store") }}',
+        'concientizacion.index': '{{ route("concientizacion.index") }}' 
     };
 
     function showLoader() { document.getElementById('loader').style.display = 'flex'; }
@@ -174,7 +175,6 @@
             toast.addEventListener('mouseleave', Swal.resumeTimer)
         }
     });
-
 
     @if (session('success') || session('toast_success'))
         Toast.fire({
