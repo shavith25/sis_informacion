@@ -1,23 +1,17 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\Concientizacion;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class PanelConcientizacionController extends Controller
 {
-    /**
-     * Muestra todas las concientizaciones.
-     */
-   public function index()
+    public function index()
     {
         $concientizaciones = Concientizacion::latest()->paginate(10);
         return view('panelConcientizaciones.index', compact('concientizaciones'));
-    }
-    public function show($id)
-    {
-        //
     }
 
     public function create()
@@ -43,18 +37,20 @@ class PanelConcientizacionController extends Controller
             'video_path' => $path,
         ]);
 
-        return redirect()->route('panelConcientizaciones.index')->with('toast_success', 'Video agregado correctamente.');
+        return redirect()->route('panelConcientizaciones.index')
+            ->with('toast_success', 'Video agregado correctamente.');
     }
 
-    public function edit(Concientizacion $concientizacion)
+    public function edit($id)
     {
-        $concientizacion = (new Concientizacion)->resolveRouteBinding($concientizacion->firstOrFail()->id);
+        $concientizacion = (new Concientizacion)->resolveRouteBinding($id);
+        
         return view('panelConcientizaciones.edit', compact('concientizacion'));
     }
 
-    public function update(Request $request, Concientizacion $concientizacion)
+    public function update(Request $request, $id)
     {
-        $concientizacion = (new Concientizacion)->resolveRouteBinding($concientizacion->firstOrFail()->id);
+        $concientizacion = (new Concientizacion)->resolveRouteBinding($id);
 
         $request->validate([
             'titulo' => 'required|string|max:255',
@@ -67,7 +63,6 @@ class PanelConcientizacionController extends Controller
             'titulo' => $request->titulo,
             'descripcion' => $request->descripcion,
             'categoria' => $request->categoria,
-            'video_path' => $concientizacion->video_path,
         ];
 
         // Si suben un video nuevo...
@@ -85,7 +80,6 @@ class PanelConcientizacionController extends Controller
         return redirect()
             ->route('panelConcientizaciones.index')
             ->with('toast_success', 'Video actualizado correctamente.');
-        
     }
 
     public function destroy($id)

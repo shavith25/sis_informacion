@@ -17,7 +17,7 @@
     <div class="section-body">
         <div class="row">
             <div class="col-lg-12">
-                
+        
                 @if(session('success'))
                     <div class="alert alert-success alert-dismissible fade show mb-2" role="alert">
                         <i class="fas fa-check-circle mr-2"></i> {{ session('success') }}
@@ -27,6 +27,7 @@
                     </div>
                 @endif
 
+                {{-- Mensajes de Error --}}
                 @if($errors->any())
                     <div class="alert alert-danger alert-dismissible fade show mb-2" role="alert">
                         <strong><i class="fas fa-exclamation-triangle"></i> Revisa los errores:</strong>
@@ -55,31 +56,34 @@
                                 <div class="col-md-6 mb-3">
                                     <div class="form-group">
                                         <label for="titulo" class="form-label"><i class="fas fa-heading"></i> Título</label>
+                                        {{-- CORRECCIÓN: Value con old() y datos de la BD --}}
                                         <input type="text" name="titulo" id="titulo" class="form-control" 
-                                            value="{{ old('titulo', $concientizacion->titulo) }}" required>
+                                                value="{{ old('titulo', $concientizacion->titulo) }}" required>
                                     </div>
                                 </div>
 
+                                {{-- CATEGORÍA --}}
                                 <div class="col-md-6 mb-3">
                                     <div class="form-group">
                                         <label for="categoria" class="form-label"><i class="fas fa-tags"></i> Categoría</label>
                                         <select name="categoria" id="categoria" class="form-control" required>
                                             <option value="">Seleccione una categoría</option>
-                                            <option value="fauna" {{ old('categoria', $concientizacion->categoria) === 'fauna' ? 'selected' : '' }}>Fauna</option>
-                                            <option value="flora" {{ old('categoria', $concientizacion->categoria) === 'flora' ? 'selected' : '' }}>Flora</option>
-                                            <option value="ecosistema" {{ old('categoria', $concientizacion->categoria) === 'ecosistema' ? 'selected' : '' }}>Ecosistema</option>
-                                            <option value="conservacion" {{ old('categoria', $concientizacion->categoria) === 'conservacion' ? 'selected' : '' }}>Conservación</option>
+                                            <option value="fauna" {{ old('categoria', $concientizacion->categoria) == 'fauna' ? 'selected' : '' }}>Fauna</option>
+                                            <option value="flora" {{ old('categoria', $concientizacion->categoria) == 'flora' ? 'selected' : '' }}>Flora</option>
+                                            <option value="ecosistema" {{ old('categoria', $concientizacion->categoria) == 'ecosistema' ? 'selected' : '' }}>Ecosistema</option>
+                                            <option value="conservacion" {{ old('categoria', $concientizacion->categoria) == 'conservacion' ? 'selected' : '' }}>Conservación</option>
                                         </select>
                                     </div>
                                 </div>
                             </div>
 
+                            {{-- DESCRIPCIÓN --}}
                             <div class="mb-3">
                                 <label for="descripcion" class="form-label"><i class="fas fa-info-circle"></i> Descripción</label>
                                 <textarea name="descripcion" id="descripcion" class="form-control" style="height: 80px;" required>{{ old('descripcion', $concientizacion->descripcion) }}</textarea>
                             </div>
 
-                            {{-- SECCIÓN DE VIDEOS ALINEADOS --}}
+                            {{-- SECCIÓN DE VIDEOS --}}
                             <div class="row mt-4">
                                 <div class="col-lg-6 border-right pr-lg-4 mb-4 mb-lg-0">
                                     <label class="form-label fw-bold text-dark mb-2">
@@ -97,6 +101,7 @@
                                     </div>
                                 </div>
 
+                                {{-- Reemplazar Video --}}
                                 <div class="col-lg-6 pl-lg-4">
                                     <label for="video" class="form-label fw-bold text-success mb-2">
                                         <i class="fas fa-upload mr-1"></i> REEMPLAZAR VIDEO (OPCIONAL)
@@ -110,6 +115,7 @@
                                     </div>
                                     <small class="text-muted d-block mb-3">Si no seleccionas uno nuevo, se conservará el actual.</small>
 
+                                    {{-- Previsualización JS --}}
                                     <div id="preview-container" class="bg-light rounded border p-2" style="display: none;">
                                         <p class="text-center text-success small mb-2">Previsualización del Nuevo Video:</p>
                                         <video id="videoPreview" controls class="w-100 rounded" style="max-height: 300px;"></video>
@@ -153,11 +159,9 @@
         .form-label { font-weight: 700; text-transform: uppercase; font-size: 0.75rem; color: #6c757d; margin-bottom: 0.5rem; }
         .btn { border-radius: 4px; padding: 0.5rem 1.5rem; font-weight: 600; }
         
-        /* Botón Azul Sólido */
         .btn-primary { background-color: #2f55d4 !important; border-color: #2f55d4 !important; box-shadow: none !important; color: #fff !important; }
         .btn-primary:hover { background-color: #2442a8 !important; border-color: #2442a8 !important; }
 
-        /* Estilos extra para la sección de video */
         .video-container video { background-color: #000; }
         @media (min-width: 992px) {
             .border-right { border-right: 1px solid #eee; }
@@ -173,7 +177,6 @@
                 $(this).next('.custom-file-label').addClass("selected").html(fileName);
             });
 
-            // Script de previsualización de video
             const videoInput = document.getElementById('video');
             const previewContainer = document.getElementById('preview-container');
             const videoPreview = document.getElementById('videoPreview');
@@ -185,9 +188,7 @@
                     if (file) {
                         const fileURL = URL.createObjectURL(file);
                         videoPreview.src = fileURL;
-
                         previewContainer.style.display = 'block';
-
                         videoPreview.load();
                         videoPreview.play();
                     } else {

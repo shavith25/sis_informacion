@@ -18,7 +18,7 @@ class ConcientizacionController extends Controller
      */
     public function index()
     {
-        $concientizaciones = Concientizacion::latest()->get();
+        $concientizaciones = Concientizacion::latest()->paginate(10);
 
         return view('concientizacion.index', compact('concientizaciones'));
     }

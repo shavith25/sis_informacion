@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class Concientizacion extends Model
 {
@@ -20,30 +22,19 @@ class Concientizacion extends Model
 
     public function getRouteKey()
     {
-        $rand = rand(10000, 99999);
-        $mezcla = $this->getKey() ^ $rand;
-        return dechex($rand) . 'x' . dechex($mezcla);
+        $encrypted = Crypt::encryptString($this->getKey());
+        return str_replace(['/', '+'], ['_', '-'], $encrypted);
     }
 
     public function resolveRouteBinding($value, $field = null)
     {
-        if (is_numeric($value)) {
-            return $this->where('id', $value)->firstOrFail();
-        }
+        try {
+            $id = Crypt::decryptString($value);
 
-        if (str_contains($value, 'x')) {
-            try {
-                $partes = explode('x', $value);
-                if (count($partes) === 2) {
-                    $aleatorio = hexdec($partes[0]);
-                    $mezcla = hexdec($partes[1]);
-                    $idReal = $mezcla ^ $aleatorio;
-                    
-                    return $this->where('id', $idReal)->firstOrFail();
-                }
-            } catch (\Exception $e) {}
-        }
+            return $this->where('id', $id)->firstOrFail();
 
-        abort(404);
+        } catch (DecryptException $e) {
+            abort(404);
+        }
     }
 }
