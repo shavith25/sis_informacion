@@ -65,21 +65,22 @@
                                                     @endif
                                                 </td>
                                                 <td>
-                                                    <span
-                                                        class="badge badge-{{ $area->estado ? 'success' : 'secondary' }} badge-lg">
+                                                    <span class="badge badge-{{ $area->estado ? 'success' : 'secondary' }} badge-lg">
                                                         {{ $area->estado ? 'Activa' : 'Inactiva' }}
                                                     </span>
                                                 </td>
                                                 <td class="text-center">
                                                     <div class="btn-group" role="group">
-
+                                                        
+                                                        {{-- CORRECCIÓN 1: Pasamos el objeto $area, no el ID --}}
                                                         <a href="{{ route('areas.edit', $area) }}"
                                                             class="btn btn-icon btn-sm btn-info text-white"
                                                             data-toggle="tooltip" title="Editar">
                                                             <i class="fas fa-edit"></i>
                                                         </a>
 
-                                                        <form action="{{ route('areas.toggle', $area->id) }}" method="POST"
+                                                        {{-- CORRECCIÓN 2: Pasamos $area en el route, pero mantenemos $area->id para el ID del formulario HTML --}}
+                                                        <form action="{{ route('areas.toggle', $area) }}" method="POST"
                                                             class="d-inline ml-1" id="form-toggle-{{ $area->id }}">
                                                             @csrf @method('PATCH')
                                                             <button type="button"
@@ -87,12 +88,12 @@
                                                                 onclick="confirmarAccion({{ $area->id }}, '{{ $area->estado ? 'desactivar' : 'activar' }}')"
                                                                 data-toggle="tooltip"
                                                                 title="{{ $area->estado ? 'Desactivar' : 'Activar' }}">
-                                                                <i
-                                                                    class="fas {{ $area->estado ? 'fa-toggle-on' : 'fa-toggle-off' }}"></i>
+                                                                <i class="fas {{ $area->estado ? 'fa-toggle-on' : 'fa-toggle-off' }}"></i>
                                                             </button>
                                                         </form>
 
-                                                        <form action="{{ route('areas.destroy', $area->id) }}"
+                                                        {{-- CORRECCIÓN 3: Pasamos $area en el route --}}
+                                                        <form action="{{ route('areas.destroy', $area) }}"
                                                             method="POST" class="d-inline ml-1"
                                                             id="form-delete-{{ $area->id }}">
                                                             @csrf @method('DELETE')
@@ -146,7 +147,6 @@
             })
         @endif
 
-        // 2. Funciones de confirmación (Toggle y Eliminar)
         function confirmarAccion(id, accion) {
             Swal.fire({
                 title: accion === 'desactivar' ? '¿Desactivar?' : '¿Activar?',
@@ -197,11 +197,10 @@
     .btn-create {
         background-color: #007bff !important; 
         border-color: #007bff !important;
-        color: #ffffff !important; /* Texto blanco */
+        color: #ffffff !important;
         box-shadow: 0 2px 6px rgba(0, 123, 255, 0.4) !important; 
     }
 
-    /* Efecto al pasar el mouse */
     .btn-create:hover {
         background-color: #0069d9 !important; 
         border-color: #0062cc !important;
@@ -213,26 +212,14 @@
         box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
 
-    /* Colores específicos para asegurar el tono exacto */
-    .btn-info {
-        background-color: #f43a53 !important;
-        color: white !important;
-    }
-    
-    .btn-warning {
-        background-color: #ffa426 !important; 
-    }
+    .btn-info { background-color: #f43a53 !important; color: white !important; }
+    .btn-warning { background-color: #ffa426 !important; }
+    .btn-danger { background-color: #fc544b !important; color: white !important; }
 
-    .btn-danger {
-        background-color: #fc544b !important; 
-        color: white !important;
-    }
-
-    /* Badge grande */
     .badge-lg {
         padding: 6px 12px;
         font-size: 12px;
         border-radius: 30px;
     }
-</style>
+    </style>
 @endpush

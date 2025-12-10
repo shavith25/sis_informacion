@@ -17,9 +17,10 @@
         <div class="section-body">
             <div class="row justify-content-left">
                 <div class="col-12 col-md-10 col-lg-8">
-                    <div class="card card-fixed-height">
+                    {{-- Agregamos la clase para altura fija --}}
+                    <div class="card card-fixed-height shadow-sm">
 
-                        <div class="card-header">
+                        <div class="card-header border-bottom">
                             <h4><i class="fas fa-edit text-primary"></i> Formulario de Edición</h4>
                         </div>
 
@@ -43,8 +44,9 @@
                                 $idEncriptado = Illuminate\Support\Facades\Crypt::encryptString($role->id);
                             @endphp
 
-                            {!! Form::model($role, ['method' => 'PATCH', 'route' => ['roles.update', $idEncriptado]]) !!}
+                            {!! Form::model($role, ['method' => 'PATCH', 'route' => ['roles.update', $idEncriptado], 'class' => 'h-100 d-flex flex-column']) !!}
 
+                            {{-- Contenedor con Scroll --}}
                             <div class="form-scroll-container">
                                 <div class="p-4">
                                     <div class="row">
@@ -60,11 +62,12 @@
 
                                     <div class="form-divider mt-4 mb-3">
                                         <h6 class="form-section-title"><i class="fas fa-key"></i> Permisos Asignados</h6>
+                                        <hr>
                                     </div>
 
                                     <div class="permissions-container">
                                         @foreach ($permissionsByModule as $module => $permissions)
-                                            <div class="card shadow-sm border mb-3">
+                                            <div class="card shadow-none border mb-3">
                                                 <div class="card-header bg-light py-2" style="min-height: auto;">
                                                     <h6 class="mb-0 text-dark font-weight-bold" style="font-size: 0.95rem;">
                                                         {{ $module }}
@@ -91,6 +94,7 @@
                                 </div>
                             </div>
                             
+                            {{-- Footer fijo al final de la tarjeta --}}
                             <div class="card-footer text-right bg-whitesmoke border-top">
                                 <a href="{{ route('roles.index') }}" class="btn btn-secondary mr-2">
                                     <i class="fas fa-times"></i> Cancelar
@@ -108,3 +112,50 @@
         </div>
     </section>
 @endsection
+
+@push('css')
+    <style>
+        .card-fixed-height {
+            height: calc(100vh - 240px); 
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-bottom: 0;
+        }
+
+        .card-body {
+            flex: 1;
+            overflow: hidden; 
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-scroll-container {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        /* Personalización de la barra de desplazamiento */
+        .form-scroll-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .form-scroll-container::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+
+        .form-scroll-container::-webkit-scrollbar-thumb {
+            background: #c1c1c1; 
+            border-radius: 4px;
+        }
+        .form-scroll-container::-webkit-scrollbar-thumb:hover {
+            background: #a8a8a8; 
+        }
+
+        .card-footer {
+            flex-shrink: 0; 
+            z-index: 10;
+        }
+    </style>
+@endpush

@@ -120,7 +120,7 @@
                             </div>
                             <div class="card-wrap">
                                 <div class="card-header p-0">
-                                    <h4 class="text-muted mb-0" style="font-size: 0.9rem;">Zonas Monitoreadas</h4>
+                                    <h4 class="text-muted mb-0" style="font-size: 0.9rem;">Zonas</h4>
                                 </div>
                                 <div class="card-body p-0 mt-1">
                                     <span style="font-size: 1.8rem; font-weight: 800; color: #2c3e50;">
