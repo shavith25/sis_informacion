@@ -81,7 +81,7 @@
                                                     <a href="{{ route('especies.edit', $especie) }}" class="btn btn-sm btn-warning">
                                                         <i class="fas fa-edit"> Editar</i>
                                                     </a>
-                                                    <form action="{{ route('especies.destroy', $especie->id) }}"
+                                                    <form action="{{ route('especies.destroy', $especie) }}"
                                                         method="POST" class="form-delete" style="margin: 0;">
                                                         @csrf
                                                         @method('DELETE')
