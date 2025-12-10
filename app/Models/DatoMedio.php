@@ -20,6 +20,6 @@ class DatoMedio extends Model
 
     public function dato()
     {
-        return $this->belongsTo(Dato::class);
+        return $this->belongsTo(Datos::class);
     }
 }
