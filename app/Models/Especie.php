@@ -30,7 +30,8 @@ class Especie extends Model
 
     public function getRouteKey()
     {
-        return Crypt::encryptString($this->getKey());
+        $encrypted = Crypt::encryptString($this->getKey());
+        return str_replace(['/', '+'], ['_', '-'], $encrypted);
     }
 
     public function resolveRouteBinding($value, $field = null)

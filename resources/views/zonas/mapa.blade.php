@@ -1118,7 +1118,6 @@
                 });
             });
 
-            // Nuevo: Resaltar polígono al pasar el mouse sobre la fila de la tabla
             document.querySelectorAll('.zona-row').forEach(row => {
                 const id = parseInt(row.dataset.zonaId);
                 row.addEventListener('mouseenter', () => {
@@ -1149,8 +1148,9 @@
                 });
 
                 row.addEventListener('click', (e) => {
-                    if (e.target.closest('.btn-action-sm')) return;
-
+                    if (e.target.closest('.btn-action-sm')) {
+                        return;
+                    }
                     polygonLayer.eachLayer(layer => {
                         if (layer.zonaId === id) {
                             if (layer instanceof L.Polygon) map.fitBounds(layer.getBounds()
