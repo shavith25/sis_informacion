@@ -178,13 +178,6 @@
         </div>
     </header>
 
-    <section class="hero-section">
-        <video autoplay muted loop playsinline poster="{{ asset('img/poster-placeholder.jpg') }}">
-            <source src="{{ asset('video/173868607267a23e78515b0.mp4') }}" type="video/mp4">
-            Tu navegador no soporta el video.
-        </video>
-    </section>
-
     <main class="container py-5">
         <div class="row g-5">
             
