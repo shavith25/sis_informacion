@@ -7,6 +7,8 @@ use App\Models\Zonas;
 use App\Models\Datos;
 use App\Models\Noticia;
 use App\Models\Especie;
+use Illuminate\Contracts\Encryption\DecryptException;
+use Illuminate\Support\Facades\Crypt;
 
 class DetalleController extends Controller
 {
@@ -17,16 +19,24 @@ class DetalleController extends Controller
         if (is_numeric($id)) {
             $idReal = $id;
         } 
-        else if (strpos($id, 'x') !== false) {
+        else {
             try {
-                $partes = explode('x', $id);
-                if(count($partes) == 2) {
-                    $aleatorio = hexdec($partes[0]);
-                    $mezcla = hexdec($partes[1]);
-                    $idReal = $mezcla ^ $aleatorio;
+                // Intentar desencriptar con el facade Crypt de Laravel
+                $idReal = Crypt::decrypt($id);
+            } catch (DecryptException $e) {
+                // Si falla la desencriptación de Laravel, intentar con el método personalizado 'x'
+                if (strpos($id, 'x') !== false) {
+                    try {
+                        $partes = explode('x', $id);
+                        if(count($partes) == 2) {
+                            $aleatorio = hexdec($partes[0]);
+                            $mezcla = hexdec($partes[1]);
+                            $idReal = $mezcla ^ $aleatorio;
+                        }
+                    } catch (\Exception $e) {
+                        // Falló la matemática, $idReal permanece null
+                    }
                 }
-            } catch (\Exception $e) {
-                // Falló la matemática
             }
         }
 
