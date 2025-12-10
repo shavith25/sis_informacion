@@ -76,11 +76,7 @@ class DetalleController extends Controller
             abort(404); 
         }
 
-        $zonas = Zonas::with(['imagenes', 'videos', 'area', 'historial' => function ($query) {
-            $query->orderBy('created_at', 'desc');
-        }])->get();
-
-        $zonasActivas = $zonas->where('estado', true)->count();
+        $zonasActivas = Zonas::where('estado', true)->count();
 
         return view($view, compact('item', 'tipo', 'zonasActivas'));
     }

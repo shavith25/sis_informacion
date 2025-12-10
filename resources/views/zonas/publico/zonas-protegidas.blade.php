@@ -243,11 +243,7 @@
                                 <span>{{ $zona->area ? $zona->area->nombre : 'Área no especificada' }}</span>
                                 <span>{{ $zona->tipo_coordenada ?? 'Tipo no definido' }}</span>
                             </div>
-                            @php
-                                $rand = rand(10000, 99999);
-                                $token = dechex($rand) . 'x' . dechex($zona->id ^ $rand);
-                            @endphp
-                            <a href="{{ route('detalle.show', ['tipo' => 'zona', 'id' => $token]) }}" class="read-more">Explorar →</a>
+                            <a href="{{ route('detalle.show', ['tipo' => 'zona', 'id' => Illuminate\Support\Facades\Crypt::encrypt($zona->id)]) }}" class="read-more">Explorar →</a>
                         </div>
                     </div>
                 @empty
@@ -271,11 +267,7 @@
                                 <span>En Peligro Crítico</span>
                                 <span>{{ $dato->provincia }}, {{ $dato->zona ? $dato->zona->nombre : 'Bolivia' }}</span>
                             </div>
-                            @php
-                                $rand = rand(10000, 99999);
-                                $token = dechex($rand) . 'x' . dechex($dato->id ^ $rand);
-                            @endphp
-                            <a href="{{ route('detalle.show', ['tipo' => 'dato', 'id' => $token]) }}" class="read-more">Saber más →</a>
+                            <a href="{{ route('detalle.show', ['tipo' => 'dato', 'id' => Illuminate\Support\Facades\Crypt::encrypt($dato->id)]) }}" class="read-more">Saber más →</a>
                         </div>
                     </div>
                 @empty
@@ -299,11 +291,7 @@
                                 <span>{{ $noticia->fecha_publicacion->format('Y-m-d') }}</span>
                                 <span>{{ $noticia->subtitulo }}</span>
                             </div>
-                            @php
-                                $rand = rand(10000, 99999);
-                                $token = dechex($rand) . 'x' . dechex($noticia->id ^ $rand);
-                            @endphp
-                            <a href="{{ route('detalle.show', ['tipo' => 'noticia', 'id' => $token]) }}" class="read-more">Leer más →</a>
+                            <a href="{{ route('detalle.show', ['tipo' => 'noticia', 'id' => Illuminate\Support\Facades\Crypt::encrypt($noticia->id)]) }}" class="read-more">Leer más →</a>
                         </div>
                     </div>
                 @empty
