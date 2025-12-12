@@ -16,7 +16,7 @@
         "laravelcollective/html": "^6.4",
         "nunomaduro/termwind": "^1.17",
         "spatie/laravel-html": "^3.5",
-        "spatie/laravel-permission": "^6.0",
+        "spatie/laravel-permission": "^6.23",
         "symfony/console": "^6.0"
     },
     "require-dev": {
