@@ -68,7 +68,7 @@ Route::middleware(['throttle:60,1'])->group(function () {
     Route::post('/public/archivos', [ComunidadArchivoController::class, 'store'])->name('public.archivos.store');
 });
 
-Auth::routes();
+Auth::routes(['register' => false]);
 
 /*
 |--------------------------------------------------------------------------
