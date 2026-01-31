@@ -15,10 +15,10 @@
                             <label for="first_name">Full Name:</label><span
                                     class="text-danger">*</span>
                             <input id="firstName" type="text"
-                                   class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}"
-                                   name="name"
-                                   tabindex="1" placeholder="Enter Full Name" value="{{ old('name') }}"
-                                   autofocus required>
+                                class="form-control{{ $errors->has('name') ? ' is-invalid' : '' }}"
+                                name="name"
+                                tabindex="1" placeholder="Enter Full Name" value="{{ old('name') }}"
+                                autofocus required>
                             <div class="invalid-feedback">
                                 {{ $errors->first('name') }}
                             </div>
@@ -29,10 +29,10 @@
                             <label for="email">Email:</label><span
                                     class="text-danger">*</span>
                             <input id="email" type="email"
-                                   class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"
-                                   placeholder="Enter Email address" name="email" tabindex="1"
-                                   value="{{ old('email') }}"
-                                   required autofocus>
+                                class="form-control{{ $errors->has('email') ? ' is-invalid' : '' }}"
+                                placeholder="Enter Email address" name="email" tabindex="1"
+                                value="{{ old('email') }}"
+                                required autofocus>
                             <div class="invalid-feedback">
                                 {{ $errors->first('email') }}
                             </div>
@@ -44,8 +44,8 @@
                                 :</label><span
                                     class="text-danger">*</span>
                             <input id="password" type="password"
-                                   class="form-control{{ $errors->has('password') ? ' is-invalid': '' }}"
-                                   placeholder="Set account password" name="password" tabindex="2" required>
+                                class="form-control{{ $errors->has('password') ? ' is-invalid': '' }}"
+                                placeholder="Set account password" name="password" tabindex="2" required>
                             <div class="invalid-feedback">
                                 {{ $errors->first('password') }}
                             </div>
@@ -54,11 +54,11 @@
                     <div class="col-md-6">
                         <div class="form-group">
                             <label for="password_confirmation"
-                                   class="control-label">Confirm Password:</label><span
+                                class="control-label">Confirm Password:</label><span
                                     class="text-danger">*</span>
                             <input id="password_confirmation" type="password" placeholder="Confirm account password"
-                                   class="form-control{{ $errors->has('password_confirmation') ? ' is-invalid': '' }}"
-                                   name="password_confirmation" tabindex="2">
+                                class="form-control{{ $errors->has('password_confirmation') ? ' is-invalid': '' }}"
+                                name="password_confirmation" tabindex="2">
                             <div class="invalid-feedback">
                                 {{ $errors->first('password_confirmation') }}
                             </div>
