@@ -17,7 +17,7 @@
                             <h4><i class="fas fa-balance-scale text-primary mr-2"></i> Listado de Leyes y Decretos</h4>
                             <div class="card-header-action">
                                 <a href="{{ route('documentos.create') }}" class="btn btn-primary">
-                                    <i class="fas fa-plus mr-1"></i> Nuevo Documento
+                                    <i class="fas fa-plus mr-1"></i> Crear Nuevo Documento
                                 </a>
                             </div>
                         </div>

@@ -20,7 +20,7 @@
                             <h4><i class="fas fa-film text-primary mr-2"></i> Listado de Videos</h4>
                             <div class="card-header-action">
                                 <a href="{{ route('panelConcientizaciones.create') }}" class="btn btn-primary">
-                                    <i class="fas fa-plus"></i> Nuevo Video
+                                    <i class="fas fa-plus"></i> Crear Nuevo Video
                                 </a>
                             </div>
                         </div>

@@ -20,7 +20,7 @@
                         <h4><i class="fas fa-list text-primary mr-2"></i> Listado de Noticias</h4>
                         <div class="card-header-action">
                             <a href="{{ route('noticias.create') }}" class="btn btn-primary">
-                                <i class="fas fa-plus mr-1"></i> Nueva Noticia
+                                <i class="fas fa-plus mr-1"></i> Crear Nueva Noticia
                             </a>
                         </div>
                     </div>

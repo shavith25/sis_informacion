@@ -124,7 +124,7 @@
             @empty
                 <div class="col-12">
                     <div class="alert alert-info text-center">
-                        No hay zonas registradas. ¡Crea una nueva!
+                        No hay zonas registradas. ¡Crea una nueva zona!
                     </div>
                 </div>
             @endforelse

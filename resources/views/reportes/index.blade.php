@@ -140,7 +140,7 @@
                     <div class="card h-100">
                         <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
                             <h5 class="m-0 text-primary font-weight-bold">
-                                <i class="fas fa-list-ul me-2"></i> Detalle por Área
+                                <i class="fas fa-list-ul me-2"></i> Detalle por Área Protegida
                             </h5>
                             
                             <div class="d-flex gap-2">
