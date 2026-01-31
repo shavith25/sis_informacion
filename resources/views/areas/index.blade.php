@@ -17,7 +17,7 @@
                 <div class="col-12">
                     <div class="card shadow-lg">
                         <div class="card-header custom-card-header">
-                            <h4><i class="fas fa-list-ul mr-2"></i> Listado de Áreas</h4>
+                            <h4><i class="fas fa-list-ul mr-2"></i> Listado de Áreas Protegidas</h4>
                             <div class="card-header-action">
                                 <a href="{{ route('areas.create') }}" class="btn btn-primary btn-create">
                                     <i class="fas fa-plus-circle mr-1"></i> Nueva Área Protegida
@@ -110,7 +110,7 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="4" class="text-center py-4">No hay áreas registradas.</td>
+                                                <td colspan="4" class="text-center py-4">No hay áreas protegidas registradas.</td>
                                             </tr>
                                         @endforelse
                                     </tbody>

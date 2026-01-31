@@ -81,7 +81,7 @@
     <section class="section">
         <div class="section-header border-0 mb-4">
             <h1 class="page__heading text-primary" style="font-weight: 700;">
-                <i class="bi bi-pie-chart-fill me-2"></i> Dashboard de Biodiversidad
+                <i class="bi bi-pie-chart-fill me-2"></i> Dashboard del Panel de Reportes
             </h1>
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item"><a href="{{ route('home') }}" class="text-decoration-none">Inicio</a></div>
@@ -213,7 +213,7 @@
                                 <canvas id="zonesChart"></canvas>
                             </div>
                             <div class="mt-3 text-center text-muted small">
-                                Distribución de zonas según áreas protegidas registradas.
+                                Distribución de zonas según las áreas protegidas registradas.
                             </div>
                         </div>
                     </div>
