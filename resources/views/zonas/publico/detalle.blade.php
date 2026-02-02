@@ -31,11 +31,11 @@
                 <div style="display: flex;align-items: center">
                 <nav class="nav-container">
                     <ul>
-                        <li><a href="{{ url('/areas-protegidas#inicio') }}">INICIO</a></li>
-                        <li><a href="{{ url('/areas-protegidas#areas') }}">ÁREAS PROTEGIDAS</a></li>
-                        <li><a href="{{ url('/areas-protegidas#especies') }}">ESPECIES</a></li>
-                        <li><a href="{{ url('/areas-protegidas#noticias') }}">NOTICIAS</a></li>
-                        <li><a href="{{ url('/areas-protegidas#conciencia') }}">CONCIENTIZACIÓN</a></li>
+                        <li><a href="{{ url('/areas-protegidas#inicio') }}"><i class="bi bi-house-fill"></i> INICIO</a></li>
+                        <li><a href="{{ url('/areas-protegidas#areas') }}"><i class="fa-solid fa-tree me-2"></i> ÁREAS PROTEGIDAS</a></li>
+                        <li><a href="{{ url('/areas-protegidas#especies') }}"><i class="fa-solid fa-leaf"></i> ESPECIES</a></li>
+                        <li><a href="{{ url('/areas-protegidas#noticias') }}"><i class="fa-solid fa-bullhorn"></i> NOTICIAS</a></li>
+                        <li><a href="{{ url('/areas-protegidas#conciencia') }}"><i class="fa-solid fa-hand-holding-heart"></i> CONCIENTIZACIÓN</a></li>
                     </ul>
                 </nav>
                 </div>

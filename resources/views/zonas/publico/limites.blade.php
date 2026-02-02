@@ -374,9 +374,9 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item"><a class="nav-link" href="{{ url('/areas-protegidas#inicio') }}">Inicio</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="#">Límites</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url('/areas-protegidas#areas') }}">Áreas Protegidas</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url('/areas-protegidas#inicio') }}"><i class="bi bi-house-fill"></i> Inicio</a></li>
+                    <li class="nav-item"><a class="nav-link active" href="#"><i class="fa-solid fa-border-all"></i> Límites</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url('/areas-protegidas#areas') }}"><i class="fa-solid fa-tree me-2"></i> Áreas Protegidas</a></li>
                     <li class="nav-item ms-lg-3 mt-3 mt-lg-0">
                         <div class="search-wrapper">
                             <input type="text" id="search-box" class="search-input" placeholder="Buscar zonas...">

@@ -142,8 +142,7 @@
                         @foreach($zona->imagenes as $imagen)
                         <div class="col-md-3 col-6 mb-4">
                             <div class="image-container" style="height: 200px; overflow: hidden; display: flex; align-items: center; justify-content: center; background: #f8f9fa; border-radius: 8px;">
-                            
-                                <a href="{{ asset('storage/' . $imagen->url) }}" data-lightbox="zona-images" data-title="{{ $zona->nombre }}" style="display: block; width: 100%; height: 100%;">
+                                <a href="{{ asset('storage/' . $imagen->url) }}" data-lightbox="zona-images" data-title="{{ $zona->nombre }}" style="display: block; width: 100%; height: 100%;" target="_blank">
                                     <img src="{{ asset('storage/' . $imagen->url) }}" class="img-fluid" alt="Imagen de {{ $zona->nombre }}" style="object-fit: contain; width: 100%; height: 100%;">
                                 </a>
                             </div>

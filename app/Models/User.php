@@ -29,6 +29,16 @@ class User extends Authenticatable
     ];
 
     /**
+     * Verifica si el usuario está activo basado en su estado.
+     *
+     * @return bool
+     */
+    public function estaActivo()
+    {
+        return (int) $this->estado === 1;
+    }
+
+    /**
      * Al generar una URL (route('usuarios.edit', $user)), Laravel llamará a esto.
      * Devuelve una cadena larga encriptada en lugar del ID.
      */

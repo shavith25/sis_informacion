@@ -75,7 +75,7 @@
                     <!-- La lista de usuarios inactivos se cargará aquí vía AJAX -->
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary btn-sm" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal"><i class="fas fa-times"></i> Cerrar</button>
                 </div>
             </div>
         </div>

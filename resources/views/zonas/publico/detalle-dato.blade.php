@@ -168,11 +168,11 @@
             
             <nav class="d-none d-lg-block">
                 <ul class="nav nav-pills gap-3 m-0">
-                    <li class="nav-item"><a href="{{ url('/areas-protegidas#inicio') }}" class="nav-link">INICIO</a></li>
-                    <li class="nav-item"><a href="{{ url('/areas-protegidas#areas') }}" class="nav-link">ÁREAS PROTEGIDAS</a></li>
-                    <li class="nav-item"><a href="{{ url('/areas-protegidas#especies') }}" class="nav-link">ESPECIES</a></li>
-                    <li class="nav-item"><a href="{{ url('/areas-protegidas#noticias') }}" class="nav-link">NOTICIAS</a></li>
-                    <li class="nav-item"><a href="{{ url('/areas-protegidas#conciencia') }}" class="nav-link">CONCIENTIZACIÓN</a></li>
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#inicio') }}" class="nav-link"><i class="bi bi-house-fill"></i> INICIO</a></li>
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#areas') }}" class="nav-link"><i class="bi bi-tree-fill"></i> ÁREAS PROTEGIDAS</a></li>
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#especies') }}" class="nav-link"><i class="bi bi-bug-fill"></i> ESPECIES</a></li>
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#noticias') }}" class="nav-link"><i class="bi bi-newspaper"></i> NOTICIAS</a></li>
+                    <li class="nav-item"><a href="{{ url('/areas-protegidas#conciencia') }}" class="nav-link"><i class="bi bi-lightbulb-fill"></i> CONCIENTIZACIÓN</a></li>
                 </ul>
             </nav>
         </div>

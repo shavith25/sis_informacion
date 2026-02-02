@@ -15,7 +15,7 @@
 
         <div class="section-body">
             <div class="row justify-content-left">
-                <div class="col-12 col-md-10 col-lg-8">
+                <div class="col-12 col-md-10 col-lg-10">
                     <div class="card card-fixed-height">
 
                         <div class="card-header">

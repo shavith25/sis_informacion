@@ -20,7 +20,7 @@
                         <h4><i class="fas fa-list mr-2"></i> Listado de Especies</h4>
                         <div class="card-header-action">
                             <a href="{{ route('especies.create') }}" class="p-2 icon-left btn-primary">
-                                <i class="fas fa-plus"></i> Nueva Especie
+                                <i class="fas fa-plus"></i> Crear Nueva Especie
                             </a>
                         </div>
                     </div>

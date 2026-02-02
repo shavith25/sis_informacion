@@ -12,7 +12,7 @@
 
         <div class="section-body">
             <div class="row">
-                <div class="col-lg-12"> <div class="card">
+                <div class="col-lg-8"> <div class="card">
                         <div class="card-header">
                             <h4><i class="fas fa-list mr-2"></i> Listado de Roles</h4>
                             <div class="card-header-action">
