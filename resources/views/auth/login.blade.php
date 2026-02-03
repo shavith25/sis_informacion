@@ -99,7 +99,7 @@
                         <div class="d-block">
                     <label for="password" class="control-label" style="color: #0047ab; font-weight: 980;">Contraseña</label>
 
-                            <label for="password" class="control-label" style="color: #f5f5f5;">Contraseña</label>
+                        
 
                         </div>
                         <div class="input-group">
@@ -133,22 +133,22 @@
         </div>
     </div>
 
-    <script>
+        <script>
+    document.addEventListener('DOMContentLoaded', () => {
         const togglePassword = document.querySelector('#togglePassword');
         const password = document.querySelector('#password');
         const iconPassword = document.querySelector('#icon-password');
 
-        togglePassword.addEventListener('click', function (e) {
-            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
-            password.setAttribute('type', type);
+        if (!togglePassword || !password || !iconPassword) return;
 
-            if (type === 'text') {
-                iconPassword.classList.remove('bi-eye-fill');
-                iconPassword.classList.add('bi-eye-slash-fill');
-            } else {
-                iconPassword.classList.remove('bi-eye-slash-fill');
-                iconPassword.classList.add('bi-eye-fill');
-            }
+        togglePassword.addEventListener('click', () => {
+        const isPassword = password.getAttribute('type') === 'password';
+        password.setAttribute('type', isPassword ? 'text' : 'password');
+
+        iconPassword.classList.toggle('bi-eye-fill', !isPassword);
+        iconPassword.classList.toggle('bi-eye-slash-fill', isPassword);
         });
+    });
     </script>
+
 @endsection
