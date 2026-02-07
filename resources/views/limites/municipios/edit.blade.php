@@ -161,41 +161,47 @@
 <script src="https://cdn.jsdelivr.net/npm/jsoneditor@latest/dist/jsoneditor.min.js"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const container = document.getElementById("jsoneditor");
-        const hiddenInput = document.getElementById("geometria");
+document.addEventListener("DOMContentLoaded", function () {
+    const container = document.getElementById("jsoneditor");
+    const hiddenInput = document.getElementById("geometria");
 
-        // Cargar datos existentes o objeto vacío
-        const initialData = {!! $municipio->geometria ? json_encode($municipio->geometria) : '{}' !!};
-        // Parsear si viene como string
-        const jsonData = (typeof initialData === 'string') ? JSON.parse(initialData) : initialData;
+    // Cargar datos existentes o objeto vacío
+    const initialData = {!! $municipio->geometria ? json_encode($municipio->geometria) : '{}' !!};
+    const jsonData = (typeof initialData === 'string') ? JSON.parse(initialData) : initialData;
 
-        const options = {
-            mode: 'code',
-            modes: ['code', 'tree'],
-            ace: ace // Usa Ace editor si está disponible
-        };
+    const options = {
+        mode: 'code',
+        modes: ['code', 'tree'],
+        ace: ace // Usa Ace editor si está disponible
+    };
 
-        const editor = new JSONEditor(container, options);
-        editor.set(jsonData);
+    const editor = new JSONEditor(container, options);
+    editor.set(jsonData);
 
-        const form = document.getElementById("form-municipio");
+    const form = document.getElementById("form-municipio");
 
-        form.addEventListener("submit", (e) => {
-            try {
-                const data = editor.get();
-                if (!data) {
-                    hiddenInput.value = '{}';
-                } else {
-                    hiddenInput.value = JSON.stringify(data);
+    form.addEventListener("submit", function (e) {
+        try {
+            const data = editor.get();
+            hiddenInput.value = data ? JSON.stringify(data) : '{}';
+        } catch (err) {
+            e.preventDefault();
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Geometría inválida',
+                text: 'El JSON de la geometría no es válido. Por favor, revisa la estructura antes de guardar.',
+                confirmButtonText: 'Entendido',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger'
                 }
-            } catch (err) {
-                e.preventDefault();
-                alert('El JSON de geometría no es válido.');
-            }
-        });
+            });
+        }
     });
+});
 </script>
+
 
 @push('css')
 <style>

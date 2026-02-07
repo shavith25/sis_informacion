@@ -142,26 +142,44 @@
 <script src="https://cdn.jsdelivr.net/npm/jsoneditor@latest/dist/jsoneditor.min.js"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const container = document.getElementById("jsoneditor");
-        const hiddenInput = document.getElementById("geometria");
-        const initialData = @json($departamento->geometria);
-        const options = { mode: 'code', modes: ['code', 'tree'], ace: ace };
-        const editor = new JSONEditor(container, options);
-        editor.set(initialData);
+document.addEventListener("DOMContentLoaded", function () {
+    const container = document.getElementById("jsoneditor");
+    const hiddenInput = document.getElementById("geometria");
+    const initialData = @json($departamento->geometria);
 
-        const form = hiddenInput.closest("form");
-        form.addEventListener("submit", () => {
-            try {
-                const data = editor.get();
-                hiddenInput.value = JSON.stringify(data);
-            } catch (e) {
-                alert('El JSON de geometría no es válido.');
-                event.preventDefault();
-            }
-        });
+    const options = {
+        mode: 'code',
+        modes: ['code', 'tree'],
+        ace: ace
+    };
+
+    const editor = new JSONEditor(container, options);
+    editor.set(initialData);
+
+    const form = hiddenInput.closest("form");
+
+    form.addEventListener("submit", function (event) {
+        try {
+            const data = editor.get();
+            hiddenInput.value = JSON.stringify(data);
+        } catch (e) {
+            event.preventDefault();
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Geometría inválida',
+                text: 'El JSON de la geometría no es válido. Por favor, revisa la estructura antes de continuar.',
+                confirmButtonText: 'Entendido',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger'
+                }
+            });
+        }
     });
+});
 </script>
+
 
 <style>
     .section-header h1 { color: #34395e; font-size: 24px; font-weight: 700; }

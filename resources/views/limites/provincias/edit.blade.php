@@ -165,31 +165,42 @@
 <script src="https://cdn.jsdelivr.net/npm/jsoneditor@latest/dist/jsoneditor.min.js"></script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const container = document.getElementById("jsoneditor");
-        const hiddenInput = document.getElementById("geometria");
+document.addEventListener("DOMContentLoaded", function () {
+    const container = document.getElementById("jsoneditor");
+    const hiddenInput = document.getElementById("geometria");
 
-        // Carga segura de datos JSON
-        const initialData = {!! $provincia->geometria ? json_encode($provincia->geometria) : '{}' !!};
-        const jsonData = (typeof initialData === 'string') ? JSON.parse(initialData) : initialData;
+    // Carga segura de datos JSON
+    const initialData = {!! $provincia->geometria ? json_encode($provincia->geometria) : '{}' !!};
+    const jsonData = (typeof initialData === 'string') ? JSON.parse(initialData) : initialData;
 
-        const options = { mode: 'code', modes: ['code', 'tree'], ace: ace };
-        const editor = new JSONEditor(container, options);
-        editor.set(jsonData);
+    const options = { mode: 'code', modes: ['code', 'tree'], ace: ace };
+    const editor = new JSONEditor(container, options);
+    editor.set(jsonData);
 
-        const form = document.getElementById("form-provincia");
+    const form = document.getElementById("form-provincia");
 
-        form.addEventListener("submit", function(e) {
-            try {
-                const data = editor.get();
-                hiddenInput.value = data ? JSON.stringify(data) : '{}';
-            } catch (err) {
-                e.preventDefault();
-                alert('Error: El JSON de geometría no es válido.');
-            }
-        });
+    form.addEventListener("submit", function (e) {
+        try {
+            const data = editor.get();
+            hiddenInput.value = data ? JSON.stringify(data) : '{}';
+        } catch (err) {
+            e.preventDefault();
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Geometría inválida',
+                text: 'El JSON de la geometría no es válido. Por favor revisa la estructura antes de guardar.',
+                confirmButtonText: 'Entendido',
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: 'btn btn-danger'
+                }
+            });
+        }
     });
+});
 </script>
+
 
 <style>
     body { overflow: hidden; }
