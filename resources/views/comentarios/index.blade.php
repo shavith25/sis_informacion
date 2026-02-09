@@ -26,7 +26,7 @@
                                 <div class="comment-item border-bottom pb-3 mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <strong><i class="fas fa-user text-secondary mr-1"></i> {{ $comentario->nombre }}</strong>
-                                        <small class="text-muted"><i class="fas fa-calendar-alt mr-1"></i> {{ $comentario->created_at->format('d/m/Y H:i') }}</small>
+                                        <small class="text-muted"><i class="fas fa-calendar-alt mr-1"></i> Fecha: {{ $comentario->created_at->format('d/m/Y') }}</small>
                                     </div>
                                     <p class="mb-3 text-justify">{{ $comentario->comentario }}</p>
 
@@ -73,7 +73,7 @@
                                 <div class="comment-item border-bottom pb-3 mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
                                         <strong><i class="fas fa-user text-secondary mr-1"></i> {{ $comentario->nombre }}</strong>
-                                        <small class="text-muted"><i class="fas fa-calendar-alt mr-1"></i> {{ $comentario->created_at->format('d/m/Y H:i') }}</small>
+                                        <small class="text-muted"><i class="fas fa-calendar-alt mr-1"></i> Fecha: {{ $comentario->created_at->format('d/m/Y') }}</small>
                                     </div>
                                     <p class="mb-3 text-justify text-muted">{{ $comentario->comentario }}</p>
 

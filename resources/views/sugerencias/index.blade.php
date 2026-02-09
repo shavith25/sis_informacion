@@ -33,7 +33,7 @@
                                             </small>
                                             <small class="text-muted">
                                                 <i class="far fa-calendar-alt mr-1"></i>
-                                                {{ $sugerencia->created_at->format('d/m/Y') }}
+                                                Fecha: {{ $sugerencia->created_at->format('d/m/Y') }}
                                             </small>
                                         </div>
                                     </div>
@@ -54,7 +54,7 @@
                                             @csrf
                                             @method('DELETE')
                                             <button type="button" class="btn btn-outline-danger btn-sm btn-delete shadow-none" data-form-id="delete-pending-{{ $sugerencia->id }}" title="Eliminar">
-                                                <i class="fas fa-trash-alt"></i>
+                                                <i class="fas fa-trash-alt"></i> Eliminar
                                             </button>
                                         </form>
                                     </div>
@@ -89,7 +89,7 @@
                                         </div>
                                         <div class="text-muted small">
                                             <i class="far fa-calendar-check mr-1"></i>
-                                            {{ $sugerencia->created_at->format('d/m/Y') }}
+                                            Fecha: {{ $sugerencia->created_at->format('d/m/Y') }}
                                         </div>
                                     </div>
 

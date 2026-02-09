@@ -41,8 +41,8 @@
                                             @foreach ($videosPendientes as $video)
                                                 <div class="col-md-6 col-lg-4 mb-4">
                                                     <div class="card h-100 border shadow-sm">
-                                                        <div class="card-header bg-light">
-                                                            <strong class="text-truncate w-100" title="{{ $video->titulo }}">{{ $video->titulo }}</strong>
+                                                        <div class="card-header bg-light"> 
+                                                            Titulo: <strong class="text-truncate w-100" title="{{ $video->titulo }}">{{ $video->titulo }}</strong>
                                                         </div>
 
                                                         <div class="card-body p-2">
@@ -51,8 +51,8 @@
                                                             </div>
 
                                                             <div class="mt-2 px-2">
-                                                                <small class="d-block text-muted"><i class="fas fa-user"></i> {{ $video->nombre }}</small>
-                                                                <small class="d-block text-muted"><i class="far fa-clock"></i> {{ $video->created_at->format('d/m/Y') }}</small>
+                                                                <small class="d-block text-muted"><i class="fas fa-user"></i> Por: {{ $video->nombre }}</small>
+                                                                <small class="d-block text-muted"><i class="far fa-clock"></i> Fecha: {{ $video->created_at->format('d/m/Y') }}</small>
                                                                 <p class="mt-2 small text-truncate">{{ $video->descripcion }}</p>
                                                             </div>
                                                         </div>
@@ -89,7 +89,7 @@
                                                 <div class="col-md-6 col-lg-4 mb-4">
                                                     <div class="card h-100 border shadow-sm">
                                                         <div class="card-header bg-light">
-                                                            <strong class="text-truncate w-100" title="{{ $imagen->titulo }}">{{ $imagen->titulo }}</strong>
+                                                            Título: <strong class="text-truncate w-100" title="{{ $imagen->titulo }}">{{ $imagen->titulo }}</strong>
                                                         </div>
 
                                                         <div class="card-body p-2">
@@ -100,8 +100,8 @@
                                                             </div>
 
                                                             <div class="mt-2 px-2">
-                                                                <small class="d-block text-muted"><i class="fas fa-user"></i> {{ $imagen->nombre }}</small>
-                                                                <small class="d-block text-muted"><i class="far fa-clock"></i> {{ $imagen->created_at->format('d/m/Y') }}</small>
+                                                                <small class="d-block text-muted"><i class="fas fa-user"></i> Por: {{ $imagen->nombre }}</small>
+                                                                <small class="d-block text-muted"><i class="far fa-clock"></i> Fecha: {{ $imagen->created_at->format('d/m/Y') }}</small>
                                                                 <p class="mt-2 small text-truncate">{{ $imagen->descripcion }}</p>
                                                             </div>
                                                         </div>
@@ -141,7 +141,7 @@
                                                 <div class="col-md-6 col-lg-4 mb-4">
                                                     <div class="card h-100 border border-success shadow-sm">
                                                         <div class="card-header bg-white text-success">
-                                                            <strong class="text-truncate w-100">{{ $video->titulo }}</strong>
+                                                            <strong class="text-truncate w-100"> Título: {{ $video->titulo }}</strong>
                                                         </div>
 
                                                         <div class="card-body p-2">
@@ -178,7 +178,7 @@
                                                 <div class="col-md-6 col-lg-4 mb-4">
                                                     <div class="card h-100 border border-success shadow-sm">
                                                         <div class="card-header bg-white text-success">
-                                                            <strong class="text-truncate w-100">{{ $imagen->titulo }}</strong>
+                                                            <strong class="text-truncate w-100"> Título: {{ $imagen->titulo }}</strong>
                                                         </div>
                                                         <div class="card-body p-2">                                                                                         
                                                             <div style="height: 200px; overflow: hidden; border-radius: 5px; cursor: pointer;" 

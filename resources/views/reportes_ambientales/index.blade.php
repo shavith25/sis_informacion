@@ -30,7 +30,7 @@
                                         <strong><i class="fas fa-user text-secondary mr-1"></i> {{ $reporte->nombre }}</strong>
                                         <small class="text-muted">
                                             <i class="fas fa-calendar-alt mr-1"></i> 
-                                            {{ $reporte->created_at->format('d/m/Y') }}
+                                            Fecha: {{ $reporte->created_at->format('d/m/Y') }}
                                         </small>
                                     </div>
                                     
