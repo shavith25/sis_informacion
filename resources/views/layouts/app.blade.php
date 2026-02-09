@@ -192,11 +192,19 @@
     @endif
     
     @if ($errors->any())
+    @if ($errors->has('numero_documento'))
+        Toast.fire({
+            icon: 'error',
+            title: @json($errors->first('numero_documento'))
+        });
+    @else
         Toast.fire({
             icon: 'error',
             title: 'Por favor revise el formulario.'
         });
     @endif
+@endif
+
 </script>
 
 @stack('js')

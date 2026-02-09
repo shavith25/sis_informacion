@@ -70,7 +70,7 @@
                                             <div class="card-footer bg-transparent">
                                                 <div class="d-flex justify-content-between align-items-center">
                                                     <span class="badge badge-light">
-                                                        <i class="fas fa-clock mr-1"></i>
+                                                        <i class="fas fa-clock mr-1"></i> Fecha:
                                                         {{ \Carbon\Carbon::parse($documento->fecha_emision)->format('d/m/Y') }}
                                                     </span>
                                                     <div>

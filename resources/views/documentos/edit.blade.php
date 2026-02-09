@@ -3,7 +3,9 @@
 @section('content')
     <section class="section">
         <div class="section-header">
-            <h3 class="page__heading"><i class="fas fa-pen text-primary mr-2"></i> Editar Documento</h3>
+            <h3 class="page__heading"><i class="fas fa-pen text-primary mr-2"></i> 
+                Editar Documento: <span class="text-primary">{{ $documento->titulo }}</span>
+            </h3>
             <div class="section-header-breadcrumb">
                 <div class="breadcrumb-item active"><a href="{{ route('home') }}">Inicio</a></div>
                 <div class="breadcrumb-item"><a href="{{ route('documentos.index') }}">Documentos</a></div>
