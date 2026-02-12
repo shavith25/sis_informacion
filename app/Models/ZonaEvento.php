@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ZonaEvento extends Model
 {
     use HasFactory;
-     protected $fillable = [
+    protected $fillable = [
         'titulo',
         'descripcion',
         'coordenadas',
@@ -21,6 +21,26 @@ class ZonaEvento extends Model
 
     protected $casts = [
         'coordenadas' => 'array',
-        'estado' => 'boolean',
+        'fecha_evento' => 'datetime',
     ];
+
+    public function zona()
+    {
+        return $this->belongsTo(Zonas::class, 'zona_id');
+    }
+
+    public function medios()
+    {
+        return $this->hasMany(ZonaEventoMedio::class, 'evento_id');
+    }
+
+    public function imagenes()
+    {
+        return $this->medios()->where('tipo', 'imagen');
+    }
+
+    public function videos()
+    {
+        return $this->medios()->where('tipo', 'video');
+    }
 }

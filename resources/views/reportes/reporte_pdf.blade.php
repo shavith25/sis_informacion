@@ -9,7 +9,7 @@
             font-size: 12px;
             color: #333;
             margin: 0;
-            padding: 20px;
+            padding: 0;
         }
 
         /* --- UTILIDADES --- */
@@ -42,25 +42,26 @@
 
         /* --- SECCIONES DE ÁREAS --- */
         .area-container {
-            margin-bottom: 30px;
-            page-break-inside: avoid;
+            margin-bottom: 20px;
+            page-break-inside: auto;
         }
         
         .area-header {
+            page-break-after: avoid;
             background-color: #004a80;
-            color: white;
-            padding: 8px 15px;
-            font-size: 14px;
-            border-radius: 4px 4px 0 0;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
         }
 
         /* --- ZONAS (Estilo Ficha) --- */
         .zona-card {
             border: 1px solid #ddd;
             border-top: none; 
-            padding: 15px;
+            padding: 12px;
             background-color: #fff;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            page-break-inside: auto;
         }
 
         .info-table {
@@ -106,11 +107,13 @@
 
         /* --- TABLA DE EVENTOS --- */
         .event-table {
+            vertical-align: top;
+            padding: 8px 6px;
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 11px;
+            margin-bottom: 10px;
         }
+
         .event-table th {
             background-color: #f1f1f1;
             border-bottom: 2px solid #ddd;
@@ -120,6 +123,10 @@
         .event-table td {
             border-bottom: 1px solid #eee;
             padding: 6px;
+        }
+
+        .page-break {
+            page-break-after: always;
         }
 
         /* --- RESUMEN KPI (ESTADÍSTICAS) --- */
@@ -158,7 +165,6 @@
         .kpi-orange { border-top: 4px solid #fd7e14; color: #fd7e14; }
         .kpi-purple { border-top: 4px solid #6f42c1; color: #6f42c1; }
         .kpi-cyan { border-top: 4px solid #17a2b8; color: #17a2b8; }
-        
     </style>
 </head>
 <body>
@@ -232,12 +238,51 @@
                                     </thead>
                                     <tbody>
                                         @foreach($zona->eventos as $evento)
-                                            <tr>
-                                                <td>{{ $evento->titulo ?? 'N/A' }}</td>
-                                                <td>{{ $evento->descripcion ?? 'Sin descripción' }}</td>
-                                                <td><span style="background: #eee; padding: 2px 5px; border-radius: 3px; font-size: 10px;">{{ strtoupper($evento->tipo) }}</span></td>
-                                            </tr>
-                                        @endforeach
+                                            @php
+                                                $imgs = $evento->medios->where('tipo','imagen');
+                                            @endphp
+
+                                        <tr>
+                                            <td style="vertical-align: top;">
+                                                {{ $evento->titulo ?? 'N/A' }}
+                                            </td>
+
+                                            <td style="vertical-align: top;">
+                                                <div>{{ $evento->descripcion ?? 'Sin descripción' }}</div>
+
+                                                @if($imgs->count())
+                                                    <div style="font-weight:bold; margin-top:6px; margin-bottom:4px;">Imágenes:</div>
+
+                                                    <table style="border-collapse:collapse;">
+                                                    <tr>
+                                                        @foreach ($imgs->take(4) as $img)
+                                                            @php $p = public_path('storage/' . $img->url); @endphp
+                                                            @if(file_exists($p))
+                                                                <td style="padding-right:6px;">
+                                                                    <img src="{{ $p }}"
+                                                                        style="display:block; width:110px; height:75px; object-fit:cover; border:1px solid #ccc; border-radius:4px;">
+                                                                    </td>
+                                                            @endif
+                                                        @endforeach
+                                                    </tr>
+                                                </table>
+
+                                                    @if($imgs->count() > 4)
+                                                        <div style="font-size:10px; color:#666; margin-top:3px;">
+                                                            +{{ $imgs->count() - 4 }} más...
+                                                        </div>
+                                                    @endif
+                                                @endif
+                                            </td>
+
+                                            <td style="vertical-align: top;">
+                                                <span style="background:#eee; padding:2px 5px; border-radius:3px; font-size:10px;">
+                                                    {{ strtoupper($evento->tipo) }}
+                                                </span>
+                                            </td>
+                                    </tr>
+                                    @endforeach
+
                                     </tbody>
                                 </table>
                             </div>
@@ -257,7 +302,7 @@
         </div>
     @endforeach
 
-    <div style="page-break-before: always;"></div>
+    <div style="page-break"></div>
 
     <h2 class="text-center mb-20" style="color: #004a80;">RESUMEN ESTADÍSTICO</h2>
 
