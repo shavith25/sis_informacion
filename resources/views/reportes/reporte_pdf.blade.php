@@ -166,7 +166,7 @@
     <table class="w-100 header-container">
         <tr>
             <td width="20%">
-                <img src="{{ public_path('img/imagen2.jpg') }}" alt="Logo" style="height: 80px; width: auto;">
+                <img src="{{ public_path('img/imagen2.jpg') }}" alt="Logo" style="height: 100px; width: auto;">
             </td>
             <td width="80%" class="text-right">
                 <h1 class="header-title">GOBIERNO AUTÓNOMO DEPARTAMENTAL DE COCHABAMBA</h1>

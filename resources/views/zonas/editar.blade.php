@@ -302,12 +302,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (!estaEnCochabamba(latlng.lat, latlng.lng)) { fueraDeLimites = true; return; }
                 coordenadas.push({ tipo: 'marcador', coordenadas: { lat: latlng.lat, lng: latlng.lng } });
             } else if (layer instanceof L.Polygon) {
-                let latlngs = layer.getLatLngs();
-                // Normaliza posibles anillos (leaflet devuelve [ [pts], [hole], ... ])
-                if (Array.isArray(latlngs) && Array.isArray(latlngs[0])) latlngs = latlngs[0];
-                const points = latlngs.map(l => ({ lat: l.lat, lng: l.lng }));
-                if (points.some(pt => !estaEnCochabamba(pt.lat, pt.lng))) { fueraDeLimites = true; return; }
-                coordenadas.push({ tipo: 'poligono', coordenadas: points });
+                const points = layer.getLatLngs()[0];
+                if (points.some(latlng => !estaEnCochabamba(latlng.lat, latlng.lng))) { fueraDeLimites = true; return; }
+                coordenadas.push({ tipo: 'poligono', coordenadas: points.map(latlng => ({ lat: latlng.lat, lng: latlng.lng })) });
             }
         });
 
@@ -325,13 +322,11 @@ document.addEventListener('DOMContentLoaded', function() {
     map.on(L.Draw.Event.CREATED, function(e) {
         const layer = e.layer;
         if (layer instanceof L.Marker) {
-            const latlng = layer.getLatLng();
-            if (!estaEnCochabamba(latlng.lat, latlng.lng)) return;
-            // activar arrastre correctamente
-            if (layer.dragging && typeof layer.dragging.enable === 'function') layer.dragging.enable();
+            if (!estaEnCochabamba(layer.getLatLng().lat, layer.getLatLng().lng)) return;
+            layer.options.draggable = true;
             layer.on('dragend', updateCoordenadasInput);
         } else if (layer instanceof L.Polygon) {
-            // no todos los eventos de edit estan disponibles en la misma instancia, la edición se controla por L.Draw.Event.EDITED
+            layer.on('edit', updateCoordenadasInput);
         }
         drawnItems.addLayer(layer);
         updateCoordenadasInput();
@@ -344,40 +339,20 @@ document.addEventListener('DOMContentLoaded', function() {
     if (oldCoordenadas) {
         try {
             const coordenadas = JSON.parse(oldCoordenadas);
-            if (Array.isArray(coordenadas)) {
+            if(Array.isArray(coordenadas)){
                 coordenadas.forEach(item => {
                     if (item.tipo === 'marcador') {
-                        // soporta formatos distintos
-                        const c = normalizeCoord(item.coordenadas);
-                        if (!c) return;
-                        const marker = L.marker([c.lat, c.lng]);
-                        if (marker.dragging && typeof marker.dragging.enable === 'function') marker.dragging.enable();
+                        const marker = L.marker([item.coordenadas.lat, item.coordenadas.lng], { draggable: true });
                         marker.on('dragend', updateCoordenadasInput);
                         drawnItems.addLayer(marker);
                     } else if (item.tipo === 'poligono') {
-                        let latlngs = [];
-                        // puede ser array de arrays ([ [lng,lat], ... ]) o array de objetos {lat,lng}
-                        if (item.coordenadas && Array.isArray(item.coordenadas) && item.coordenadas.length > 0) {
-                            if (Array.isArray(item.coordenadas[0])) {
-                                // array de arrays
-                                latlngs = item.coordenadas.map(coord => {
-                                    const n = normalizeCoord(coord);
-                                    return [n.lat, n.lng];
-                                });
-                            } else {
-                                // array de objetos
-                                latlngs = item.coordenadas.map(coord => {
-                                    const n = normalizeCoord(coord);
-                                    return [n.lat, n.lng];
-                                });
-                            }
-                        }
-                        if (latlngs.length === 0) return;
+                        const latlngs = item.coordenadas.map(coord => [coord.lat, coord.lng]);
                         const polygon = L.polygon(latlngs, { color: '#3388ff', fillColor: '#3388ff', fillOpacity: 0.2 });
+                        polygon.on('edit', updateCoordenadasInput);
                         drawnItems.addLayer(polygon);
                     }
                 });
-                if (drawnItems.getLayers().length > 0) map.fitBounds(drawnItems.getBounds());
+                if (drawnItems.getLayers().length > 0) map.fitBounds(drawnItems.getBounds()); 
             }
         } catch (e) { console.error('Error cargando coordenadas', e); }
     }
@@ -394,29 +369,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelectorAll('.view-history').forEach(btn => {
         btn.addEventListener('click', function() {
             const historialCoords = JSON.parse(this.getAttribute('data-coordenadas'));
-            drawnItems.clearLayers();
+            drawnItems.clearLayers(); 
             historialCoords.forEach(item => {
-                if (item.tipo === 'marcador') {
-                    const c = normalizeCoord(item.coordenadas);
-                    if (!c) return;
-                    const m = L.marker([c.lat, c.lng]);
-                    drawnItems.addLayer(m);
-                } else if (item.tipo === 'poligono') {
-                    let latlngs = [];
-                    if (item.coordenadas && Array.isArray(item.coordenadas) && item.coordenadas.length > 0) {
-                        if (Array.isArray(item.coordenadas[0])) {
-                            latlngs = item.coordenadas.map(coord => {
-                                const n = normalizeCoord(coord);
-                                return [n.lat, n.lng];
-                            });
-                        } else {
-                            latlngs = item.coordenadas.map(coord => {
-                                const n = normalizeCoord(coord);
-                                return [n.lat, n.lng];
-                            });
-                        }
-                    }
-                    if (latlngs.length === 0) return;
+                if (item.tipo === 'marcador') drawnItems.addLayer(L.marker([item.coordenadas.lat, item.coordenadas.lng], { icon: new L.Icon.Default({className: 'history-filter'}) }));
+                else if (item.tipo === 'poligono') {
+                    const latlngs = item.coordenadas.map(coord => [coord.lat, coord.lng]);
                     drawnItems.addLayer(L.polygon(latlngs, { color: '#ff5722', fillColor: '#ff5722', fillOpacity: 0.3 }));
                 }
             });
