@@ -204,7 +204,12 @@
                         </div>
                         <div class="map-container mb-20">
                             @php
-                                $imagenMapa = $zona->historial->firstWhere('imagen_mapa', '!=', null)->imagen_mapa ?? null;
+                                $h = $zona->historial
+                                    ->whereNotNull('imagen_mapa')
+                                    ->sortByDesc('created_at')
+                                    ->first();
+
+                                $imagenMapa = $h ? $h->imagen_mapa : null;
                             @endphp
 
                             @if($imagenMapa)

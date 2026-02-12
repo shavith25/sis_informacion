@@ -424,14 +424,43 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('zona-form').addEventListener('submit', function(e) {
         e.preventDefault();
+
+        function fitToDrawnItems() {
+            if (drawnItems || drawnItems.getLayers().length === 0) return;
+
+            const polys = [];
+            drawnItems.eachLayer(l => { if (l instanceof L.Polygon) polys.push(l); });
+
+            const bound = polys.length ? polys[0].getBounds() : drawnItems.getBounds();
+            if (!bounds.isValid()) return;
+
+            map.fitBounds(bounds, {padding: [40, 40], maxZoom: 15, animate: false});
+        }
+
+        if (!document.getElementById('coordenadas-array').value) {
+            return Swal.fire('Error', 'Dibuja la zona en el mapa.', 'error');
+        }
+
+        fitToDrawnItems();
         map.invalidateSize();
-        if (!document.getElementById('coordenadas-array').value) return Swal.fire('Error', "Dibuja la zona en el mapa.", 'error');
-        html2canvas(document.getElementById('map'), { useCORS: true, backgroundColor: null, ignoreElements: (element) => element.classList.contains('leaflet-control-container') })
-        .then(canvas => {
-            const input = document.createElement('input');
-            input.type = 'hidden'; input.name = 'imagen_mapa'; input.value = canvas.toDataURL('image/jpeg', 0.6);
-            this.appendChild(input); this.submit();
-        }).catch(() => this.submit());
+
+        setTimeout(() => {
+            html2canvas(document.getElementById('map'), {
+                useCORS: true,
+                background: '#ffffff',
+                scale: 2,
+                ignoreElements: (el) => el.classList.contains('leaflet-control-container')
+            })
+            .then(canvas => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'imagen_mapa';
+                input.value = canvas.toDataURL('image/jpeg', 0.80);
+                this.appendChild(input);
+                this.submit();
+            })
+            .catch(() => this.submit());
+        }, 900);
     });
 });
 </script>
