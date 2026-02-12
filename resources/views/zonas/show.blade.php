@@ -27,9 +27,8 @@
             </div>
         </div>
     </div>
-    <div style="overflow-x: hidden; overflow-y:auto; height: calc(100vh - 200px);">
 
-    
+    <div style="overflow-x: hidden; overflow-y:auto; height: calc(100vh - 200px);">
         <div class="row">
             <!-- Columna de información -->
             <div class="col-lg-4 mb-4">
@@ -99,21 +98,20 @@
                             <i class="fas fa-map me-2"></i> Mapa de la Zona
                         </h5>
                         <div>
-                        <div class="btn-group">
-                            <button class="btn btn-sm btn-light dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
-                                <i class="fas fa-download me-1"></i> Exportar
-                            </button>
-                            <ul class="dropdown-menu dropdown-menu-end">
-                                <li><a class="dropdown-item" href="#" id="export-image"><i class="fas fa-image me-2"></i> Imagen PNG</a></li>
-                                <li><a class="dropdown-item" href="#" id="export-kml"><i class="fas fa-file-code me-2"></i> KML</a></li>
-                                <li><a class="dropdown-item" href="#" id="export-kmz"><i class="fas fa-file-archive me-2"></i> KMZ</a></li>
-                                <li><a class="dropdown-item" href="#" id="export-shp"><i class="fas fa-map me-2"></i> SHP</a></li>
-                            </ul>
-                        </div>
-
-
+                            <div class="btn-group">
+                                <button class="btn btn-sm btn-light dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
+                                    <i class="fas fa-download me-1"></i> Exportar
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="#" id="export-image"><i class="fas fa-image me-2"></i> Imagen PNG</a></li>
+                                    <li><a class="dropdown-item" href="#" id="export-kml"><i class="fas fa-file-code me-2"></i> KML</a></li>
+                                    <li><a class="dropdown-item" href="#" id="export-kmz"><i class="fas fa-file-archive me-2"></i> KMZ</a></li>
+                                    <li><a class="dropdown-item" href="#" id="export-shp"><i class="fas fa-map me-2"></i> SHP</a></li>
+                                </ul>
+                            </div>
                         </div>
                     </div>
+
                     <div class="card-body p-0 position-relative">
                         <div id="map" style="height: 570px; width: 100%;"></div>
                         <div class="map-overlay p-2">
@@ -134,7 +132,7 @@
                 </h5>
             </div>
             <div class="card-body">
-                
+
                 @if(isset($zona->imagenes) && count($zona->imagenes) > 0)
                 <div class="mb-4">
                     <h6 class="text-muted mb-3"><i class="fas fa-image me-2"></i> Imágenes</h6>
@@ -159,7 +157,6 @@
                         @foreach($zona->videos as $video)
                         <div class="col-md-6 mb-3">
                             <div class="ratio ratio-16x9" style="width: 300px ; height:200px">
-                                
                                 <video controls class="rounded shadow-sm bg-dark" style="width: 100%; height: 100%;">
                                     <source src="{{ asset('storage/' . $video->url) }}" type="video/mp4">
                                     Tu navegador no soporta el elemento de video.
@@ -205,20 +202,16 @@
 <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lightbox2/2.11.3/js/lightbox.min.js"></script>
-<!-- tokml -->
+
+<!-- tokml (ya no se usa para export KML/KMZ, pero lo puedes dejar sin problema) -->
 <script src="https://cdn.jsdelivr.net/npm/@mapbox/tokml@0.4.0/tokml.min.js"></script>
 <script src="https://unpkg.com/tokml@0.4.0/tokml.js"></script>
 
 <!-- JSZip -->
-
-{{-- <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script> --}}
-{{-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.6.1/jszip.min.js"></script> --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
-
 
 <!-- shp-write -->
 <script src="https://cdn.jsdelivr.net/npm/shp-write@0.3.0/shpwrite.min.js"></script>
-
 
 <style>
     .card {
@@ -254,7 +247,7 @@
     .gallery {
         display: flex;
         flex-wrap: wrap;
-        margin: -8px; /* Compensa el margen de las columnas */
+        margin: -8px;
     }
 
     .image-container {
@@ -285,87 +278,100 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // Variable global para almacenar los colores asignados
     const assignedColors = {};
     const coordenadas = @json($coordenadas);
-    
-    // --- Funciones auxiliares ---
+
+    // --- Colores y helpers ---
     function getRandomColor() {
         const letters = '0123456789ABCDEF';
         let color = '#';
-        for (let i = 0; i < 6; i++) {
-            color += letters[Math.floor(Math.random() * 16)];
-        }
+        for (let i = 0; i < 6; i++) color += letters[Math.floor(Math.random() * 16)];
         return color;
     }
 
-    // Convierte HEX (#RRGGBB) a KML AABBGGRR (Alpha-Blue-Green-Red)
+    // (Se deja por compatibilidad, aunque ya no dependemos de esto para el KML final)
     function hexToKmlColor(hex, alpha = 'ff') {
         hex = hex.startsWith('#') ? hex.slice(1) : hex;
         if (hex.length !== 6) return "7d00ff00";
-        
         const r = hex.substring(0, 2);
         const g = hex.substring(2, 4);
         const b = hex.substring(4, 6);
         return `${alpha}${b}${g}${r}`;
     }
 
+    function kmlEscape(s='') {
+        return String(s)
+            .replace(/&/g,'&amp;')
+            .replace(/</g,'&lt;')
+            .replace(/>/g,'&gt;')
+            .replace(/"/g,'&quot;')
+            .replace(/'/g,'&apos;');
+    }
+
+    // Genera GeoJSON desde tus coordenadas (igual que antes)
     function generarGeoJSONDesdeCoordenadas(coordenadas) {
         const features = [];
         let featureIndex = 0;
 
+        // Caso: Array de arrays de coords [ [lat,lng], ... ] por polígono
         if (Array.isArray(coordenadas[0]) && Array.isArray(coordenadas[0][0])) {
             coordenadas.forEach((poligonoCoords, index) => {
                 const uniqueId = `polygon_${featureIndex++}`;
                 const featureColor = assignedColors[uniqueId] || getRandomColor();
                 assignedColors[uniqueId] = featureColor;
 
+                // Convertimos [lat,lng] -> [lng,lat] GeoJSON
                 const coordsLngLat = poligonoCoords.map(c => [c[1], c[0]]);
-                if (coordsLngLat.length > 2 && (coordsLngLat[0][0] !== coordsLngLat[coordsLngLat.length - 1][0] || coordsLngLat[0][1] !== coordsLngLat[coordsLngLat.length - 1][1])) {
-                    coordsLngLat.push(coordsLngLat[0]);
+                if (coordsLngLat.length > 2) {
+                    const first = coordsLngLat[0];
+                    const last = coordsLngLat[coordsLngLat.length - 1];
+                    if (first[0] !== last[0] || first[1] !== last[1]) coordsLngLat.push(first);
                 }
-                
+
                 features.push({
                     type: 'Feature',
                     geometry: { type: 'Polygon', coordinates: [coordsLngLat] },
-                    properties: { 
-                        name: `Polígono ${index + 1}`, 
-                        description: `Puntos: ${poligonoCoords.length}`, 
-                        color: featureColor, 
-                        tipo: 'poligono' 
+                    properties: {
+                        name: `Polígono ${index + 1}`,
+                        description: `Puntos: ${poligonoCoords.length}`,
+                        color: featureColor,
+                        tipo: 'poligono'
                     }
                 });
             });
         } else {
+            // Caso: Array de objetos {tipo:'poligono'|'marcador', coordenadas:...}
             coordenadas.forEach((item, index) => {
                 const uniqueId = (item.tipo === 'poligono') ? `polygon_${featureIndex}` : `marker_${featureIndex}`;
                 const featureColor = getRandomColor();
                 assignedColors[uniqueId] = featureColor;
-                
+
                 if (item.tipo === 'poligono' && item.coordenadas && Array.isArray(item.coordenadas)) {
                     const coordsLngLat = item.coordenadas.map(coord => [coord.lng, coord.lat]);
-                    if (coordsLngLat.length > 2 && (coordsLngLat[0][0] !== coordsLngLat[coordsLngLat.length - 1][0] || coordsLngLat[0][1] !== coordsLngLat[coordsLngLat.length - 1][1])) {
-                        coordsLngLat.push(coordsLngLat[0]);
+                    if (coordsLngLat.length > 2) {
+                        const first = coordsLngLat[0];
+                        const last = coordsLngLat[coordsLngLat.length - 1];
+                        if (first[0] !== last[0] || first[1] !== last[1]) coordsLngLat.push(first);
                     }
                     features.push({
                         type: 'Feature',
                         geometry: { type: 'Polygon', coordinates: [coordsLngLat] },
-                        properties: { 
-                            name: `Polígono ${index + 1}`, 
-                            description: `Puntos: ${item.coordenadas.length}`, 
-                            color: featureColor, 
-                            tipo: 'poligono' 
+                        properties: {
+                            name: `Polígono ${index + 1}`,
+                            description: `Puntos: ${item.coordenadas.length}`,
+                            color: featureColor,
+                            tipo: 'poligono'
                         }
                     });
                 } else if (item.tipo === 'marcador' && item.coordenadas) {
                     features.push({
                         type: 'Feature',
                         geometry: { type: 'Point', coordinates: [item.coordenadas.lng, item.coordenadas.lat] },
-                        properties: { 
-                            name: `Marcador ${index + 1}`, 
-                            description: `Lat: ${item.coordenadas.lat.toFixed(6)}, Lng: ${item.coordenadas.lng.toFixed(6)}`, 
-                            color: featureColor, 
-                            tipo: 'marcador' 
+                        properties: {
+                            name: `Marcador ${index + 1}`,
+                            description: `Lat: ${item.coordenadas.lat.toFixed(6)}, Lng: ${item.coordenadas.lng.toFixed(6)}`,
+                            color: featureColor,
+                            tipo: 'marcador'
                         }
                     });
                 }
@@ -373,16 +379,79 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        return { type: 'FeatureCollection', features: features };
+        return { type: 'FeatureCollection', features };
+    }
+
+    /**
+     * ✅ KML SIN "FONDO BLANCO"
+     * Estilo fijo: relleno verde transparente + borde verde.
+     * Esto evita el bug/limitación de estilos de tokml en Google Earth.
+     */
+    function geojsonToKmlGreen(geojson) {
+        const styles = `
+        <Style id="poly_green">
+            <LineStyle><color>ff00ff00</color><width>3</width></LineStyle>
+            <PolyStyle><color>7d00ff00</color><fill>1</fill><outline>1</outline></PolyStyle>
+        </Style>
+        <Style id="pt_green">
+            <IconStyle>
+                <color>ff00ff00</color>
+                <scale>1.1</scale>
+                <Icon><href>http://maps.google.com/mapfiles/kml/pushpin/grn-pushpin.png</href></Icon>
+            </IconStyle>
+        </Style>`;
+
+        let placemarks = '';
+
+        geojson.features.forEach(f => {
+            const name = kmlEscape(f.properties?.name || 'Sin nombre');
+            const desc = kmlEscape(f.properties?.description || '');
+
+            if (f.geometry.type === 'Polygon') {
+                const ring = (f.geometry.coordinates?.[0] || [])
+                    .map(([lng, lat]) => `${lng},${lat},0`)
+                    .join(' ');
+
+                placemarks += `
+                <Placemark>
+                    <name>${name}</name>
+                    <description>${desc}</description>
+                    <styleUrl>#poly_green</styleUrl>
+                    <Polygon>
+                        <tessellate>1</tessellate>
+                        <outerBoundaryIs>
+                            <LinearRing><coordinates>${ring}</coordinates></LinearRing>
+                        </outerBoundaryIs>
+                    </Polygon>
+                </Placemark>`;
+            }
+
+            if (f.geometry.type === 'Point') {
+                const [lng, lat] = f.geometry.coordinates;
+                placemarks += `
+                <Placemark>
+                    <name>${name}</name>
+                    <description>${desc}</description>
+                    <styleUrl>#pt_green</styleUrl>
+                    <Point><coordinates>${lng},${lat},0</coordinates></Point>
+                </Placemark>`;
+            }
+        });
+
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+    <Document>
+        <name>${kmlEscape('Zona {{ $zona->nombre }}')}</name>
+        <description>${kmlEscape('Exportación con estilo verde transparente')}</description>
+        ${styles}
+        ${placemarks}
+    </Document>
+</kml>`;
     }
 
     // --- Inicialización del Mapa Leaflet ---
     let initialLatLng = [-17.3895, -66.1568];
-
-    const map = L.map('map', {
-        zoomControl: true,
-        scrollWheelZoom: true
-    }).setView(initialLatLng, 18);
+    const map = L.map('map', { zoomControl: true, scrollWheelZoom: true }).setView(initialLatLng, 18);
 
     L.layerGroup([
         L.tileLayer('https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -402,12 +471,11 @@ document.addEventListener('DOMContentLoaded', function () {
         let currentIndex = 0;
 
         if (Array.isArray(coordenadas[0]) && Array.isArray(coordenadas[0][0])) {
-            // Formato: Array de arrays de coordenadas
             coordenadas.forEach((poligonoCoords, index) => {
                 const uniqueId = `polygon_${currentIndex++}`;
                 const randomColor = getRandomColor();
                 assignedColors[uniqueId] = randomColor;
-                
+
                 const latLngs = poligonoCoords.map(coord => [coord[0], coord[1]]);
                 const polygon = L.polygon(latLngs, {
                     color: randomColor,
@@ -415,19 +483,18 @@ document.addEventListener('DOMContentLoaded', function () {
                     fillOpacity: 0.4,
                     weight: 3
                 }).addTo(featureGroup);
-                
+
                 bounds.extend(polygon.getBounds());
                 polygon.bindPopup(`<strong>Polígono ${index + 1}</strong><br>Puntos: ${poligonoCoords.length}<br>Color: <span style="display:inline-block;width:15px;height:15px;background:${randomColor};border:1px solid #000;"></span> ${randomColor}`);
             });
         } else {
-            // Formato: Array de objetos con tipo y coordenadas
             coordenadas.forEach(function(item, index) {
                 const randomColor = getRandomColor();
-                
+
                 if (item.tipo === 'poligono' && item.coordenadas && Array.isArray(item.coordenadas)) {
                     const uniqueId = `polygon_${currentIndex}`;
                     assignedColors[uniqueId] = randomColor;
-                    
+
                     const latLngs = item.coordenadas.map(coord => [coord.lat, coord.lng]);
                     const polygon = L.polygon(latLngs, {
                         color: randomColor,
@@ -435,14 +502,13 @@ document.addEventListener('DOMContentLoaded', function () {
                         fillOpacity: 0.4,
                         weight: 3
                     }).addTo(featureGroup);
-                    
+
                     polygon.bindPopup(`<strong>Polígono ${index + 1}</strong><br>Puntos: ${item.coordenadas.length}<br>Color: <span style="display:inline-block;width:15px;height:15px;background:${randomColor};border:1px solid #000;"></span> ${randomColor}`);
                     bounds.extend(polygon.getBounds());
-                    
                 } else if (item.tipo === 'marcador' && item.coordenadas) {
                     const uniqueId = `marker_${currentIndex}`;
                     assignedColors[uniqueId] = randomColor;
-                    
+
                     const marker = L.marker([item.coordenadas.lat, item.coordenadas.lng], {
                         icon: L.divIcon({
                             className: 'custom-marker',
@@ -451,7 +517,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             iconAnchor: [16, 32]
                         })
                     }).addTo(featureGroup);
-                    
+
                     marker.bindPopup(`<strong>Marcador ${index + 1}</strong><br>Lat: ${item.coordenadas.lat.toFixed(6)}<br>Lng: ${item.coordenadas.lng.toFixed(6)}<br>Color: <span style="display:inline-block;width:15px;height:15px;background:${randomColor};border:1px solid #000;"></span> ${randomColor}`);
                     bounds.extend(marker.getLatLng());
                 }
@@ -459,7 +525,6 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
 
-        // Ajustar vista para mostrar todos los elementos
         if (bounds.isValid()) {
             setTimeout(() => {
                 map.fitBounds(bounds, { padding: [50, 50] });
@@ -475,11 +540,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // --- EXPORTACIÓN PNG ---
     document.getElementById('export-image').addEventListener('click', function (e) {
         e.preventDefault();
-        
-        html2canvas(document.getElementById('map'), {
-            useCORS: true,
-            allowTaint: true
-        }).then(canvas => {
+        html2canvas(document.getElementById('map'), { useCORS: true, allowTaint: true }).then(canvas => {
             const link = document.createElement('a');
             link.download = `zona_{{ $zona->nombre }}_${new Date().toISOString().slice(0,10)}.png`;
             link.href = canvas.toDataURL();
@@ -487,59 +548,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // --- EXPORTACIÓN KML ---
+    // ✅ EXPORTACIÓN KML (VERDE TRANSPARENTE, SIN FONDO BLANCO)
     document.getElementById('export-kml').addEventListener('click', function (e) {
         e.preventDefault();
 
         const geojson = generarGeoJSONDesdeCoordenadas(coordenadas);
-        let kmlStyles = '';
-        const uniqueColors = new Set();
-
-        geojson.features.forEach(feature => {
-            if (feature.properties && feature.properties.color) {
-                uniqueColors.add(feature.properties.color);
-            }
-        });
-
-        // Generar estilos KML
-        uniqueColors.forEach(hexColor => {
-            const kmlColorLinea = hexToKmlColor(hexColor, 'ff');
-            const kmlColorRelleno = hexToKmlColor(hexColor, '80');
-            const styleId = `style_${hexColor.replace('#', '')}`;
-            
-            kmlStyles += `
-                <Style id="${styleId}_polygon">
-                    <LineStyle><color>${kmlColorLinea}</color><width>3</width></LineStyle>
-                    <PolyStyle><color>${kmlColorRelleno}</color></PolyStyle>
-                </Style>`;
-            
-            kmlStyles += `
-                <Style id="${styleId}_marker">
-                    <IconStyle>
-                        <color>${kmlColorLinea}</color>
-                        <Icon><href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href></Icon>
-                        <hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/>
-                    </IconStyle>
-                </Style>`;
-        });
-
-        // Generar KML
-        let kml = tokml(geojson, {
-            documentName: 'Zona {{ $zona->nombre }}',
-            documentDescription: 'Datos de polígonos y marcadores con colores aleatorios.',
-            name: 'name',
-            description: 'description',
-            style: (feature) => {
-                if (feature.properties && feature.properties.color) {
-                    const hexColor = feature.properties.color;
-                    const styleId = `style_${hexColor.replace('#', '')}`;
-                    return feature.geometry.type === 'Polygon' ? `#${styleId}_polygon` : `#${styleId}_marker`;
-                }
-                return '';
-            }
-        });
-
-        kml = kml.replace('</Document>', `${kmlStyles}</Document>`);
+        const kml = geojsonToKmlGreen(geojson);
 
         const blob = new Blob([kml], { type: 'application/vnd.google-earth.kml+xml' });
         const link = document.createElement('a');
@@ -547,50 +561,17 @@ document.addEventListener('DOMContentLoaded', function () {
         link.download = `zona_{{ $zona->nombre }}_${new Date().toISOString().slice(0,10)}.kml`;
         link.click();
     });
-    
-    // --- EXPORTACIÓN KMZ ---
+
+    // ✅ EXPORTACIÓN KMZ (VERDE TRANSPARENTE, SIN FONDO BLANCO)
     document.getElementById('export-kmz').addEventListener('click', function (e) {
         e.preventDefault();
 
         const geojson = generarGeoJSONDesdeCoordenadas(coordenadas);
-        let kmlStyles = '';
-        const uniqueColors = new Set();
-
-        geojson.features.forEach(feature => {
-            if (feature.properties && feature.properties.color) {
-                uniqueColors.add(feature.properties.color);
-            }
-        });
-
-        uniqueColors.forEach(hexColor => {
-            const kmlColorLinea = hexToKmlColor(hexColor, 'ff');
-            const kmlColorRelleno = hexToKmlColor(hexColor, '80');
-            const styleId = `style_${hexColor.replace('#', '')}`;
-            
-            kmlStyles += `<Style id="${styleId}_polygon"><LineStyle><color>${kmlColorLinea}</color><width>3</width></LineStyle><PolyStyle><color>${kmlColorRelleno}</color></PolyStyle></Style>`;
-            kmlStyles += `<Style id="${styleId}_marker"><IconStyle><color>${kmlColorLinea}</color><Icon><href>http://maps.google.com/mapfiles/kml/pushpin/ylw-pushpin.png</href></Icon><hotSpot x="20" y="2" xunits="pixels" yunits="pixels"/></IconStyle></Style>`;
-        });
-
-        let kml = tokml(geojson, {
-            documentName: 'Zona {{ $zona->nombre }}',
-            documentDescription: 'Datos de polígonos y marcadores.',
-            name: 'name',
-            description: 'description',
-            style: (feature) => {
-                if (feature.properties && feature.properties.color) {
-                    const hexColor = feature.properties.color;
-                    const styleId = `style_${hexColor.replace('#', '')}`;
-                    return feature.geometry.type === 'Polygon' ? `#${styleId}_polygon` : `#${styleId}_marker`;
-                }
-                return '';
-            }
-        });
-
-        kml = kml.replace('</Document>', `${kmlStyles}</Document>`);
+        const kml = geojsonToKmlGreen(geojson);
 
         const zip = new JSZip();
         zip.file('doc.kml', kml);
-        
+
         zip.generateAsync({ type: 'blob' }).then(blob => {
             const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
@@ -604,18 +585,14 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
 
         const geojson = generarGeoJSONDesdeCoordenadas(coordenadas);
-
         shpwrite.download(geojson, {
-            folder: 'zona_shp', 
+            folder: 'zona_shp',
             filename: `zona_{{ $zona->nombre }}_${new Date().toISOString().slice(0,10)}`,
-            types: {
-                point: 'Marcadores',
-                polygon: 'Poligonos'
-            }
+            types: { point: 'Marcadores', polygon: 'Poligonos' }
         });
     });
 
-    // Configurar lightbox para las imágenes
+    // Lightbox
     if (typeof lightbox !== 'undefined') {
         lightbox.option({
             'resizeDuration': 200,
@@ -624,6 +601,5 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 });
-
 </script>
 @endsection

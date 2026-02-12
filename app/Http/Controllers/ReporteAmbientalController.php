@@ -2,74 +2,81 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Area;
-use App\Models\Zonas;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\ReporteAmbiental; // ✅ asegúrate que este modelo exista
+use Illuminate\Http\Request;
 
-class ReportesController extends Controller
+class ReporteAmbientalController extends Controller
 {
+    public function __construct()
+    {
+        // ✅ permisos (ajusta los nombres a los que tengas en tu BD)
+        $this->middleware('permission:ver-reportes-ambientales', ['only' => ['adminIndex']]);
+        $this->middleware('permission:aprobar-reportes-ambientales', ['only' => ['approve']]);
+        $this->middleware('permission:eliminar-reportes-ambientales', ['only' => ['destroy']]);
+    }
+
+    /**
+     * ✅ API pública (si la necesitas): lista reportes aprobados
+     * GET /public/reportes (solo lectura)
+     */
     public function index()
     {
-        $data = $this->getReportData();
-        return view('reportes.index', $data);
+        $reportes = ReporteAmbiental::where('aprobado', true)->latest()->get();
+        return response()->json(['data' => $reportes]);
     }
 
-    public function exportarPDF()
+    /**
+     * ✅ Panel ADMIN (tu ruta apunta aquí)
+     * GET /admin/reportes-ambientales
+     */
+    public function adminIndex()
     {
-        $data = $this->getReportData();
+        $reportesPendientes = ReporteAmbiental::where('aprobado', false)->latest()->get();
+        $reportesAprobados  = ReporteAmbiental::where('aprobado', true)->latest()->get();
 
-        $pdf = Pdf::loadView('reportes.reporte_pdf', $data)
-            ->setPaper('A4', 'portrait');
-
-        return $pdf->download('reporte_zonas_areas.pdf');
+        return view('reportes_ambientales.index', compact('reportesPendientes', 'reportesAprobados'));
     }
 
-    private function getReportData()
+    /**
+     * ✅ Guardar reporte desde formulario público
+     * POST /public/reportes
+     */
+    public function store(Request $request)
     {
-        // ✅ Cuenta ZONAS que tienen al menos 1 evento de tipo X
-        $countZonasConEvento = function (string $tipo) {
-            return Zonas::whereHas('eventos', function ($q) use ($tipo) {
-                $q->where('tipo', $tipo);
-            })->count();
-        };
+        $request->validate([
+            'nombre'    => 'required|string|max:100',
+            'titulo'    => 'required|string|max:255',
+            'contenido' => 'required|string|max:2000',
+            // si manejas tipo, ubicación, etc, agrégalos aquí
+        ]);
 
-        // ✅ Si quieres contar EVENTOS (no zonas), usa esto en vez del de arriba:
-        // $countEventos = fn(string $tipo) => \App\Models\ZonaEvento::where('tipo', $tipo)->count();
+        $reporte = ReporteAmbiental::create([
+            'nombre'    => $request->nombre,
+            'titulo'    => $request->titulo,
+            'contenido' => $request->contenido,
+            'aprobado'  => false,
+        ]);
 
-        $zonasPorArea = Area::where('estado', true)
-            ->withCount(['zonas' => fn($q) => $q->where('estado', true)])
-            ->with([
-                'zonas' => function ($q) {
-                    $q->where('estado', true)
-                        // ✅ historial (último primero)
-                        ->with(['historial' => fn($h) => $h->orderBy('created_at', 'desc')])
-                        // ✅ eventos + medios (CLAVE para imágenes en reporte)
-                        ->with([
-                            'eventos' => function ($e) {
-                                $e->orderBy('fecha_evento', 'desc')
-                                ->orderBy('created_at', 'desc')
-                                ->with('medios');
-                            }
-                        ]);
-                }
-            ])
-            ->get();
+        return response()->json($reporte, 201);
+    }
 
-        return [
-            'totalAreas' => Area::count(),
-            'totalZonas' => Zonas::count(),
+    /**
+     * ✅ Aprobar reporte
+     * PATCH /admin/reportes-ambientales/{reporte}/approve
+     */
+    public function approve(ReporteAmbiental $reporte)
+    {
+        $reporte->update(['aprobado' => true]);
+        return back()->with('success', 'Reporte aprobado correctamente.');
+    }
 
-            'totalIncendios' => $countZonasConEvento('incendio'),
-            'totalAvasallamientos' => $countZonasConEvento('avasallamiento'),
-            'totalInundaciones' => $countZonasConEvento('inundacion'),
-            'totalOtros' => $countZonasConEvento('otro'),
-
-            // ⚠️ Si tu BD enum no incluye estos tipos, estos contadores darán 0 siempre
-            'totalSequias' => $countZonasConEvento('sequia'),
-            'totalLoteamientos' => $countZonasConEvento('loteamiento'),
-            'totalBiodiversidad' => $countZonasConEvento('afectacion_biodiversidad'),
-
-            'zonasPorArea' => $zonasPorArea,
-        ];
+    /**
+     * ✅ Eliminar reporte
+     * DELETE /admin/reportes-ambientales/{reporte}
+     */
+    public function destroy(ReporteAmbiental $reporte)
+    {
+        $reporte->delete();
+        return back()->with('success', 'Reporte eliminado correctamente.');
     }
 }
