@@ -24,7 +24,7 @@
                                 <div class="alert alert-danger alert-dismissible show fade m-3">
                                     <div class="alert-body">
                                         <button class="close" data-dismiss="alert"><span>&times;</span></button>
-                                        <strong>¡Revise los campos!</strong>
+                                        <strong>¡Revise el campo Correo Electrónico!</strong>, la cuenta ya existe !</strong>
                                     </div>
                                 </div>
                             @endif

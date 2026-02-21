@@ -161,7 +161,7 @@ class UsuarioController extends Controller
                 ]);
             } else {
                 return response()->json(['message' => 'No se pudo guardar el cambio en BD'], 500);
-            }
+            } 
 
         } catch (\Exception $e) {
             return response()->json(['message' => 'Error crítico: ' . $e->getMessage()], 500);

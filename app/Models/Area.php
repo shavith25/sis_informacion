@@ -40,4 +40,12 @@ class Area extends Model
             abort(404);
         }
     }
+
+    /*public function toggleEstado(): self
+    {
+        $this->estado = ! (bool) $this->estado;
+        $this->save();
+
+        return $this->fresh();
+    }*/
 }
