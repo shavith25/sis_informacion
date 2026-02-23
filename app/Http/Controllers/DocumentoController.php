@@ -10,6 +10,14 @@ use Illuminate\Database\QueryException;
 
 class DocumentoController extends Controller
 {
+    function __construct()
+    {
+        $this->middleware('permission:ver-documento', ['only' => ['index']]);
+        $this->middleware('permission:crear-documento', ['only' => ['create', 'store']]);
+        $this->middleware('permission:editar-documento', ['only' => ['edit', 'update']]);
+        $this->middleware('permission:eliminar-documento', ['only' => ['destroy']]);
+    }
+
     public function index()
     {
         $documentos = Documento::orderBy('fecha_publicacion', 'desc')
@@ -74,6 +82,12 @@ class DocumentoController extends Controller
     public function edit(Documento $documento)
     {
         return view('documentos.edit', compact('documento'));
+    }
+
+    public function show($id)
+    {
+        $documento = \App\Models\Documento::findOrFail($id);
+        return view('documentos.show', compact('documento'));
     }
 
     public function update(Request $request, Documento $documento)

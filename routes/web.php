@@ -23,6 +23,7 @@ use App\Http\Controllers\RolController;
 use App\Http\Controllers\SugerenciaController;
 use App\Http\Controllers\UsuarioController;
 use App\Http\Controllers\ZonasController;
+use App\Models\Documento;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -78,7 +79,8 @@ Auth::routes(['register' => false]);
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-    
+
+    Route::middleware(['permission:ver-zona|crear-zona|editar-zona|eliminar-zona'])->group(function () {
     // Gestión de Zonas
     Route::get('/zonas/mapa', [ZonasController::class, 'mapa'])->name('zonas.mapa');
     Route::get('/zonas/registradas', [ZonasController::class, 'registradas'])->name('zonas.registradas');
@@ -89,6 +91,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/zonas/{id}/generarMapaPDF', [ZonasController::class, 'generarMapaPDF'])->name('zonas.generarMapaPDF');
     Route::patch('/zonas/{zona}/change-status', [ZonasController::class, 'changeStatus'])->name('zonas.change-status');
     Route::resource('zonas', ZonasController::class);
+    });
 
     // Datos y Detalles
     Route::get('/datos/todos', [ZonasController::class, 'getAllDatos'])->name('datos.todos');
@@ -98,32 +101,54 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/datos/{id}', [ZonasController::class, 'destroyDato'])->name('datos.destroy');
     Route::get('/detalle/{tipo}/{id}', [DetalleController::class, 'show'])->name('detalle.show');
 
-    // Mapas
+    // MAPA DE ÁREAS PROTEGIDAS (PROTEGIDO POR PERMISOS)
+    Route::middleware(['permission:ver-mapa-areas'])->group(function () {;
     Route::get('/mapa-areas', [DepartamentoController::class, 'mapa'])->name('mapa-areas.index');
     Route::get('/mapa-areas/{id}/areas', [DepartamentoController::class, 'getByDepartamento'])->name('mapa-areas.byDepartamento');
     Route::get('/mapa-areas/listado', [AreaController::class, 'getAreas'])->name('mapa-areas.listado');
     Route::get('/mapa-areas/zonas', [MapasAreaController::class, 'getZonas'])->name('mapa-areas.zonas');
     Route::get('/mapa-areas/provincia/{provinciaId}/municipios', [MapasAreaController::class, 'getMunicipiosByProvincia'])->name('mapa-areas.municipios');
     Route::get('/mapa-areas/municipio/{municipioId}/geometria', [MapasAreaController::class, 'getMunicipioGeometria'])->name('mapa-areas.geometria');
+    });
+    
     Route::post('/mapa-areas/store', [MapasAreaController::class, 'storeFromMapa'])->name('mapa-areas.storeFromMapa');
     Route::post('/mapa-areas/store-zona', [MapasAreaController::class, 'storeZonaFromMapa'])->name('mapa-areas.storeZonaFromMapa');
     Route::post('/mapa-areas/store-zona-incidencia', [MapasAreaController::class, 'storeZonaIncidenciaFromMapa'])->name('mapa-areas.storeZonaIncidenciaFromMapa');
     
     // Otros recursos generales
-    Route::patch('/areas/{area}/toggle', [AreaController::class, 'toggleEstado'])->name('areas.toggle');
-    Route::resource('areas', AreaController::class);
-    Route::resource('especies', EspecieController::class)->parameters(['especies' => 'especie']);
-    Route::resource('noticias', NoticiaController::class);
+    Route::middleware(['permission:ver-area|crear-area|editar-area|eliminar-area'])->group(function () {
+        Route::patch('/areas/{area}/toggle', [AreaController::class, 'toggleEstado'])->name('areas.toggle');
+        Route::resource('areas', AreaController::class);
+    });
+
+    Route::middleware(['permission:ver-especie|crear-especie|editar-especie|eliminar-especie'])->group(function () {
+        Route::resource('especies', EspecieController::class)
+            ->parameters(['especies' => 'especie']);
+    });
+
+    Route::middleware(['permission:ver-noticia|crear-noticia|editar-noticia|eliminar-noticia'])->group(function () {
+        Route::patch('/noticias/{noticia}/toggle', [NoticiaController::class, 'toggleEstado'])->name('noticias.toggle');
+        Route::resource('noticias', NoticiaController::class);
+    });
     
     // Ayuda y Documentos
-    Route::get('/ayuda', [AyudaController::class, 'index'])->name('ayuda.index');
-    Route::post('/ayuda/subir', [AyudaController::class, 'subir'])->name('ayuda.subir');
-    Route::get('/documento/descargar/{id}', [AyudaController::class, 'descargar'])->name('documento.descargar');
-    Route::delete('/documento/{id}', [AyudaController::class, 'eliminar'])->name('documento.eliminar');
-    Route::resource('documentos', DocumentoController::class);
+    Route::middleware(['permission:ver-documento'])->group(function () {
+        Route::get('/ayuda', [AyudaController::class, 'index'])->name('ayuda.index');
+        Route::get('/documentos/descargar/{id}', [DocumentoController::class, 'descargar'])->name('documentos.descargar');
+        Route::resource('documentos', DocumentoController::class)->only(['index']);
+    });
+
+    Route::middleware(['permission:crear-documento|editar-documento|eliminar-documento'])->group(function () {
+        Route::post('/ayuda/subir', [AyudaController::class, 'subir'])->name('ayuda.subir');
+        Route::delete('/documento/{id}', [AyudaController::class, 'eliminar'])->name('documento.eliminar');
+        Route::resource('documentos', DocumentoController::class)->except(['show']);
+    });
     
-    Route::get('/reportes', [ReportesController::class, 'index'])->name('reportes.index');
-    Route::get('/reportes/exportar-pdf', [ReportesController::class, 'exportarPDF'])->name('reportes.exportarPDF');
+    Route::get('/reportes', [ReportesController::class, 'index'])
+        ->middleware('permission:ver-reporte')->name('reportes.index');
+    
+    Route::get('/reportes/exportar-pdf', [ReportesController::class, 'exportarPDF'])
+        ->middleware('permission:ver-reporte')->name('reportes.exportarPDF');
 
 
     /*
@@ -137,7 +162,7 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/usuarios/{usuario}/change-status', [UsuarioController::class, 'changeStatus'])->name('usuarios.change-status');
         Route::get('/usuarios/inactivos', [UsuarioController::class, 'getInactiveUsers'])->name('usuarios.inactivos');
         Route::resource('usuarios', UsuarioController::class);
-        Route::resource('roles', RolController::class);
+        Route::resource('roles', RolController::class)->parameters(['roles' => 'token']); // Usamos 'token' para mayor seguridad en URLs
 
         // Aprobación de contenido (Moderación)
         Route::prefix('admin')->name('admin.')->group(function () {

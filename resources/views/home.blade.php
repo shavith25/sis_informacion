@@ -140,50 +140,395 @@
         </script>
 
     @else
-        <section class="section">
-            <div class="section-header">
-                <h3 class="page__heading">Inicio</h3>
+    <section class="section">
+
+<style>
+    .gov-hero{
+        border-radius: 18px;
+        padding: 28px 28px;
+        background: linear-gradient(135deg, #1e3a8a, #2563eb, #4f46e5);
+        color: #fff;
+        box-shadow: 0 18px 50px rgba(30,58,138,.25);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .gov-hero::after{
+        content:"";
+        position:absolute; inset:-80px auto auto -80px;
+        width:200px; height:200px; border-radius:50%;
+        background: rgba(255,255,255,.10);
+        filter: blur(0px);
+    }
+
+    .gov-hero::before{
+        content:"";
+        position:absolute; inset:auto -80px -80px auto;
+        width:260px; height:260px; border-radius:50%;
+        background: rgba(255,255,255,.08);
+    }
+
+    .kpi-card{
+        border-radius: 16px;
+        border: 1px solid rgba(15,23,42,.08);
+        box-shadow: 0 12px 30px rgba(15,23,42,.06);
+        transition: transform .15s ease, box-shadow .15s ease;
+        overflow:hidden;
+        background:#fff;
+    }
+
+    .kpi-card:hover{ transform: translateY(-2px); box-shadow: 0 18px 40px rgba(15,23,42,.10); }
+    .kpi-topline{ height: 4px; background: linear-gradient(90deg,#2563eb,#4f46e5); }
+    .kpi-icon{
+        width:44px; height:44px; border-radius:12px;
+        display:flex; align-items:center; justify-content:center;
+        background: rgba(37,99,235,.10);
+        color:#1d4ed8;
+        font-weight:800;
+        flex: 0 0 auto;
+    }
+
+    .kpi-value{ font-size: 28px; font-weight: 900; color:#0f172a; line-height:1; }
+    .kpi-label{ color:#64748b; font-weight: 700; margin:0; }
+    .kpi-sub{ color:#94a3b8; font-size:.9rem; margin:0; }
+
+    .panel-card{
+        border-radius: 16px;
+        border: 1px solid rgba(15,23,42,.08);
+        box-shadow: 0 12px 30px rgba(15,23,42,.06);
+        background:#fff;
+        overflow:hidden;
+    }
+
+    .panel-head{
+        padding: 14px 18px;
+        border-bottom:1px solid rgba(15,23,42,.08);
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        gap:12px;
+        background: linear-gradient(180deg, #f8fafc, #ffffff);
+    }
+
+    .panel-head:before{
+        content:"";
+        position:absolute; inset:0;
+        border-radius:16px;
+        background: rgba(255,255,255,.10);
+        pointer-events:none;
+    }
+
+    .panel-head *{ position:relative; z-index:1; }
+    .panel-title{
+        margin:0;
+        font-weight: 900;
+        color:#0f172a;
+        letter-spacing:-.01em;
+    }
+
+    .panel-title::before{
+        content:"";
+        position:absolute; inset:0;
+        border-radius:16px;
+        background: rgba(79,70,229,.10);
+        filter: blur(12px);
+        z-index:-1;
+    }
+
+    .panel-body{ padding: 18px; }
+
+    .quick-grid{
+        display:grid;
+        grid-template-columns: repeat(4, minmax(0,1fr));
+        gap:12px;
+    }
+    
+    @media(max-width: 1400px){ .quick-grid{ grid-template-columns: repeat(3, minmax(0,1fr)); } }
+    @media(max-width: 1200px){ .quick-grid{ grid-template-columns: repeat(2, minmax(0,1fr)); } }
+    @media(max-width: 600px){ .quick-grid{ grid-template-columns: 1fr; } }
+
+    .quick-btn{
+        border-radius: 14px;
+        padding: 14px 14px;
+        border: 1px solid rgba(15,23,42,.08);
+        background: #ffffff;
+        text-decoration:none;
+        display:flex;
+        gap:12px;
+        align-items:flex-start;
+        box-shadow: 0 10px 24px rgba(15,23,42,.05);
+        transition: transform .15s ease, box-shadow .15s ease;
+        height:100%;
+    }
+
+    .quick-btn:focus{
+        outline: 2px solid #4f46e5;
+        outline-offset: 2px;
+    }
+
+    .quick-btn:hover{ transform: translateY(-2px); box-shadow: 0 16px 34px rgba(15,23,42,.10); text-decoration:none; }
+    .quick-title{ margin:0; font-weight: 900; color:#0f172a; }
+    .quick-desc{ margin:0; color:#64748b; font-size:.92rem; }
+    .quick-ico{
+        width:40px;height:40px;border-radius:12px;
+        background: rgba(79,70,229,.10);
+        display:flex;align-items:center;justify-content:center;
+        color:#4338ca;font-weight:900;
+        flex:0 0 auto;
+    }
+
+    .table td, .table th{ vertical-align: middle !important; }
+    .badge-soft{
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-weight: 800;
+        background: rgba(37,99,235,.10);
+        color:#1d4ed8;
+        border: 1px solid rgba(37,99,235,.15);
+    }
+
+</style>
+
+<div class="section-header">
+    <h3 class="page__heading">Bienvenido: {{ Auth::user()->name }}</h3>
+</div>
+
+<div class="section-body">
+
+    {{-- HERO --}}
+    <div class="gov-hero mb-4">
+        <div class="d-flex flex-wrap align-items-center justify-content-between" style="gap:14px;">
+            <div>
+                <h2 class="mb-1" style="font-weight:900; letter-spacing:-.02em;">
+                    Programa de Gestión de la Biodiversidad
+                </h2>
+
+                <div style="opacity:.92;">
+                    Bienvenido/a, <strong>{{ Auth::user()->name }}</strong> ·
+                    Rol: <span class="badge badge-light">{{ Auth::user()->roles->pluck('name')->first() ?? 'Sin Rol' }}</span>
+                </div>
             </div>
-            <div class="section-body">
-                <div class="card">
-                    <div class="card-body text-center p-5">
-                        <img src="{{ asset('img/Cochabamba-Bolivia.png') }}" alt="Logo" width="535" class="mb-4"> 
-                        <h2 class="text-primary">¡Bienvenido al Programa Gestión de la Biodiversidad! 🌳</h2>
-                        <h4 class="text-secondary mt-3">Hola, {{ Auth::user()->name }}</h4>
-                        
-                        <p class="lead mt-4">
-                            Has ingresado correctamente al sistema. <br>
-                            Tu rol actual es: 
-                            <span class="badge badge-primary">{{ Auth::user()->roles->pluck('name')->first() ?? 'Sin Rol' }}</span>
-                        </p>
 
-                        <div class="alert alert-light mt-4 d-inline-block text-left shadow-sm">
-                            <i class="fas fa-info-circle mr-2 text-primary"></i> 
-                            
-                            @if(Auth::user()->hasRole('Supervisor'))
-                                <strong>Perfil de Supervisor:</strong> Tu función es supervisar y validar la información del sistema. 
-                                Accede a los módulos de <em>Reportes</em> y <em>Sugerencias</em> para moderar el contenido.
-                            
-                            @elseif(Auth::user()->hasRole('Encargado'))
-                                <strong>Perfil de Encargado:</strong> Tienes control sobre la gestión administrativa de tu área.
-                                Revisa el menú para coordinar las actividades y actualizaciones del sistema.
+            <div class="text-right" style="opacity:.92;">
+                <div style="font-weight:800;">Estado del sistema</div>
+                <div style="font-size:.92rem;">Acceso autenticado · Control por permisos</div>
+            </div>
+        </div>
+    </div>
 
-                            @elseif(Auth::user()->hasRole('Técnico Gobernación'))
-                                <strong>Técnico Departamental:</strong> Tienes permisos globales para la gestión de biodiversidad.
-                                Utiliza el menú para registrar <em>Zonas Protegidas</em>, <em>Especies</em> y actualizar datos a nivel departamental.
-
-                            @elseif(Auth::user()->hasRole('Técnico Municipal'))
-                                <strong>Técnico Municipal:</strong> Tienes permisos para gestionar datos locales.
-                                Ingresa al menú para registrar información sobre las áreas y especies de tu municipio asignado.
-
-                            @else
-                                <strong>Bienvenido:</strong> Por favor, utiliza el <strong>menú lateral izquierdo</strong> para acceder a las opciones habilitadas para tu cuenta.
-                            @endif
-                        </div>
+    {{-- KPIs --}}
+    <div class="row">
+        <div class="col-lg-3 col-md-6 mb-3">
+            <div class="kpi-card">
+                <div class="kpi-topline"></div>
+                    <div class="p-3 d-flex align-items-center" style="gap:12px;">
+                <div class="kpi-icon">Z</div>
+                    <div>
+                        <div class="kpi-value">{{ $stats['zonas'] ?? 0 }}</div>
+                        <p class="kpi-label">Zonas protegidas</p>
+                        <p class="kpi-sub">Registros disponibles</p>
                     </div>
                 </div>
             </div>
-        </section>
-    @endrole
+        </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card">
+            <div class="kpi-topline"></div>
+                <div class="p-3 d-flex align-items-center" style="gap:12px;">
+                <div class="kpi-icon">A</div>
+                <div>
+                <div class="kpi-value">{{ $stats['areas'] ?? 0 }}</div>
+                <p class="kpi-label">Áreas protegidas</p>
+                <p class="kpi-sub">Inventario institucional</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card">
+            <div class="kpi-topline"></div>
+            <div class="p-3 d-flex align-items-center" style="gap:12px;">
+                <div class="kpi-icon">E</div>
+                <div>
+                <div class="kpi-value">{{ $stats['especies'] ?? 0 }}</div>
+                <p class="kpi-label">Especies</p>
+                <p class="kpi-sub">Catálogo registrado</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-6 mb-3">
+        <div class="kpi-card">
+            <div class="kpi-topline"></div>
+                <div class="p-3 d-flex align-items-center" style="gap:12px;">
+                <div class="kpi-icon">R</div>
+                    <div>
+                    <div class="kpi-value">{{ $stats['reportes'] ?? 0 }}</div>
+                    <p class="kpi-label">Reportes</p>
+                    <p class="kpi-sub">Incidencias / registros</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Accesos rápidos por permiso --}}
+    <div class="panel-card mb-4">
+        <div class="panel-head">
+            <h5 class="panel-title">Accesos rápidos</h5>
+            <span class="badge-soft">Disponibles según permisos</span>
+        </div>
+
+        <div class="panel-body">
+            <div class="quick-grid">
+
+            @can('ver-zona')
+            <a class="quick-btn" href="{{ route('zonas.index') }}">
+                <div class="quick-ico">🗺️</div>
+                <div>
+                    <p class="quick-title">Zonas</p>
+                    <p class="quick-desc">Gestión y registro de zonas protegidas.</p>
+                </div>
+            </a>
+            @endcan
+
+            @can('ver-area')
+            <a class="quick-btn" href="{{ route('areas.index') }}">
+                <div class="quick-ico">🏞️</div>
+                <div>
+                <p class="quick-title">Áreas</p>
+                <p class="quick-desc">Listado y administración de áreas.</p>
+                </div>
+            </a>
+            @endcan
+
+            @can('ver-especie')
+            <a class="quick-btn" href="{{ route('especies.index') }}">
+                <div class="quick-ico">🧬</div>
+                <div>
+                <p class="quick-title">Especies</p>
+                <p class="quick-desc">Catálogo de especies y datos asociados.</p>
+                </div>
+            </a>
+            @endcan
+
+            @can('ver-reporte')
+            <a class="quick-btn" href="{{ route('reportes.index') }}">
+                <div class="quick-ico">📄</div>
+                <div>
+                <p class="quick-title">Reportes</p>
+                <p class="quick-desc">Revisión y exportación de información.</p>
+                </div>
+            </a>
+            @endcan
+
+            {{-- Si no tiene ningún permiso relevante --}}
+            @if(
+                !Auth::user()->can('ver-zona') &&
+                !Auth::user()->can('ver-area') &&
+                !Auth::user()->can('ver-especie') &&
+                !Auth::user()->can('ver-reporte')
+            )
+            <div class="alert alert-light mb-0" style="border-radius:14px;">
+                <strong>Sin accesos asignados.</strong>
+                Solicita al administrador permisos para habilitar módulos.
+            </div>
+            @endif
+
+            </div>
+        </div>
+    </div>
+
+    {{-- Actividad reciente --}}
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="panel-card">
+                <div class="panel-head">
+                    <h5 class="panel-title">Últimas Zonas registradas</h5>
+                    @can('ver-zona')
+                        <a href="{{ route('zonas.index') }}" class="btn btn-sm btn-primary">Ver todo</a>
+                    @endcan
+                </div>
+                <div class="panel-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                        <thead>
+                        <tr>
+                            <th>Zona</th>
+                            <th class="text-center">Estado</th>
+                            <th class="text-right">Fecha</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        @forelse(($ultimasZonas ?? []) as $z)
+                            <tr>
+                            <td><strong>{{ $z->nombre ?? '—' }}</strong></td>
+                            <td class="text-center">
+                                <span class="badge badge-light">
+                                {{ $z->estado ?? '—' }}
+                                </span>
+                            </td>
+                            <td class="text-right">
+                                {{ optional($z->created_at)->format('d/m/Y') }}
+                            </td>
+                            </tr>
+                        @empty
+                            <tr><td colspan="3" class="text-center text-muted p-4">Sin registros recientes.</td></tr>
+                        @endforelse
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6 mb-4">
+            <div class="panel-card">
+                <div class="panel-head">
+                    <h5 class="panel-title">Últimas Áreas registradas</h5>
+                    @can('ver-area')
+                    <a href="{{ route('areas.index') }}" class="btn btn-sm btn-primary">Ver todo</a>
+                    @endcan
+                </div>
+                <div class="panel-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                            <tr>
+                                <th>Área</th>
+                                <th class="text-center">Estado</th>
+                                <th class="text-right">Fecha</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            @forelse(($ultimasAreas ?? []) as $a)
+                                <tr>
+                                <td><strong>{{ $a->nombre ?? '—' }}</strong></td>
+                                <td class="text-center">
+                                    <span class="badge badge-light">
+                                    {{ $a->estado ?? '—' }}
+                                    </span>
+                                </td>
+                                <td class="text-right">
+                                    {{ optional($a->created_at)->format('d/m/Y') }}
+                                </td>
+                                </tr>
+                            @empty
+                                <tr><td colspan="3" class="text-center text-muted p-4">Sin registros recientes.</td></tr>
+                            @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+</section>
+@endrole
 
 @endsection

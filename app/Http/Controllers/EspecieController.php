@@ -35,8 +35,15 @@ class EspecieController extends Controller
             'documentos.*' => 'nullable|mimes:pdf,doc,docx|max:51200',
         ]);
 
+        $tituloPlano = trim(strip_tags($request->titulo));
+
+        if ($tituloPlano === '') {
+            return back()->withErrors(['titulo' => 'El título no puede estar vacío o contener solo etiquetas HTML.'])->withInput();
+        }
+
         $data = $request->only(['titulo', 'descripcion', 'tipo', 'zona_id']);
-        $data['slug'] = Str::slug($request->titulo) . '-' . uniqid(); 
+        $data['titulo'] = $tituloPlano;
+        $data['slug'] = Str::slug($tituloPlano) . '-' . uniqid();
 
         $especie = Especie::create($data);
 
@@ -92,10 +99,16 @@ class EspecieController extends Controller
             'documentos.*' => 'nullable|mimes:pdf,doc,docx|max:51200',
         ]);
 
+        $tituloPlano = trim(strip_tags($request->titulo));
+
+        if ($tituloPlano === '') {
+            return back()->withErrors(['titulo' => 'El título no puede estar vacío o contener solo etiquetas HTML.'])->withInput();
+        }
+
         $data = $request->only(['titulo', 'descripcion', 'tipo', 'zona_id']);
-        
-        if($especie->titulo != $request->titulo){
-            $data['slug'] = Str::slug($request->titulo) . '-' . $especie->id;
+        $data['titulo'] = $tituloPlano;
+        if($especie->titulo !== $request->titulo){
+            $data['slug'] = Str::slug($tituloPlano) . '-' . uniqid();
         }
 
         $especie->update($data);
@@ -177,6 +190,6 @@ class EspecieController extends Controller
         $especie->delete();
 
         return redirect()->route('especies.index')
-                        ->with('success', 'Especie eliminada y archivos limpiados correctamente.');
+                        ->with('success', 'Especie eliminada correctamente.');
     }
 }

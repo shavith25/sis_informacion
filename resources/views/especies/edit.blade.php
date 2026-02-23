@@ -146,8 +146,8 @@
                                             {{ basename($doc->archivo) }}
                                         </div>
                                         <div>
-                                            <a href="{{ asset('storage/' . $doc->archivo) }}" class="btn btn-sm btn-outline-info mr-1" download title="Descargar"><i class="fas fa-download"></i></a>
-                                            <button type="button" class="btn btn-sm btn-outline-danger eliminar-doc" data-id="{{ $doc->id }}" title="Eliminar"><i class="fas fa-trash"></i></button>
+                                            <a href="{{ asset('storage/' . $doc->archivo) }}" class="btn btn-sm btn-outline-info mr-1" download title="Descargar"><i class="fas fa-download"></i> Descargar</a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger eliminar-doc" data-id="{{ $doc->id }}" title="Eliminar"><i class="fas fa-trash"></i> Eliminar</button>
                                             <input type="hidden" name="eliminar_documentos[]" value="">
                                         </div>
                                     </div>
