@@ -380,8 +380,8 @@
                         <thead style="position: sticky; top: 0; background: #f8f9fa; z-index: 10;">
                             <tr>
                                 <th class="text-dark fw-bold small text-uppercase">Nombre</th>
-                                <th class="text-dark fw-bold small text-uppercase">Área</th>
-                                <th class="text-dark fw-bold small text-uppercase">Tipo</th>
+                                <th class="text-dark fw-bold small text-uppercase">Área Protegida</th>
+                                <th class="text-dark fw-bold small text-uppercase">Típo Zona</th>
                                 <th class="text-dark fw-bold small text-uppercase">Estado</th>
                                 <th class="text-dark fw-bold small text-uppercase text-end">Acciones</th>
                             </tr>
